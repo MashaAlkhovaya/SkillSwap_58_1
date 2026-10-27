@@ -1,1 +1,352 @@
-[]
+[
+  {
+    "id": "user-01",
+    "name": "Анна",
+    "email": "anna.smirnova@example.com",
+    "avatarUrl": "/db/avatars/figma/anna.jpg",
+    "createdAt": "2025-01-16T11:15:00.000Z"
+  },
+  {
+    "id": "user-02",
+    "name": "Максим",
+    "email": "maxim.ivanov@example.com",
+    "avatarUrl": "/db/avatars/figma/maxim.jpg",
+    "createdAt": "2025-01-20T12:15:00.000Z"
+  },
+  {
+    "id": "user-03",
+    "name": "Екатерина",
+    "email": "ekaterina.petrova@example.com",
+    "avatarUrl": "/db/avatars/figma/ekaterina.jpg",
+    "createdAt": "2025-01-24T13:15:00.000Z"
+  },
+  {
+    "id": "user-04",
+    "name": "Дмитрий",
+    "email": "dmitry.sokolov@example.com",
+    "avatarUrl": "/db/avatars/generated/user-04.svg",
+    "createdAt": "2025-01-28T14:15:00.000Z"
+  },
+  {
+    "id": "user-05",
+    "name": "Мария",
+    "email": "maria.volkova@example.com",
+    "avatarUrl": "/db/avatars/figma/maria.jpg",
+    "createdAt": "2025-02-01T15:15:00.000Z"
+  },
+  {
+    "id": "user-06",
+    "name": "Алексей",
+    "email": "alexey.kuznetsov@example.com",
+    "avatarUrl": "/db/avatars/generated/user-06.svg",
+    "createdAt": "2025-02-05T16:15:00.000Z"
+  },
+  {
+    "id": "user-07",
+    "name": "Ольга",
+    "email": "olga.popova@example.com",
+    "avatarUrl": "/db/avatars/generated/user-07.svg",
+    "createdAt": "2025-02-09T17:15:00.000Z"
+  },
+  {
+    "id": "user-08",
+    "name": "Илья",
+    "email": "ilya.lebedev@example.com",
+    "avatarUrl": "/db/avatars/generated/user-08.svg",
+    "createdAt": "2025-02-13T18:15:00.000Z"
+  },
+  {
+    "id": "user-09",
+    "name": "София",
+    "email": "sofia.kozlova@example.com",
+    "avatarUrl": "/db/avatars/figma/sofia.jpg",
+    "createdAt": "2025-02-17T10:15:00.000Z"
+  },
+  {
+    "id": "user-10",
+    "name": "Артём",
+    "email": "artem.novikov@example.com",
+    "avatarUrl": "/db/avatars/generated/user-10.svg",
+    "createdAt": "2025-02-21T11:15:00.000Z"
+  },
+  {
+    "id": "user-11",
+    "name": "Алина",
+    "email": "alina.morozova@example.com",
+    "avatarUrl": "/db/avatars/generated/user-11.svg",
+    "createdAt": "2025-02-25T12:15:00.000Z"
+  },
+  {
+    "id": "user-12",
+    "name": "Кирилл",
+    "email": "kirill.petrov@example.com",
+    "avatarUrl": "/db/avatars/generated/user-12.svg",
+    "createdAt": "2025-03-01T13:15:00.000Z"
+  },
+  {
+    "id": "user-13",
+    "name": "Виктория",
+    "email": "viktoria.volkova@example.com",
+    "avatarUrl": "/db/avatars/figma/viktoria.jpg",
+    "createdAt": "2025-03-05T14:15:00.000Z"
+  },
+  {
+    "id": "user-14",
+    "name": "Роман",
+    "email": "roman.solovyov@example.com",
+    "avatarUrl": "/db/avatars/generated/user-14.svg",
+    "createdAt": "2025-03-09T15:15:00.000Z"
+  },
+  {
+    "id": "user-15",
+    "name": "Полина",
+    "email": "polina.vasilyeva@example.com",
+    "avatarUrl": "/db/avatars/generated/user-15.svg",
+    "createdAt": "2025-03-13T16:15:00.000Z"
+  },
+  {
+    "id": "user-16",
+    "name": "Никита",
+    "email": "nikita.fedorov@example.com",
+    "avatarUrl": "/db/avatars/generated/user-16.svg",
+    "createdAt": "2025-03-17T17:15:00.000Z"
+  },
+  {
+    "id": "user-17",
+    "name": "Дарья",
+    "email": "daria.mikhailova@example.com",
+    "avatarUrl": "/db/avatars/figma/daria.jpg",
+    "createdAt": "2025-03-21T18:15:00.000Z"
+  },
+  {
+    "id": "user-18",
+    "name": "Михаил",
+    "email": "mikhail.andreev@example.com",
+    "avatarUrl": "/db/avatars/figma/mikhail.jpg",
+    "createdAt": "2025-03-25T10:15:00.000Z"
+  },
+  {
+    "id": "user-19",
+    "name": "Елена",
+    "email": "elena.makarova@example.com",
+    "avatarUrl": "/db/avatars/figma/elena.jpg",
+    "createdAt": "2025-03-29T11:15:00.000Z"
+  },
+  {
+    "id": "user-20",
+    "name": "Павел",
+    "email": "pavel.egorov@example.com",
+    "avatarUrl": "/db/avatars/generated/user-20.svg",
+    "createdAt": "2025-04-02T12:15:00.000Z"
+  },
+  {
+    "id": "user-21",
+    "name": "Ксения",
+    "email": "kseniya.nikolaeva@example.com",
+    "avatarUrl": "/db/avatars/generated/user-21.svg",
+    "createdAt": "2025-04-06T13:15:00.000Z"
+  },
+  {
+    "id": "user-22",
+    "name": "Тимур",
+    "email": "timur.orlov@example.com",
+    "avatarUrl": "/db/avatars/generated/user-22.svg",
+    "createdAt": "2025-04-10T14:15:00.000Z"
+  },
+  {
+    "id": "user-23",
+    "name": "Вероника",
+    "email": "veronika.zaitseva@example.com",
+    "avatarUrl": "/db/avatars/generated/user-23.svg",
+    "createdAt": "2025-04-14T15:15:00.000Z"
+  },
+  {
+    "id": "user-24",
+    "name": "Глеб",
+    "email": "gleb.borisov@example.com",
+    "avatarUrl": "/db/avatars/generated/user-24.svg",
+    "createdAt": "2025-04-18T16:15:00.000Z"
+  },
+  {
+    "id": "user-25",
+    "name": "Людмила",
+    "email": "lyudmila.yakova@example.com",
+    "avatarUrl": "/db/avatars/generated/user-25.svg",
+    "createdAt": "2025-04-22T17:15:00.000Z"
+  },
+  {
+    "id": "user-26",
+    "name": "Владислав",
+    "email": "vladislav.grigoryev@example.com",
+    "avatarUrl": "/db/avatars/generated/user-26.svg",
+    "createdAt": "2025-04-26T18:15:00.000Z"
+  },
+  {
+    "id": "user-27",
+    "name": "Арина",
+    "email": "arina.romanova@example.com",
+    "avatarUrl": "/db/avatars/generated/user-27.svg",
+    "createdAt": "2025-04-30T10:15:00.000Z"
+  },
+  {
+    "id": "user-28",
+    "name": "Станислав",
+    "email": "stanislav.kiselev@example.com",
+    "avatarUrl": "/db/avatars/generated/user-28.svg",
+    "createdAt": "2025-05-04T11:15:00.000Z"
+  },
+  {
+    "id": "user-29",
+    "name": "Евгения",
+    "email": "evgenia.mironova@example.com",
+    "avatarUrl": "/db/avatars/generated/user-29.svg",
+    "createdAt": "2025-05-08T12:15:00.000Z"
+  },
+  {
+    "id": "user-30",
+    "name": "Борис",
+    "email": "boris.kozlov@example.com",
+    "avatarUrl": "/db/avatars/generated/user-30.svg",
+    "createdAt": "2025-05-12T13:15:00.000Z"
+  },
+  {
+    "id": "user-31",
+    "name": "Татьяна",
+    "email": "tatiana.ilyina@example.com",
+    "avatarUrl": "/db/avatars/generated/user-31.svg",
+    "createdAt": "2025-05-16T14:15:00.000Z"
+  },
+  {
+    "id": "user-32",
+    "name": "Денис",
+    "email": "denis.gusev@example.com",
+    "avatarUrl": "/db/avatars/generated/user-32.svg",
+    "createdAt": "2025-05-20T15:15:00.000Z"
+  },
+  {
+    "id": "user-33",
+    "name": "Надежда",
+    "email": "nadezhda.titova@example.com",
+    "avatarUrl": "/db/avatars/generated/user-33.svg",
+    "createdAt": "2025-05-24T16:15:00.000Z"
+  },
+  {
+    "id": "user-34",
+    "name": "Вадим",
+    "email": "vadim.korolev@example.com",
+    "avatarUrl": "/db/avatars/generated/user-34.svg",
+    "createdAt": "2025-05-28T17:15:00.000Z"
+  },
+  {
+    "id": "user-35",
+    "name": "Яна",
+    "email": "yana.medvedeva@example.com",
+    "avatarUrl": "/db/avatars/generated/user-35.svg",
+    "createdAt": "2025-06-01T18:15:00.000Z"
+  },
+  {
+    "id": "user-36",
+    "name": "Фёдор",
+    "email": "fedor.markov@example.com",
+    "avatarUrl": "/db/avatars/generated/user-36.svg",
+    "createdAt": "2025-06-05T10:15:00.000Z"
+  },
+  {
+    "id": "user-37",
+    "name": "Алёна",
+    "email": "alyona.belova@example.com",
+    "avatarUrl": "/db/avatars/generated/user-37.svg",
+    "createdAt": "2025-06-09T11:15:00.000Z"
+  },
+  {
+    "id": "user-38",
+    "name": "Василий",
+    "email": "vasily.tarasov@example.com",
+    "avatarUrl": "/db/avatars/generated/user-38.svg",
+    "createdAt": "2025-06-13T12:15:00.000Z"
+  },
+  {
+    "id": "user-39",
+    "name": "Инна",
+    "email": "inna.bogdanova@example.com",
+    "avatarUrl": "/db/avatars/generated/user-39.svg",
+    "createdAt": "2025-06-17T13:15:00.000Z"
+  },
+  {
+    "id": "user-40",
+    "name": "Григорий",
+    "email": "grigory.voronov@example.com",
+    "avatarUrl": "/db/avatars/generated/user-40.svg",
+    "createdAt": "2025-06-21T14:15:00.000Z"
+  },
+  {
+    "id": "user-41",
+    "name": "Светлана",
+    "email": "svetlana.filippova@example.com",
+    "avatarUrl": "/db/avatars/generated/user-41.svg",
+    "createdAt": "2025-06-25T15:15:00.000Z"
+  },
+  {
+    "id": "user-42",
+    "name": "Константин",
+    "email": "konstantin.davydov@example.com",
+    "avatarUrl": "/db/avatars/figma/konstantin.jpg",
+    "createdAt": "2025-06-29T16:15:00.000Z"
+  },
+  {
+    "id": "user-43",
+    "name": "Марина",
+    "email": "marina.karpova@example.com",
+    "avatarUrl": "/db/avatars/generated/user-43.svg",
+    "createdAt": "2025-07-03T17:15:00.000Z"
+  },
+  {
+    "id": "user-44",
+    "name": "Семён",
+    "email": "semyon.antonov@example.com",
+    "avatarUrl": "/db/avatars/generated/user-44.svg",
+    "createdAt": "2025-07-07T18:15:00.000Z"
+  },
+  {
+    "id": "user-45",
+    "name": "Лариса",
+    "email": "larisa.zhukova@example.com",
+    "avatarUrl": "/db/avatars/generated/user-45.svg",
+    "createdAt": "2025-07-11T10:15:00.000Z"
+  },
+  {
+    "id": "user-46",
+    "name": "Эдуард",
+    "email": "eduard.baranov@example.com",
+    "avatarUrl": "/db/avatars/generated/user-46.svg",
+    "createdAt": "2025-07-15T11:15:00.000Z"
+  },
+  {
+    "id": "user-47",
+    "name": "Жанна",
+    "email": "zhanna.krylova@example.com",
+    "avatarUrl": "/db/avatars/generated/user-47.svg",
+    "createdAt": "2025-07-19T12:15:00.000Z"
+  },
+  {
+    "id": "user-48",
+    "name": "Олег",
+    "email": "oleg.ermolov@example.com",
+    "avatarUrl": "/db/avatars/generated/user-48.svg",
+    "createdAt": "2025-07-23T13:15:00.000Z"
+  },
+  {
+    "id": "user-49",
+    "name": "Наталья",
+    "email": "natalia.golubeva@example.com",
+    "avatarUrl": "/db/avatars/generated/user-49.svg",
+    "createdAt": "2025-07-27T14:15:00.000Z"
+  },
+  {
+    "id": "user-50",
+    "name": "Ярослав",
+    "email": "yaroslav.danilov@example.com",
+    "avatarUrl": "/db/avatars/generated/user-50.svg",
+    "createdAt": "2025-07-31T15:15:00.000Z"
+  }
+]
