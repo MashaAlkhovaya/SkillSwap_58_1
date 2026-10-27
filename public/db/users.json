@@ -4,349 +4,549 @@
     "name": "Анна",
     "email": "anna.smirnova@example.com",
     "avatarUrl": "/db/avatars/figma/anna.jpg",
-    "createdAt": "2025-01-16T11:15:00.000Z"
+    "createdAt": "2025-01-16T11:15:00.000Z",
+    "birthDate": "1995-02-08",
+    "gender": "female",
+    "city": "Санкт-Петербург",
+    "bio": "Доброжелательная и любознательная, ценю искреннее общение и тёплые встречи с близкими."
   },
   {
     "id": "user-02",
     "name": "Максим",
     "email": "maxim.ivanov@example.com",
     "avatarUrl": "/db/avatars/figma/maxim.jpg",
-    "createdAt": "2025-01-20T12:15:00.000Z"
+    "createdAt": "2025-01-20T12:15:00.000Z",
+    "birthDate": "1990-07-15",
+    "gender": "male",
+    "city": "Москва",
+    "bio": "Спокойный и открытый к новым знакомствам. Люблю хорошие фильмы и уютные вечера; плед уже считает меня членом семьи."
   },
   {
     "id": "user-03",
     "name": "Екатерина",
     "email": "ekaterina.petrova@example.com",
     "avatarUrl": "/db/avatars/figma/ekaterina.jpg",
-    "createdAt": "2025-01-24T13:15:00.000Z"
+    "createdAt": "2025-01-24T13:15:00.000Z",
+    "birthDate": "1993-11-22",
+    "gender": "female",
+    "city": "Казань",
+    "bio": "Ценю душевные разговоры, семейные традиции и возможность узнавать людей с разными взглядами."
   },
   {
     "id": "user-04",
     "name": "Дмитрий",
     "email": "dmitry.sokolov@example.com",
     "avatarUrl": "/db/avatars/generated/user-04.svg",
-    "createdAt": "2025-01-28T14:15:00.000Z"
+    "createdAt": "2025-01-28T14:15:00.000Z",
+    "birthDate": "1988-04-03",
+    "gender": "male",
+    "city": "Екатеринбург",
+    "bio": "Люблю проводить выходные с друзьями, открывать новые места в городе и пробовать что-то необычное."
   },
   {
     "id": "user-05",
     "name": "Мария",
     "email": "maria.volkova@example.com",
     "avatarUrl": "/db/avatars/figma/maria.jpg",
-    "createdAt": "2025-02-01T15:15:00.000Z"
+    "createdAt": "2025-02-01T15:15:00.000Z",
+    "birthDate": "1997-09-19",
+    "gender": "female",
+    "city": "Новосибирск",
+    "bio": "Внимательная к деталям и ценю красоту в повседневных мелочах. Иногда нахожу повод устроить тихий вечер даже в очень занятом дне."
   },
   {
     "id": "user-06",
     "name": "Алексей",
     "email": "alexey.kuznetsov@example.com",
     "avatarUrl": "/db/avatars/generated/user-06.svg",
-    "createdAt": "2025-02-05T16:15:00.000Z"
+    "createdAt": "2025-02-05T16:15:00.000Z",
+    "birthDate": "1992-01-27",
+    "gender": "male",
+    "city": "Нижний Новгород",
+    "bio": "Сдержанный, надёжный и всегда готов поддержать разговор за чашкой кофе."
   },
   {
     "id": "user-07",
     "name": "Ольга",
     "email": "olga.popova@example.com",
     "avatarUrl": "/db/avatars/generated/user-07.svg",
-    "createdAt": "2025-02-09T17:15:00.000Z"
+    "createdAt": "2025-02-09T17:15:00.000Z",
+    "birthDate": "1989-06-11",
+    "gender": "female",
+    "city": "Москва",
+    "bio": "Легко нахожу общий язык с людьми. Ценю уют, добрый юмор и небольшие спонтанные планы."
   },
   {
     "id": "user-08",
     "name": "Илья",
     "email": "ilya.lebedev@example.com",
     "avatarUrl": "/db/avatars/generated/user-08.svg",
-    "createdAt": "2025-02-13T18:15:00.000Z"
+    "createdAt": "2025-02-13T18:15:00.000Z",
+    "birthDate": "1996-12-05",
+    "gender": "male",
+    "city": "Самара",
+    "bio": "Люблю активные выходные, новые впечатления и встречи в хорошей компании. Мой навигатор иногда делает вид, что знает дорогу лучше меня."
   },
   {
     "id": "user-09",
     "name": "София",
     "email": "sofia.kozlova@example.com",
     "avatarUrl": "/db/avatars/figma/sofia.jpg",
-    "createdAt": "2025-02-17T10:15:00.000Z"
+    "createdAt": "2025-02-17T10:15:00.000Z",
+    "birthDate": "1994-03-14",
+    "gender": "female",
+    "city": "Санкт-Петербург",
+    "bio": "Ценю домашний уют, тёплое общение и возможность иногда выбраться за город."
   },
   {
     "id": "user-10",
     "name": "Артём",
     "email": "artem.novikov@example.com",
     "avatarUrl": "/db/avatars/generated/user-10.svg",
-    "createdAt": "2025-02-21T11:15:00.000Z"
+    "createdAt": "2025-02-21T11:15:00.000Z",
+    "birthDate": "1991-08-26",
+    "gender": "male",
+    "city": "Казань",
+    "bio": "Общительный и любознательный. Люблю знакомиться с новыми людьми и узнавать их истории."
   },
   {
     "id": "user-11",
     "name": "Алина",
     "email": "alina.morozova@example.com",
     "avatarUrl": "/db/avatars/generated/user-11.svg",
-    "createdAt": "2025-02-25T12:15:00.000Z"
+    "createdAt": "2025-02-25T12:15:00.000Z",
+    "birthDate": "1998-05-09",
+    "gender": "female",
+    "city": "Екатеринбург",
+    "bio": "Предпочитаю спокойный ритм жизни, внимательное отношение и приятные беседы. Могу отменить спешку, но не чай."
   },
   {
     "id": "user-12",
     "name": "Кирилл",
     "email": "kirill.petrov@example.com",
     "avatarUrl": "/db/avatars/generated/user-12.svg",
-    "createdAt": "2025-03-01T13:15:00.000Z"
+    "createdAt": "2025-03-01T13:15:00.000Z",
+    "birthDate": "1987-10-17",
+    "gender": "male",
+    "city": "Новосибирск",
+    "bio": "Всегда рад новым знакомствам. В свободное время люблю прогулки и встречи с друзьями."
   },
   {
     "id": "user-13",
     "name": "Виктория",
     "email": "viktoria.volkova@example.com",
     "avatarUrl": "/db/avatars/figma/viktoria.jpg",
-    "createdAt": "2025-03-05T14:15:00.000Z"
+    "createdAt": "2025-03-05T14:15:00.000Z",
+    "birthDate": "1993-01-06",
+    "gender": "female",
+    "city": "Москва",
+    "bio": "Ценю терпение, доброжелательность и хорошую атмосферу в любой компании."
   },
   {
     "id": "user-14",
     "name": "Роман",
     "email": "roman.solovyov@example.com",
     "avatarUrl": "/db/avatars/generated/user-14.svg",
-    "createdAt": "2025-03-09T15:15:00.000Z"
+    "createdAt": "2025-03-09T15:15:00.000Z",
+    "birthDate": "1985-06-23",
+    "gender": "male",
+    "city": "Нижний Новгород",
+    "bio": "Люблю проводить время с близкими, замечать красивые места и сохранять приятные воспоминания."
   },
   {
     "id": "user-15",
     "name": "Полина",
     "email": "polina.vasilyeva@example.com",
     "avatarUrl": "/db/avatars/generated/user-15.svg",
-    "createdAt": "2025-03-13T16:15:00.000Z"
+    "createdAt": "2025-03-13T16:15:00.000Z",
+    "birthDate": "2000-11-12",
+    "gender": "female",
+    "city": "Самара",
+    "bio": "Оптимистичная и заботливая. Радуюсь простым вещам, уютным вечерам и искренним разговорам."
   },
   {
     "id": "user-16",
     "name": "Никита",
     "email": "nikita.fedorov@example.com",
     "avatarUrl": "/db/avatars/generated/user-16.svg",
-    "createdAt": "2025-03-17T17:15:00.000Z"
+    "createdAt": "2025-03-17T17:15:00.000Z",
+    "birthDate": "1992-04-20",
+    "gender": "male",
+    "city": "Санкт-Петербург",
+    "bio": "Практичный и спокойный человек, которому нравятся понятные планы. Правда, список дел иногда нужен просто для моральной поддержки."
   },
   {
     "id": "user-17",
     "name": "Дарья",
     "email": "daria.mikhailova@example.com",
     "avatarUrl": "/db/avatars/figma/daria.jpg",
-    "createdAt": "2025-03-21T18:15:00.000Z"
+    "createdAt": "2025-03-21T18:15:00.000Z",
+    "birthDate": "1996-09-02",
+    "gender": "female",
+    "city": "Казань",
+    "bio": "Люблю знакомиться с интересными людьми и находить поводы для хорошего настроения."
   },
   {
     "id": "user-18",
     "name": "Михаил",
     "email": "mikhail.andreev@example.com",
     "avatarUrl": "/db/avatars/figma/mikhail.jpg",
-    "createdAt": "2025-03-25T10:15:00.000Z"
+    "createdAt": "2025-03-25T10:15:00.000Z",
+    "birthDate": "1988-02-16",
+    "gender": "male",
+    "city": "Екатеринбург",
+    "bio": "Любознательный и терпеливый. Ценю ясность, уважение и возможность обменяться мнениями."
   },
   {
     "id": "user-19",
     "name": "Елена",
     "email": "elena.makarova@example.com",
     "avatarUrl": "/db/avatars/figma/elena.jpg",
-    "createdAt": "2025-03-29T11:15:00.000Z"
+    "createdAt": "2025-03-29T11:15:00.000Z",
+    "birthDate": "1999-07-28",
+    "gender": "female",
+    "city": "Новосибирск",
+    "bio": "Ценю гармонию, приятную компанию и небольшие радости обычного дня. Умею превратить выбор фильма в отдельное вечернее мероприятие."
   },
   {
     "id": "user-20",
     "name": "Павел",
     "email": "pavel.egorov@example.com",
     "avatarUrl": "/db/avatars/generated/user-20.svg",
-    "createdAt": "2025-04-02T12:15:00.000Z"
+    "createdAt": "2025-04-02T12:15:00.000Z",
+    "birthDate": "1990-12-09",
+    "gender": "male",
+    "city": "Москва",
+    "bio": "Предпочитаю содержательные разговоры, спокойную обстановку и встречи без спешки."
   },
   {
     "id": "user-21",
     "name": "Ксения",
     "email": "kseniya.nikolaeva@example.com",
     "avatarUrl": "/db/avatars/generated/user-21.svg",
-    "createdAt": "2025-04-06T13:15:00.000Z"
+    "createdAt": "2025-04-06T13:15:00.000Z",
+    "birthDate": "1995-05-24",
+    "gender": "female",
+    "city": "Нижний Новгород",
+    "bio": "Открытая и энергичная. Люблю проводить время в компании и поддерживать близких."
   },
   {
     "id": "user-22",
     "name": "Тимур",
     "email": "timur.orlov@example.com",
     "avatarUrl": "/db/avatars/generated/user-22.svg",
-    "createdAt": "2025-04-10T14:15:00.000Z"
+    "createdAt": "2025-04-10T14:15:00.000Z",
+    "birthDate": "1986-10-04",
+    "gender": "male",
+    "city": "Самара",
+    "bio": "Ответственный и доброжелательный. Ценю честность, взаимное уважение и чувство меры."
   },
   {
     "id": "user-23",
     "name": "Вероника",
     "email": "veronika.zaitseva@example.com",
     "avatarUrl": "/db/avatars/generated/user-23.svg",
-    "createdAt": "2025-04-14T15:15:00.000Z"
+    "createdAt": "2025-04-14T15:15:00.000Z",
+    "birthDate": "2001-03-18",
+    "gender": "female",
+    "city": "Санкт-Петербург",
+    "bio": "Стараюсь сохранять баланс между делами и отдыхом. Иногда отдых начинается с торжественного переноса дел на завтра."
   },
   {
     "id": "user-24",
     "name": "Глеб",
     "email": "gleb.borisov@example.com",
     "avatarUrl": "/db/avatars/generated/user-24.svg",
-    "createdAt": "2025-04-18T16:15:00.000Z"
+    "createdAt": "2025-04-18T16:15:00.000Z",
+    "birthDate": "1993-08-07",
+    "gender": "male",
+    "city": "Казань",
+    "bio": "Люблю дружескую атмосферу, добрый юмор и возможность провести время с интересными людьми."
   },
   {
     "id": "user-25",
     "name": "Людмила",
     "email": "lyudmila.yakova@example.com",
     "avatarUrl": "/db/avatars/generated/user-25.svg",
-    "createdAt": "2025-04-22T17:15:00.000Z"
+    "createdAt": "2025-04-22T17:15:00.000Z",
+    "birthDate": "1984-01-29",
+    "gender": "female",
+    "city": "Екатеринбург",
+    "bio": "Ценю воображение, тёплое общение и вечера в хорошей компании."
   },
   {
     "id": "user-26",
     "name": "Владислав",
     "email": "vladislav.grigoryev@example.com",
     "avatarUrl": "/db/avatars/generated/user-26.svg",
-    "createdAt": "2025-04-26T18:15:00.000Z"
+    "createdAt": "2025-04-26T18:15:00.000Z",
+    "birthDate": "1997-06-13",
+    "gender": "male",
+    "city": "Новосибирск",
+    "bio": "Спокойный и внимательный собеседник. Рад новым знакомствам и приятным планам, особенно если в них предусмотрен кофе."
   },
   {
     "id": "user-27",
     "name": "Арина",
     "email": "arina.romanova@example.com",
     "avatarUrl": "/db/avatars/generated/user-27.svg",
-    "createdAt": "2025-04-30T10:15:00.000Z"
+    "createdAt": "2025-04-30T10:15:00.000Z",
+    "birthDate": "2002-11-21",
+    "gender": "female",
+    "city": "Москва",
+    "bio": "Люблю красивые детали, уютные пространства и общение с людьми, которые смотрят на мир по-своему."
   },
   {
     "id": "user-28",
     "name": "Станислав",
     "email": "stanislav.kiselev@example.com",
     "avatarUrl": "/db/avatars/generated/user-28.svg",
-    "createdAt": "2025-05-04T11:15:00.000Z"
+    "createdAt": "2025-05-04T11:15:00.000Z",
+    "birthDate": "1989-04-10",
+    "gender": "male",
+    "city": "Нижний Новгород",
+    "bio": "Уравновешенный человек, которому важны тишина, уважение и комфортная атмосфера."
   },
   {
     "id": "user-29",
     "name": "Евгения",
     "email": "evgenia.mironova@example.com",
     "avatarUrl": "/db/avatars/generated/user-29.svg",
-    "createdAt": "2025-05-08T12:15:00.000Z"
+    "createdAt": "2025-05-08T12:15:00.000Z",
+    "birthDate": "1994-09-25",
+    "gender": "female",
+    "city": "Самара",
+    "bio": "Ценю яркие впечатления, лёгкость в общении и возможность посмеяться вместе."
   },
   {
     "id": "user-30",
     "name": "Борис",
     "email": "boris.kozlov@example.com",
     "avatarUrl": "/db/avatars/generated/user-30.svg",
-    "createdAt": "2025-05-12T13:15:00.000Z"
+    "createdAt": "2025-05-12T13:15:00.000Z",
+    "birthDate": "1987-02-01",
+    "gender": "male",
+    "city": "Санкт-Петербург",
+    "bio": "Люблю узнавать новые места и проводить время с друзьями. Умею собрать компанию быстрее, чем выбрать место встречи."
   },
   {
     "id": "user-31",
     "name": "Татьяна",
     "email": "tatiana.ilyina@example.com",
     "avatarUrl": "/db/avatars/generated/user-31.svg",
-    "createdAt": "2025-05-16T14:15:00.000Z"
+    "createdAt": "2025-05-16T14:15:00.000Z",
+    "birthDate": "1998-07-16",
+    "gender": "female",
+    "city": "Казань",
+    "bio": "Доброжелательная и открытая. Ценю внимание к людям, искренность и приятные разговоры."
   },
   {
     "id": "user-32",
     "name": "Денис",
     "email": "denis.gusev@example.com",
     "avatarUrl": "/db/avatars/generated/user-32.svg",
-    "createdAt": "2025-05-20T15:15:00.000Z"
+    "createdAt": "2025-05-20T15:15:00.000Z",
+    "birthDate": "1991-12-27",
+    "gender": "male",
+    "city": "Екатеринбург",
+    "bio": "Люблю непринуждённое общение, хорошие истории и возможность посмотреть на привычное иначе."
   },
   {
     "id": "user-33",
     "name": "Надежда",
     "email": "nadezhda.titova@example.com",
     "avatarUrl": "/db/avatars/generated/user-33.svg",
-    "createdAt": "2025-05-24T16:15:00.000Z"
+    "createdAt": "2025-05-24T16:15:00.000Z",
+    "birthDate": "1986-05-05",
+    "gender": "female",
+    "city": "Новосибирск",
+    "bio": "Спокойная и отзывчивая. Радуюсь встречам с близкими и небольшим приятным событиям."
   },
   {
     "id": "user-34",
     "name": "Вадим",
     "email": "vadim.korolev@example.com",
     "avatarUrl": "/db/avatars/generated/user-34.svg",
-    "createdAt": "2025-05-28T17:15:00.000Z"
+    "createdAt": "2025-05-28T17:15:00.000Z",
+    "birthDate": "1999-10-14",
+    "gender": "male",
+    "city": "Москва",
+    "bio": "Ценю дружескую поддержку, открытость и возможность познакомиться с новыми людьми."
   },
   {
     "id": "user-35",
     "name": "Яна",
     "email": "yana.medvedeva@example.com",
     "avatarUrl": "/db/avatars/generated/user-35.svg",
-    "createdAt": "2025-06-01T18:15:00.000Z"
+    "createdAt": "2025-06-01T18:15:00.000Z",
+    "birthDate": "1993-03-22",
+    "gender": "female",
+    "city": "Нижний Новгород",
+    "bio": "Люблю уют, тёплую компанию и простые поводы собраться вместе. Считаю, что «ещё пять минут» — вполне официальный план."
   },
   {
     "id": "user-36",
     "name": "Фёдор",
     "email": "fedor.markov@example.com",
     "avatarUrl": "/db/avatars/generated/user-36.svg",
-    "createdAt": "2025-06-05T10:15:00.000Z"
+    "createdAt": "2025-06-05T10:15:00.000Z",
+    "birthDate": "1985-08-30",
+    "gender": "male",
+    "city": "Самара",
+    "bio": "Активный и доброжелательный, ценю свежие впечатления и хорошую компанию."
   },
   {
     "id": "user-37",
     "name": "Алёна",
     "email": "alyona.belova@example.com",
     "avatarUrl": "/db/avatars/generated/user-37.svg",
-    "createdAt": "2025-06-09T11:15:00.000Z"
+    "createdAt": "2025-06-09T11:15:00.000Z",
+    "birthDate": "2000-01-11",
+    "gender": "female",
+    "city": "Санкт-Петербург",
+    "bio": "Внимательная и терпеливая. Люблю спокойную обстановку и добрые слова."
   },
   {
     "id": "user-38",
     "name": "Василий",
     "email": "vasily.tarasov@example.com",
     "avatarUrl": "/db/avatars/generated/user-38.svg",
-    "createdAt": "2025-06-13T12:15:00.000Z"
+    "createdAt": "2025-06-13T12:15:00.000Z",
+    "birthDate": "1992-06-19",
+    "gender": "male",
+    "city": "Казань",
+    "bio": "Ценю домашний уют, заботу о близких и размеренный отдых после насыщенного дня."
   },
   {
     "id": "user-39",
     "name": "Инна",
     "email": "inna.bogdanova@example.com",
     "avatarUrl": "/db/avatars/generated/user-39.svg",
-    "createdAt": "2025-06-17T13:15:00.000Z"
+    "createdAt": "2025-06-17T13:15:00.000Z",
+    "birthDate": "1988-11-03",
+    "gender": "female",
+    "city": "Екатеринбург",
+    "bio": "Люблю порядок в повседневных делах, дружелюбную атмосферу и ясное общение. Иногда навожу порядок просто ради удовольствия от галочек."
   },
   {
     "id": "user-40",
     "name": "Григорий",
     "email": "grigory.voronov@example.com",
     "avatarUrl": "/db/avatars/generated/user-40.svg",
-    "createdAt": "2025-06-21T14:15:00.000Z"
+    "createdAt": "2025-06-21T14:15:00.000Z",
+    "birthDate": "1996-04-25",
+    "gender": "male",
+    "city": "Новосибирск",
+    "bio": "Открытый к диалогу и новым знакомствам. Ценю взаимную поддержку и уважение."
   },
   {
     "id": "user-41",
     "name": "Светлана",
     "email": "svetlana.filippova@example.com",
     "avatarUrl": "/db/avatars/generated/user-41.svg",
-    "createdAt": "2025-06-25T15:15:00.000Z"
+    "createdAt": "2025-06-25T15:15:00.000Z",
+    "birthDate": "1990-09-08",
+    "gender": "female",
+    "city": "Москва",
+    "bio": "Люблю проводить время с близкими, гулять по любимым районам и открывать уютные места."
   },
   {
     "id": "user-42",
     "name": "Константин",
     "email": "konstantin.davydov@example.com",
     "avatarUrl": "/db/avatars/figma/konstantin.jpg",
-    "createdAt": "2025-06-29T16:15:00.000Z"
+    "createdAt": "2025-06-29T16:15:00.000Z",
+    "birthDate": "1984-02-20",
+    "gender": "male",
+    "city": "Нижний Новгород",
+    "bio": "Спокойный и вдумчивый. Предпочитаю искреннее общение и людей, на которых можно положиться."
   },
   {
     "id": "user-43",
     "name": "Марина",
     "email": "marina.karpova@example.com",
     "avatarUrl": "/db/avatars/generated/user-43.svg",
-    "createdAt": "2025-07-03T17:15:00.000Z"
+    "createdAt": "2025-07-03T17:15:00.000Z",
+    "birthDate": "1997-07-02",
+    "gender": "female",
+    "city": "Самара",
+    "bio": "Ценю доброжелательность, чувство юмора и встречи, после которых остаются хорошие воспоминания."
   },
   {
     "id": "user-44",
     "name": "Семён",
     "email": "semyon.antonov@example.com",
     "avatarUrl": "/db/avatars/generated/user-44.svg",
-    "createdAt": "2025-07-07T18:15:00.000Z"
+    "createdAt": "2025-07-07T18:15:00.000Z",
+    "birthDate": "1989-12-15",
+    "gender": "male",
+    "city": "Санкт-Петербург",
+    "bio": "Открытый и внимательный к людям. Люблю непринуждённые беседы и тёплые встречи."
   },
   {
     "id": "user-45",
     "name": "Лариса",
     "email": "larisa.zhukova@example.com",
     "avatarUrl": "/db/avatars/generated/user-45.svg",
-    "createdAt": "2025-07-11T10:15:00.000Z"
+    "createdAt": "2025-07-11T10:15:00.000Z",
+    "birthDate": "1995-05-27",
+    "gender": "female",
+    "city": "Казань",
+    "bio": "Предпочитаю простоту, честность и дружеское общение без лишней формальности."
   },
   {
     "id": "user-46",
     "name": "Эдуард",
     "email": "eduard.baranov@example.com",
     "avatarUrl": "/db/avatars/generated/user-46.svg",
-    "createdAt": "2025-07-15T11:15:00.000Z"
+    "createdAt": "2025-07-15T11:15:00.000Z",
+    "birthDate": "1987-10-09",
+    "gender": "male",
+    "city": "Екатеринбург",
+    "bio": "Люблю проводить время в хорошей компании и делиться историями. В любой компании могу найти человека, который тоже пришёл за десертом."
   },
   {
     "id": "user-47",
     "name": "Жанна",
     "email": "zhanna.krylova@example.com",
     "avatarUrl": "/db/avatars/generated/user-47.svg",
-    "createdAt": "2025-07-19T12:15:00.000Z"
+    "createdAt": "2025-07-19T12:15:00.000Z",
+    "birthDate": "2001-03-06",
+    "gender": "female",
+    "city": "Новосибирск",
+    "bio": "Доброжелательная и любознательная. Рада интересным знакомствам и приятным разговорам."
   },
   {
     "id": "user-48",
     "name": "Олег",
     "email": "oleg.ermolov@example.com",
     "avatarUrl": "/db/avatars/generated/user-48.svg",
-    "createdAt": "2025-07-23T13:15:00.000Z"
+    "createdAt": "2025-07-23T13:15:00.000Z",
+    "birthDate": "1994-08-18",
+    "gender": "male",
+    "city": "Москва",
+    "bio": "Люблю уютные места, встречи с друзьями и небольшие поводы устроить себе хороший день."
   },
   {
     "id": "user-49",
     "name": "Наталья",
     "email": "natalia.golubeva@example.com",
     "avatarUrl": "/db/avatars/generated/user-49.svg",
-    "createdAt": "2025-07-27T14:15:00.000Z"
+    "createdAt": "2025-07-27T14:15:00.000Z",
+    "birthDate": "1986-01-24",
+    "gender": "female",
+    "city": "Нижний Новгород",
+    "bio": "Ценю разнообразие взглядов, лёгкость в общении и возможность расширять круг знакомств."
   },
   {
     "id": "user-50",
     "name": "Ярослав",
     "email": "yaroslav.danilov@example.com",
     "avatarUrl": "/db/avatars/generated/user-50.svg",
-    "createdAt": "2025-07-31T15:15:00.000Z"
+    "createdAt": "2025-07-31T15:15:00.000Z",
+    "birthDate": "1998-06-07",
+    "gender": "male",
+    "city": "Самара",
+    "bio": "Спокойный и позитивный человек. Люблю тёплую компанию, прогулки и хорошие беседы."
   }
 ]

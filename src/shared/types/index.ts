@@ -19,6 +19,10 @@ export interface User {
   name: string
   email: string
   avatarUrl: string | null
+  birthDate: string
+  gender: 'female' | 'male'
+  city: string
+  bio: string
   createdAt: string
 }
 
