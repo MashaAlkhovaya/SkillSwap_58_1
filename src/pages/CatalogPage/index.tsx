@@ -1,10 +1,13 @@
-// TODO: реализовать страницу CatalogPage
+import { Logo } from '@/shared/ui'
+
+// TODO: Добавить страницу каталога
 
 export default function CatalogPage() {
   return (
     <main>
-      <h1>CatalogPage</h1>
-      <p>Страница в разработке</p>
+      <Logo />
+      <h1></h1>
+      <p></p>
     </main>
   )
 }
