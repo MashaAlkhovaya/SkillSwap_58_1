@@ -1,12 +1,12 @@
-import { Skill } from '@/shared/types/index.ts'
-import { fetchSkills } from '@/api/skills.ts'
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { Skill } from '@/shared/types/index.ts';
+import { fetchSkills } from '@/api/skills.ts';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 interface SkillsState {
-  skills: Skill[],
-  isLoading: boolean,
-  error: string | null
-};
+  skills: Skill[];
+  isLoading: boolean;
+  error: string | null;
+}
 
 const initialState: SkillsState = {
   skills: [],
@@ -14,21 +14,20 @@ const initialState: SkillsState = {
   error: null,
 };
 
-export const loadSkills = createAsyncThunk(
-  'skills/load',
-  async (_, { rejectWithValue }) => {
-    try {
-      return await fetchSkills();
-    } catch {
-      return rejectWithValue('Не удалось загрузить навыки');
-    }
-  }
-);
+export const loadSkills = createAsyncThunk('skills/load', async () => {
+  const data = await fetchSkills();
+  return data;
+});
 
 export const skillsSlice = createSlice({
   name: 'skills',
   initialState,
   reducers: {},
+  selectors: {
+    selectSkills: (state) => state.skills,
+    selectSkillsLoading: (state) => state.isLoading,
+    selectSkillsError: (state) => state.error,
+  },
   extraReducers: (builder) => {
     builder.addCase(loadSkills.pending, (state) => {
       state.isLoading = true;
@@ -42,11 +41,9 @@ export const skillsSlice = createSlice({
       state.isLoading = false;
       state.error = action.error.message || 'Ошибка загрузки навыков';
     });
-  }
+  },
 });
 
-export const selectSkills = (state: { skills: SkillsState }) => state.skills.skills;
-export const selectSkillsLoading = (state: { skills: SkillsState }) => state.skills.isLoading;
-export const selectSkillsError = (state: { skills: SkillsState }) => state.skills.error;
+export const { selectSkills, selectSkillsLoading, selectSkillsError } = skillsSlice.selectors;
 
 export default skillsSlice.reducer;
