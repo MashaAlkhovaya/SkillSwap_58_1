@@ -1,0 +1,71 @@
+.label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  width: fit-content;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: opacity 0.2s ease;
+}
+
+.hiddenInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.label:has(.hiddenInput:focus-visible) {
+  outline: 2px solid #abd27a;
+  outline-offset: 0;
+}
+
+.iconWrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: var(--space-sm);
+  flex-shrink: 0;
+  color: #253017;
+  transition: color 0.2s ease;
+}
+
+.iconWrapper circle {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.label:hover .iconWrapper {
+  color: #4a5c30;
+}
+
+.iconWrapper.active {
+  color: #508826;
+}
+
+.iconWrapper.active circle {
+  opacity: 1;
+}
+
+.label.disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.label.disabled .iconWrapper {
+  color: #999;
+}
+
+.label.disabled:hover .iconWrapper {
+  color: #999;
+}
+
+.label:not(.disabled):hover .iconWrapper {
+  color: #508826;
+}
+
+.text {
+  font-size: var(--font-size-base);
+  color: #253017;
+  line-height: 1.5;
+}
