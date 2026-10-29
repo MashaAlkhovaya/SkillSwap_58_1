@@ -8,7 +8,12 @@
     "birthDate": "1995-02-08",
     "gender": "female",
     "city": "Санкт-Петербург",
-    "bio": "Доброжелательная и любознательная, ценю искреннее общение и тёплые встречи с близкими."
+    "bio": "Доброжелательная и любознательная, ценю искреннее общение и тёплые встречи с близкими.",
+    "login": "anna.smirnova",
+    "password": "SkillSwapMock2025!",
+    "likes": [
+      "user-02"
+    ]
   },
   {
     "id": "user-02",
@@ -19,7 +24,13 @@
     "birthDate": "1990-07-15",
     "gender": "male",
     "city": "Москва",
-    "bio": "Спокойный и открытый к новым знакомствам. Люблю хорошие фильмы и уютные вечера; плед уже считает меня членом семьи."
+    "bio": "Спокойный и открытый к новым знакомствам. Люблю хорошие фильмы и уютные вечера; плед уже считает меня членом семьи.",
+    "login": "maxim.ivanov",
+    "password": "SkillSwapMock2025!",
+    "likes": [
+      "user-03",
+      "user-04"
+    ]
   },
   {
     "id": "user-03",
@@ -30,18 +41,33 @@
     "birthDate": "1993-11-22",
     "gender": "female",
     "city": "Казань",
-    "bio": "Ценю душевные разговоры, семейные традиции и возможность узнавать людей с разными взглядами."
+    "bio": "Ценю душевные разговоры, семейные традиции и возможность узнавать людей с разными взглядами.",
+    "login": "ekaterina.petrova",
+    "password": "SkillSwapMock2025!",
+    "likes": [
+      "user-04",
+      "user-05",
+      "user-06"
+    ]
   },
   {
     "id": "user-04",
     "name": "Дмитрий",
     "email": "dmitry.sokolov@example.com",
-    "avatarUrl": "/db/avatars/generated/user-04.svg",
+    "avatarUrl": null,
     "createdAt": "2025-01-28T14:15:00.000Z",
     "birthDate": "1988-04-03",
     "gender": "male",
     "city": "Екатеринбург",
-    "bio": "Люблю проводить выходные с друзьями, открывать новые места в городе и пробовать что-то необычное."
+    "bio": "Люблю проводить выходные с друзьями, открывать новые места в городе и пробовать что-то необычное.",
+    "login": "dmitry.sokolov",
+    "password": "SkillSwapMock2025!",
+    "likes": [
+      "user-05",
+      "user-06",
+      "user-07",
+      "user-08"
+    ]
   },
   {
     "id": "user-05",
@@ -52,40 +78,68 @@
     "birthDate": "1997-09-19",
     "gender": "female",
     "city": "Новосибирск",
-    "bio": "Внимательная к деталям и ценю красоту в повседневных мелочах. Иногда нахожу повод устроить тихий вечер даже в очень занятом дне."
+    "bio": "Внимательная к деталям и ценю красоту в повседневных мелочах. Иногда нахожу повод устроить тихий вечер даже в очень занятом дне.",
+    "login": "maria.volkova",
+    "password": "SkillSwapMock2025!",
+    "likes": [
+      "user-06",
+      "user-07",
+      "user-08",
+      "user-09",
+      "user-10"
+    ]
   },
   {
     "id": "user-06",
     "name": "Алексей",
     "email": "alexey.kuznetsov@example.com",
-    "avatarUrl": "/db/avatars/generated/user-06.svg",
+    "avatarUrl": null,
     "createdAt": "2025-02-05T16:15:00.000Z",
     "birthDate": "1992-01-27",
     "gender": "male",
     "city": "Нижний Новгород",
-    "bio": "Сдержанный, надёжный и всегда готов поддержать разговор за чашкой кофе."
+    "bio": "Сдержанный, надёжный и всегда готов поддержать разговор за чашкой кофе.",
+    "login": "alexey.kuznetsov",
+    "password": "SkillSwapMock2025!",
+    "likes": [
+      "user-07",
+      "user-08"
+    ]
   },
   {
     "id": "user-07",
     "name": "Ольга",
     "email": "olga.popova@example.com",
-    "avatarUrl": "/db/avatars/generated/user-07.svg",
+    "avatarUrl": null,
     "createdAt": "2025-02-09T17:15:00.000Z",
     "birthDate": "1989-06-11",
     "gender": "female",
     "city": "Москва",
-    "bio": "Легко нахожу общий язык с людьми. Ценю уют, добрый юмор и небольшие спонтанные планы."
+    "bio": "Легко нахожу общий язык с людьми. Ценю уют, добрый юмор и небольшие спонтанные планы.",
+    "login": "olga.popova",
+    "password": "SkillSwapMock2025!",
+    "likes": [
+      "user-08",
+      "user-09",
+      "user-10",
+      "user-11"
+    ]
   },
   {
     "id": "user-08",
     "name": "Илья",
     "email": "ilya.lebedev@example.com",
-    "avatarUrl": "/db/avatars/generated/user-08.svg",
+    "avatarUrl": null,
     "createdAt": "2025-02-13T18:15:00.000Z",
     "birthDate": "1996-12-05",
     "gender": "male",
     "city": "Самара",
-    "bio": "Люблю активные выходные, новые впечатления и встречи в хорошей компании. Мой навигатор иногда делает вид, что знает дорогу лучше меня."
+    "bio": "Люблю активные выходные, новые впечатления и встречи в хорошей компании. Мой навигатор иногда делает вид, что знает дорогу лучше меня.",
+    "login": "ilya.lebedev",
+    "password": "SkillSwapMock2025!",
+    "likes": [
+      "user-09"
+    ]
   },
   {
     "id": "user-09",
@@ -96,40 +150,62 @@
     "birthDate": "1994-03-14",
     "gender": "female",
     "city": "Санкт-Петербург",
-    "bio": "Ценю домашний уют, тёплое общение и возможность иногда выбраться за город."
+    "bio": "Ценю домашний уют, тёплое общение и возможность иногда выбраться за город.",
+    "login": "sofia.kozlova",
+    "password": "SkillSwapMock2025!",
+    "likes": [
+      "user-10",
+      "user-11",
+      "user-12"
+    ]
   },
   {
     "id": "user-10",
     "name": "Артём",
     "email": "artem.novikov@example.com",
-    "avatarUrl": "/db/avatars/generated/user-10.svg",
+    "avatarUrl": null,
     "createdAt": "2025-02-21T11:15:00.000Z",
     "birthDate": "1991-08-26",
     "gender": "male",
     "city": "Казань",
-    "bio": "Общительный и любознательный. Люблю знакомиться с новыми людьми и узнавать их истории."
+    "bio": "Общительный и любознательный. Люблю знакомиться с новыми людьми и узнавать их истории.",
+    "login": "artem.novikov",
+    "password": "SkillSwapMock2025!",
+    "likes": [
+      "user-11",
+      "user-12",
+      "user-13",
+      "user-14",
+      "user-15"
+    ]
   },
   {
     "id": "user-11",
     "name": "Алина",
     "email": "alina.morozova@example.com",
-    "avatarUrl": "/db/avatars/generated/user-11.svg",
+    "avatarUrl": null,
     "createdAt": "2025-02-25T12:15:00.000Z",
     "birthDate": "1998-05-09",
     "gender": "female",
     "city": "Екатеринбург",
-    "bio": "Предпочитаю спокойный ритм жизни, внимательное отношение и приятные беседы. Могу отменить спешку, но не чай."
+    "bio": "Предпочитаю спокойный ритм жизни, внимательное отношение и приятные беседы. Могу отменить спешку, но не чай.",
+    "login": "alina.morozova",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-12",
     "name": "Кирилл",
     "email": "kirill.petrov@example.com",
-    "avatarUrl": "/db/avatars/generated/user-12.svg",
+    "avatarUrl": null,
     "createdAt": "2025-03-01T13:15:00.000Z",
     "birthDate": "1987-10-17",
     "gender": "male",
     "city": "Новосибирск",
-    "bio": "Всегда рад новым знакомствам. В свободное время люблю прогулки и встречи с друзьями."
+    "bio": "Всегда рад новым знакомствам. В свободное время люблю прогулки и встречи с друзьями.",
+    "login": "kirill.petrov",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-13",
@@ -140,40 +216,52 @@
     "birthDate": "1993-01-06",
     "gender": "female",
     "city": "Москва",
-    "bio": "Ценю терпение, доброжелательность и хорошую атмосферу в любой компании."
+    "bio": "Ценю терпение, доброжелательность и хорошую атмосферу в любой компании.",
+    "login": "viktoria.volkova",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-14",
     "name": "Роман",
     "email": "roman.solovyov@example.com",
-    "avatarUrl": "/db/avatars/generated/user-14.svg",
+    "avatarUrl": null,
     "createdAt": "2025-03-09T15:15:00.000Z",
     "birthDate": "1985-06-23",
     "gender": "male",
     "city": "Нижний Новгород",
-    "bio": "Люблю проводить время с близкими, замечать красивые места и сохранять приятные воспоминания."
+    "bio": "Люблю проводить время с близкими, замечать красивые места и сохранять приятные воспоминания.",
+    "login": "roman.solovyov",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-15",
     "name": "Полина",
     "email": "polina.vasilyeva@example.com",
-    "avatarUrl": "/db/avatars/generated/user-15.svg",
+    "avatarUrl": null,
     "createdAt": "2025-03-13T16:15:00.000Z",
     "birthDate": "2000-11-12",
     "gender": "female",
     "city": "Самара",
-    "bio": "Оптимистичная и заботливая. Радуюсь простым вещам, уютным вечерам и искренним разговорам."
+    "bio": "Оптимистичная и заботливая. Радуюсь простым вещам, уютным вечерам и искренним разговорам.",
+    "login": "polina.vasilyeva",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-16",
     "name": "Никита",
     "email": "nikita.fedorov@example.com",
-    "avatarUrl": "/db/avatars/generated/user-16.svg",
+    "avatarUrl": null,
     "createdAt": "2025-03-17T17:15:00.000Z",
     "birthDate": "1992-04-20",
     "gender": "male",
     "city": "Санкт-Петербург",
-    "bio": "Практичный и спокойный человек, которому нравятся понятные планы. Правда, список дел иногда нужен просто для моральной поддержки."
+    "bio": "Практичный и спокойный человек, которому нравятся понятные планы. Правда, список дел иногда нужен просто для моральной поддержки.",
+    "login": "nikita.fedorov",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-17",
@@ -184,7 +272,10 @@
     "birthDate": "1996-09-02",
     "gender": "female",
     "city": "Казань",
-    "bio": "Люблю знакомиться с интересными людьми и находить поводы для хорошего настроения."
+    "bio": "Люблю знакомиться с интересными людьми и находить поводы для хорошего настроения.",
+    "login": "daria.mikhailova",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-18",
@@ -195,7 +286,10 @@
     "birthDate": "1988-02-16",
     "gender": "male",
     "city": "Екатеринбург",
-    "bio": "Любознательный и терпеливый. Ценю ясность, уважение и возможность обменяться мнениями."
+    "bio": "Любознательный и терпеливый. Ценю ясность, уважение и возможность обменяться мнениями.",
+    "login": "mikhail.andreev",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-19",
@@ -206,249 +300,318 @@
     "birthDate": "1999-07-28",
     "gender": "female",
     "city": "Новосибирск",
-    "bio": "Ценю гармонию, приятную компанию и небольшие радости обычного дня. Умею превратить выбор фильма в отдельное вечернее мероприятие."
+    "bio": "Ценю гармонию, приятную компанию и небольшие радости обычного дня. Умею превратить выбор фильма в отдельное вечернее мероприятие.",
+    "login": "elena.makarova",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-20",
     "name": "Павел",
     "email": "pavel.egorov@example.com",
-    "avatarUrl": "/db/avatars/generated/user-20.svg",
+    "avatarUrl": null,
     "createdAt": "2025-04-02T12:15:00.000Z",
     "birthDate": "1990-12-09",
     "gender": "male",
     "city": "Москва",
-    "bio": "Предпочитаю содержательные разговоры, спокойную обстановку и встречи без спешки."
+    "bio": "Предпочитаю содержательные разговоры, спокойную обстановку и встречи без спешки.",
+    "login": "pavel.egorov",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-21",
     "name": "Ксения",
     "email": "kseniya.nikolaeva@example.com",
-    "avatarUrl": "/db/avatars/generated/user-21.svg",
+    "avatarUrl": null,
     "createdAt": "2025-04-06T13:15:00.000Z",
     "birthDate": "1995-05-24",
     "gender": "female",
     "city": "Нижний Новгород",
-    "bio": "Открытая и энергичная. Люблю проводить время в компании и поддерживать близких."
+    "bio": "Открытая и энергичная. Люблю проводить время в компании и поддерживать близких.",
+    "login": "kseniya.nikolaeva",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-22",
     "name": "Тимур",
     "email": "timur.orlov@example.com",
-    "avatarUrl": "/db/avatars/generated/user-22.svg",
+    "avatarUrl": null,
     "createdAt": "2025-04-10T14:15:00.000Z",
     "birthDate": "1986-10-04",
     "gender": "male",
     "city": "Самара",
-    "bio": "Ответственный и доброжелательный. Ценю честность, взаимное уважение и чувство меры."
+    "bio": "Ответственный и доброжелательный. Ценю честность, взаимное уважение и чувство меры.",
+    "login": "timur.orlov",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-23",
     "name": "Вероника",
     "email": "veronika.zaitseva@example.com",
-    "avatarUrl": "/db/avatars/generated/user-23.svg",
+    "avatarUrl": null,
     "createdAt": "2025-04-14T15:15:00.000Z",
     "birthDate": "2001-03-18",
     "gender": "female",
     "city": "Санкт-Петербург",
-    "bio": "Стараюсь сохранять баланс между делами и отдыхом. Иногда отдых начинается с торжественного переноса дел на завтра."
+    "bio": "Стараюсь сохранять баланс между делами и отдыхом. Иногда отдых начинается с торжественного переноса дел на завтра.",
+    "login": "veronika.zaitseva",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-24",
     "name": "Глеб",
     "email": "gleb.borisov@example.com",
-    "avatarUrl": "/db/avatars/generated/user-24.svg",
+    "avatarUrl": null,
     "createdAt": "2025-04-18T16:15:00.000Z",
     "birthDate": "1993-08-07",
     "gender": "male",
     "city": "Казань",
-    "bio": "Люблю дружескую атмосферу, добрый юмор и возможность провести время с интересными людьми."
+    "bio": "Люблю дружескую атмосферу, добрый юмор и возможность провести время с интересными людьми.",
+    "login": "gleb.borisov",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-25",
     "name": "Людмила",
     "email": "lyudmila.yakova@example.com",
-    "avatarUrl": "/db/avatars/generated/user-25.svg",
+    "avatarUrl": null,
     "createdAt": "2025-04-22T17:15:00.000Z",
     "birthDate": "1984-01-29",
     "gender": "female",
     "city": "Екатеринбург",
-    "bio": "Ценю воображение, тёплое общение и вечера в хорошей компании."
+    "bio": "Ценю воображение, тёплое общение и вечера в хорошей компании.",
+    "login": "lyudmila.yakova",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-26",
     "name": "Владислав",
     "email": "vladislav.grigoryev@example.com",
-    "avatarUrl": "/db/avatars/generated/user-26.svg",
+    "avatarUrl": null,
     "createdAt": "2025-04-26T18:15:00.000Z",
     "birthDate": "1997-06-13",
     "gender": "male",
     "city": "Новосибирск",
-    "bio": "Спокойный и внимательный собеседник. Рад новым знакомствам и приятным планам, особенно если в них предусмотрен кофе."
+    "bio": "Спокойный и внимательный собеседник. Рад новым знакомствам и приятным планам, особенно если в них предусмотрен кофе.",
+    "login": "vladislav.grigoryev",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-27",
     "name": "Арина",
     "email": "arina.romanova@example.com",
-    "avatarUrl": "/db/avatars/generated/user-27.svg",
+    "avatarUrl": null,
     "createdAt": "2025-04-30T10:15:00.000Z",
     "birthDate": "2002-11-21",
     "gender": "female",
     "city": "Москва",
-    "bio": "Люблю красивые детали, уютные пространства и общение с людьми, которые смотрят на мир по-своему."
+    "bio": "Люблю красивые детали, уютные пространства и общение с людьми, которые смотрят на мир по-своему.",
+    "login": "arina.romanova",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-28",
     "name": "Станислав",
     "email": "stanislav.kiselev@example.com",
-    "avatarUrl": "/db/avatars/generated/user-28.svg",
+    "avatarUrl": null,
     "createdAt": "2025-05-04T11:15:00.000Z",
     "birthDate": "1989-04-10",
     "gender": "male",
     "city": "Нижний Новгород",
-    "bio": "Уравновешенный человек, которому важны тишина, уважение и комфортная атмосфера."
+    "bio": "Уравновешенный человек, которому важны тишина, уважение и комфортная атмосфера.",
+    "login": "stanislav.kiselev",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-29",
     "name": "Евгения",
     "email": "evgenia.mironova@example.com",
-    "avatarUrl": "/db/avatars/generated/user-29.svg",
+    "avatarUrl": null,
     "createdAt": "2025-05-08T12:15:00.000Z",
     "birthDate": "1994-09-25",
     "gender": "female",
     "city": "Самара",
-    "bio": "Ценю яркие впечатления, лёгкость в общении и возможность посмеяться вместе."
+    "bio": "Ценю яркие впечатления, лёгкость в общении и возможность посмеяться вместе.",
+    "login": "evgenia.mironova",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-30",
     "name": "Борис",
     "email": "boris.kozlov@example.com",
-    "avatarUrl": "/db/avatars/generated/user-30.svg",
+    "avatarUrl": null,
     "createdAt": "2025-05-12T13:15:00.000Z",
     "birthDate": "1987-02-01",
     "gender": "male",
     "city": "Санкт-Петербург",
-    "bio": "Люблю узнавать новые места и проводить время с друзьями. Умею собрать компанию быстрее, чем выбрать место встречи."
+    "bio": "Люблю узнавать новые места и проводить время с друзьями. Умею собрать компанию быстрее, чем выбрать место встречи.",
+    "login": "boris.kozlov",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-31",
     "name": "Татьяна",
     "email": "tatiana.ilyina@example.com",
-    "avatarUrl": "/db/avatars/generated/user-31.svg",
+    "avatarUrl": null,
     "createdAt": "2025-05-16T14:15:00.000Z",
     "birthDate": "1998-07-16",
     "gender": "female",
     "city": "Казань",
-    "bio": "Доброжелательная и открытая. Ценю внимание к людям, искренность и приятные разговоры."
+    "bio": "Доброжелательная и открытая. Ценю внимание к людям, искренность и приятные разговоры.",
+    "login": "tatiana.ilyina",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-32",
     "name": "Денис",
     "email": "denis.gusev@example.com",
-    "avatarUrl": "/db/avatars/generated/user-32.svg",
+    "avatarUrl": null,
     "createdAt": "2025-05-20T15:15:00.000Z",
     "birthDate": "1991-12-27",
     "gender": "male",
     "city": "Екатеринбург",
-    "bio": "Люблю непринуждённое общение, хорошие истории и возможность посмотреть на привычное иначе."
+    "bio": "Люблю непринуждённое общение, хорошие истории и возможность посмотреть на привычное иначе.",
+    "login": "denis.gusev",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-33",
     "name": "Надежда",
     "email": "nadezhda.titova@example.com",
-    "avatarUrl": "/db/avatars/generated/user-33.svg",
+    "avatarUrl": null,
     "createdAt": "2025-05-24T16:15:00.000Z",
     "birthDate": "1986-05-05",
     "gender": "female",
     "city": "Новосибирск",
-    "bio": "Спокойная и отзывчивая. Радуюсь встречам с близкими и небольшим приятным событиям."
+    "bio": "Спокойная и отзывчивая. Радуюсь встречам с близкими и небольшим приятным событиям.",
+    "login": "nadezhda.titova",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-34",
     "name": "Вадим",
     "email": "vadim.korolev@example.com",
-    "avatarUrl": "/db/avatars/generated/user-34.svg",
+    "avatarUrl": null,
     "createdAt": "2025-05-28T17:15:00.000Z",
     "birthDate": "1999-10-14",
     "gender": "male",
     "city": "Москва",
-    "bio": "Ценю дружескую поддержку, открытость и возможность познакомиться с новыми людьми."
+    "bio": "Ценю дружескую поддержку, открытость и возможность познакомиться с новыми людьми.",
+    "login": "vadim.korolev",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-35",
     "name": "Яна",
     "email": "yana.medvedeva@example.com",
-    "avatarUrl": "/db/avatars/generated/user-35.svg",
+    "avatarUrl": null,
     "createdAt": "2025-06-01T18:15:00.000Z",
     "birthDate": "1993-03-22",
     "gender": "female",
     "city": "Нижний Новгород",
-    "bio": "Люблю уют, тёплую компанию и простые поводы собраться вместе. Считаю, что «ещё пять минут» — вполне официальный план."
+    "bio": "Люблю уют, тёплую компанию и простые поводы собраться вместе. Считаю, что «ещё пять минут» — вполне официальный план.",
+    "login": "yana.medvedeva",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-36",
     "name": "Фёдор",
     "email": "fedor.markov@example.com",
-    "avatarUrl": "/db/avatars/generated/user-36.svg",
+    "avatarUrl": null,
     "createdAt": "2025-06-05T10:15:00.000Z",
     "birthDate": "1985-08-30",
     "gender": "male",
     "city": "Самара",
-    "bio": "Активный и доброжелательный, ценю свежие впечатления и хорошую компанию."
+    "bio": "Активный и доброжелательный, ценю свежие впечатления и хорошую компанию.",
+    "login": "fedor.markov",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-37",
     "name": "Алёна",
     "email": "alyona.belova@example.com",
-    "avatarUrl": "/db/avatars/generated/user-37.svg",
+    "avatarUrl": null,
     "createdAt": "2025-06-09T11:15:00.000Z",
     "birthDate": "2000-01-11",
     "gender": "female",
     "city": "Санкт-Петербург",
-    "bio": "Внимательная и терпеливая. Люблю спокойную обстановку и добрые слова."
+    "bio": "Внимательная и терпеливая. Люблю спокойную обстановку и добрые слова.",
+    "login": "alyona.belova",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-38",
     "name": "Василий",
     "email": "vasily.tarasov@example.com",
-    "avatarUrl": "/db/avatars/generated/user-38.svg",
+    "avatarUrl": null,
     "createdAt": "2025-06-13T12:15:00.000Z",
     "birthDate": "1992-06-19",
     "gender": "male",
     "city": "Казань",
-    "bio": "Ценю домашний уют, заботу о близких и размеренный отдых после насыщенного дня."
+    "bio": "Ценю домашний уют, заботу о близких и размеренный отдых после насыщенного дня.",
+    "login": "vasily.tarasov",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-39",
     "name": "Инна",
     "email": "inna.bogdanova@example.com",
-    "avatarUrl": "/db/avatars/generated/user-39.svg",
+    "avatarUrl": null,
     "createdAt": "2025-06-17T13:15:00.000Z",
     "birthDate": "1988-11-03",
     "gender": "female",
     "city": "Екатеринбург",
-    "bio": "Люблю порядок в повседневных делах, дружелюбную атмосферу и ясное общение. Иногда навожу порядок просто ради удовольствия от галочек."
+    "bio": "Люблю порядок в повседневных делах, дружелюбную атмосферу и ясное общение. Иногда навожу порядок просто ради удовольствия от галочек.",
+    "login": "inna.bogdanova",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-40",
     "name": "Григорий",
     "email": "grigory.voronov@example.com",
-    "avatarUrl": "/db/avatars/generated/user-40.svg",
+    "avatarUrl": null,
     "createdAt": "2025-06-21T14:15:00.000Z",
     "birthDate": "1996-04-25",
     "gender": "male",
     "city": "Новосибирск",
-    "bio": "Открытый к диалогу и новым знакомствам. Ценю взаимную поддержку и уважение."
+    "bio": "Открытый к диалогу и новым знакомствам. Ценю взаимную поддержку и уважение.",
+    "login": "grigory.voronov",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-41",
     "name": "Светлана",
     "email": "svetlana.filippova@example.com",
-    "avatarUrl": "/db/avatars/generated/user-41.svg",
+    "avatarUrl": null,
     "createdAt": "2025-06-25T15:15:00.000Z",
     "birthDate": "1990-09-08",
     "gender": "female",
     "city": "Москва",
-    "bio": "Люблю проводить время с близкими, гулять по любимым районам и открывать уютные места."
+    "bio": "Люблю проводить время с близкими, гулять по любимым районам и открывать уютные места.",
+    "login": "svetlana.filippova",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-42",
@@ -459,94 +622,121 @@
     "birthDate": "1984-02-20",
     "gender": "male",
     "city": "Нижний Новгород",
-    "bio": "Спокойный и вдумчивый. Предпочитаю искреннее общение и людей, на которых можно положиться."
+    "bio": "Спокойный и вдумчивый. Предпочитаю искреннее общение и людей, на которых можно положиться.",
+    "login": "konstantin.davydov",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-43",
     "name": "Марина",
     "email": "marina.karpova@example.com",
-    "avatarUrl": "/db/avatars/generated/user-43.svg",
+    "avatarUrl": null,
     "createdAt": "2025-07-03T17:15:00.000Z",
     "birthDate": "1997-07-02",
     "gender": "female",
     "city": "Самара",
-    "bio": "Ценю доброжелательность, чувство юмора и встречи, после которых остаются хорошие воспоминания."
+    "bio": "Ценю доброжелательность, чувство юмора и встречи, после которых остаются хорошие воспоминания.",
+    "login": "marina.karpova",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-44",
     "name": "Семён",
     "email": "semyon.antonov@example.com",
-    "avatarUrl": "/db/avatars/generated/user-44.svg",
+    "avatarUrl": null,
     "createdAt": "2025-07-07T18:15:00.000Z",
     "birthDate": "1989-12-15",
     "gender": "male",
     "city": "Санкт-Петербург",
-    "bio": "Открытый и внимательный к людям. Люблю непринуждённые беседы и тёплые встречи."
+    "bio": "Открытый и внимательный к людям. Люблю непринуждённые беседы и тёплые встречи.",
+    "login": "semyon.antonov",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-45",
     "name": "Лариса",
     "email": "larisa.zhukova@example.com",
-    "avatarUrl": "/db/avatars/generated/user-45.svg",
+    "avatarUrl": null,
     "createdAt": "2025-07-11T10:15:00.000Z",
     "birthDate": "1995-05-27",
     "gender": "female",
     "city": "Казань",
-    "bio": "Предпочитаю простоту, честность и дружеское общение без лишней формальности."
+    "bio": "Предпочитаю простоту, честность и дружеское общение без лишней формальности.",
+    "login": "larisa.zhukova",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-46",
     "name": "Эдуард",
     "email": "eduard.baranov@example.com",
-    "avatarUrl": "/db/avatars/generated/user-46.svg",
+    "avatarUrl": null,
     "createdAt": "2025-07-15T11:15:00.000Z",
     "birthDate": "1987-10-09",
     "gender": "male",
     "city": "Екатеринбург",
-    "bio": "Люблю проводить время в хорошей компании и делиться историями. В любой компании могу найти человека, который тоже пришёл за десертом."
+    "bio": "Люблю проводить время в хорошей компании и делиться историями. В любой компании могу найти человека, который тоже пришёл за десертом.",
+    "login": "eduard.baranov",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-47",
     "name": "Жанна",
     "email": "zhanna.krylova@example.com",
-    "avatarUrl": "/db/avatars/generated/user-47.svg",
+    "avatarUrl": null,
     "createdAt": "2025-07-19T12:15:00.000Z",
     "birthDate": "2001-03-06",
     "gender": "female",
     "city": "Новосибирск",
-    "bio": "Доброжелательная и любознательная. Рада интересным знакомствам и приятным разговорам."
+    "bio": "Доброжелательная и любознательная. Рада интересным знакомствам и приятным разговорам.",
+    "login": "zhanna.krylova",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-48",
     "name": "Олег",
     "email": "oleg.ermolov@example.com",
-    "avatarUrl": "/db/avatars/generated/user-48.svg",
+    "avatarUrl": null,
     "createdAt": "2025-07-23T13:15:00.000Z",
     "birthDate": "1994-08-18",
     "gender": "male",
     "city": "Москва",
-    "bio": "Люблю уютные места, встречи с друзьями и небольшие поводы устроить себе хороший день."
+    "bio": "Люблю уютные места, встречи с друзьями и небольшие поводы устроить себе хороший день.",
+    "login": "oleg.ermolov",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-49",
     "name": "Наталья",
     "email": "natalia.golubeva@example.com",
-    "avatarUrl": "/db/avatars/generated/user-49.svg",
+    "avatarUrl": null,
     "createdAt": "2025-07-27T14:15:00.000Z",
     "birthDate": "1986-01-24",
     "gender": "female",
     "city": "Нижний Новгород",
-    "bio": "Ценю разнообразие взглядов, лёгкость в общении и возможность расширять круг знакомств."
+    "bio": "Ценю разнообразие взглядов, лёгкость в общении и возможность расширять круг знакомств.",
+    "login": "natalia.golubeva",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   },
   {
     "id": "user-50",
     "name": "Ярослав",
     "email": "yaroslav.danilov@example.com",
-    "avatarUrl": "/db/avatars/generated/user-50.svg",
+    "avatarUrl": null,
     "createdAt": "2025-07-31T15:15:00.000Z",
     "birthDate": "1998-06-07",
     "gender": "male",
     "city": "Самара",
-    "bio": "Спокойный и позитивный человек. Люблю тёплую компанию, прогулки и хорошие беседы."
+    "bio": "Спокойный и позитивный человек. Люблю тёплую компанию, прогулки и хорошие беседы.",
+    "login": "yaroslav.danilov",
+    "password": "SkillSwapMock2025!",
+    "likes": []
   }
 ]
