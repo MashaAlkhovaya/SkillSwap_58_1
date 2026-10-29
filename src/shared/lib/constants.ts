@@ -99,3 +99,15 @@ export const LOCAL_STORAGE_KEYS = {
   REQUESTS: 'skillswap_requests',
   THEME: 'skillswap_theme',
 } as const
+
+export const CITIES = [
+  'Москва',
+  'Санкт-Петербург',
+  'Казань',
+  'Екатеринбург',
+  'Новосибирск',
+  'Нижний Новгород',
+  'Самара',
+] as const
+
+export type City = (typeof CITIES)[number]
