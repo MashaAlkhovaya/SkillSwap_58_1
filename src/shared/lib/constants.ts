@@ -111,3 +111,5 @@ export const CITIES = [
 ] as const
 
 export type City = (typeof CITIES)[number]
+
+export const YEARS_WORDS = ['год', 'года', 'лет'] as const
