@@ -7,6 +7,7 @@ export interface Skill {
   description: string
   type: SkillType
   category: string
+  subCategory: string
   tags: string[]
   imageUrl: string | null
   authorId: string
@@ -19,7 +20,14 @@ export interface User {
   name: string
   email: string
   avatarUrl: string | null
+  birthDate: string
+  gender: 'female' | 'male'
+  city: string
+  bio: string
   createdAt: string
+  login: string
+  password: string
+  likes: string[]
 }
 
 // ─── Request ─────────────────────────────────────────────
