@@ -1,0 +1,35 @@
+.chip {
+  border-radius: 20px;
+  padding: 8px 12px;
+  background-color: var(--color-border);
+  font-size: 12px;
+  display: inline-block;
+  max-width: 134px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.business {
+  background-color: #eee7f7;
+}
+
+.art {
+  background-color: #f7e7f2;
+}
+
+.languages {
+  background-color: #ebe5c5;
+}
+
+.education {
+  background-color: #e7f2f6;
+}
+
+.home-coziness {
+  background-color: #f7ebe5;
+}
+
+.health {
+  background-color: #e9f7e7;
+}
