@@ -1,0 +1,32 @@
+.title {
+  margin: 0;
+  color: inherit;
+}
+
+.size1 {
+  font-size: var(--font-size-3xl);
+  font-weight: 500;
+  line-height: 1.25; /* 40 / 32 */
+  letter-spacing: -0.011em; /* -1.1% в Figma */
+}
+
+.size2 {
+  font-size: var(--font-size-2xl);
+  font-weight: 500;
+  line-height: 1.167; /* 28 / 24 */
+  letter-spacing: -0.011em;
+}
+
+.size3 {
+  font-size: var(--font-size-xl);
+  font-weight: 500;
+  line-height: 1.2; /* 24 / 20 */
+  letter-spacing: -0.011em;
+}
+
+.size4 {
+  font-size: var(--font-size-base);
+  font-weight: 500;
+  line-height: 1.5; /* 24 / 16 */
+  letter-spacing: 0.02em; /* +2% в Figma */
+}
