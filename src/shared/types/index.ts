@@ -1,3 +1,5 @@
+import type { CategoryId, SubCategoryId } from '@/shared/lib/constants'
+
 // ─── Skill ───────────────────────────────────────────────
 export type SkillType = 'teach' | 'learn'
 
@@ -15,6 +17,12 @@ export interface Skill {
 }
 
 // ─── User ────────────────────────────────────────────────
+export interface TeachSkill {
+  id: string
+  category: CategoryId
+  subCategory: SubCategoryId
+}
+
 export interface User {
   id: string
   name: string
@@ -28,6 +36,8 @@ export interface User {
   login: string
   password: string
   likes: string[]
+  canTeach: TeachSkill
+  wantsToLearn: SubCategoryId[]
 }
 
 // ─── Request ─────────────────────────────────────────────

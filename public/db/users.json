@@ -11,9 +11,13 @@
     "bio": "Доброжелательная и любознательная, ценю искреннее общение и тёплые встречи с близкими.",
     "login": "anna.smirnova",
     "password": "SkillSwapMock2025!",
-    "likes": [
-      "user-02"
-    ]
+    "likes": ["user-02"],
+    "canTeach": {
+      "id": "skill-01",
+      "category": "art",
+      "subCategory": "music-sound"
+    },
+    "wantsToLearn": ["acting", "german", "team-management"]
   },
   {
     "id": "user-02",
@@ -27,10 +31,13 @@
     "bio": "Спокойный и открытый к новым знакомствам. Люблю хорошие фильмы и уютные вечера; плед уже считает меня членом семьи.",
     "login": "maxim.ivanov",
     "password": "SkillSwapMock2025!",
-    "likes": [
-      "user-03",
-      "user-04"
-    ]
+    "likes": ["user-03", "user-04"],
+    "canTeach": {
+      "id": "skill-02",
+      "category": "art",
+      "subCategory": "music-sound"
+    },
+    "wantsToLearn": ["speed-reading", "team-management"]
   },
   {
     "id": "user-03",
@@ -44,11 +51,13 @@
     "bio": "Ценю душевные разговоры, семейные традиции и возможность узнавать людей с разными взглядами.",
     "login": "ekaterina.petrova",
     "password": "SkillSwapMock2025!",
-    "likes": [
-      "user-04",
-      "user-05",
-      "user-06"
-    ]
+    "likes": ["user-04", "user-05", "user-06"],
+    "canTeach": {
+      "id": "skill-03",
+      "category": "languages",
+      "subCategory": "english"
+    },
+    "wantsToLearn": ["german", "home-finances", "teaching-skills"]
   },
   {
     "id": "user-04",
@@ -62,12 +71,13 @@
     "bio": "Люблю проводить выходные с друзьями, открывать новые места в городе и пробовать что-то необычное.",
     "login": "dmitry.sokolov",
     "password": "SkillSwapMock2025!",
-    "likes": [
-      "user-05",
-      "user-06",
-      "user-07",
-      "user-08"
-    ]
+    "likes": ["user-05", "user-06", "user-07", "user-08"],
+    "canTeach": {
+      "id": "skill-04",
+      "category": "languages",
+      "subCategory": "spanish"
+    },
+    "wantsToLearn": ["chinese", "sales-negotiations", "yoga"]
   },
   {
     "id": "user-05",
@@ -81,13 +91,13 @@
     "bio": "Внимательная к деталям и ценю красоту в повседневных мелочах. Иногда нахожу повод устроить тихий вечер даже в очень занятом дне.",
     "login": "maria.volkova",
     "password": "SkillSwapMock2025!",
-    "likes": [
-      "user-06",
-      "user-07",
-      "user-08",
-      "user-09",
-      "user-10"
-    ]
+    "likes": ["user-06", "user-07", "user-08", "user-09", "user-10"],
+    "canTeach": {
+      "id": "skill-05",
+      "category": "art",
+      "subCategory": "illustration"
+    },
+    "wantsToLearn": ["japanese", "personal-brand"]
   },
   {
     "id": "user-06",
@@ -101,10 +111,13 @@
     "bio": "Сдержанный, надёжный и всегда готов поддержать разговор за чашкой кофе.",
     "login": "alexey.kuznetsov",
     "password": "SkillSwapMock2025!",
-    "likes": [
-      "user-07",
-      "user-08"
-    ]
+    "likes": ["user-07", "user-08"],
+    "canTeach": {
+      "id": "skill-06",
+      "category": "art",
+      "subCategory": "illustration"
+    },
+    "wantsToLearn": ["cleaning-organization", "music-sound", "spanish"]
   },
   {
     "id": "user-07",
@@ -118,12 +131,13 @@
     "bio": "Легко нахожу общий язык с людьми. Ценю уют, добрый юмор и небольшие спонтанные планы.",
     "login": "olga.popova",
     "password": "SkillSwapMock2025!",
-    "likes": [
-      "user-08",
-      "user-09",
-      "user-10",
-      "user-11"
-    ]
+    "likes": ["user-08", "user-09", "user-10", "user-11"],
+    "canTeach": {
+      "id": "skill-07",
+      "category": "art",
+      "subCategory": "photo"
+    },
+    "wantsToLearn": ["houseplants"]
   },
   {
     "id": "user-08",
@@ -137,9 +151,13 @@
     "bio": "Люблю активные выходные, новые впечатления и встречи в хорошей компании. Мой навигатор иногда делает вид, что знает дорогу лучше меня.",
     "login": "ilya.lebedev",
     "password": "SkillSwapMock2025!",
-    "likes": [
-      "user-09"
-    ]
+    "likes": ["user-09"],
+    "canTeach": {
+      "id": "skill-08",
+      "category": "art",
+      "subCategory": "photo"
+    },
+    "wantsToLearn": ["illustration"]
   },
   {
     "id": "user-09",
@@ -153,11 +171,13 @@
     "bio": "Ценю домашний уют, тёплое общение и возможность иногда выбраться за город.",
     "login": "sofia.kozlova",
     "password": "SkillSwapMock2025!",
-    "likes": [
-      "user-10",
-      "user-11",
-      "user-12"
-    ]
+    "likes": ["user-10", "user-11", "user-12"],
+    "canTeach": {
+      "id": "skill-09",
+      "category": "home-coziness",
+      "subCategory": "food-preparation"
+    },
+    "wantsToLearn": ["art-therapy", "home-finances", "nutrition"]
   },
   {
     "id": "user-10",
@@ -171,13 +191,13 @@
     "bio": "Общительный и любознательный. Люблю знакомиться с новыми людьми и узнавать их истории.",
     "login": "artem.novikov",
     "password": "SkillSwapMock2025!",
-    "likes": [
-      "user-11",
-      "user-12",
-      "user-13",
-      "user-14",
-      "user-15"
-    ]
+    "likes": ["user-11", "user-12", "user-13", "user-14", "user-15"],
+    "canTeach": {
+      "id": "skill-10",
+      "category": "home-coziness",
+      "subCategory": "food-preparation"
+    },
+    "wantsToLearn": ["exam-preparation"]
   },
   {
     "id": "user-11",
@@ -191,7 +211,13 @@
     "bio": "Предпочитаю спокойный ритм жизни, внимательное отношение и приятные беседы. Могу отменить спешку, но не чай.",
     "login": "alina.morozova",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-11",
+      "category": "health",
+      "subCategory": "yoga"
+    },
+    "wantsToLearn": ["music-sound", "video-editing"]
   },
   {
     "id": "user-12",
@@ -205,7 +231,13 @@
     "bio": "Всегда рад новым знакомствам. В свободное время люблю прогулки и встречи с друзьями.",
     "login": "kirill.petrov",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-12",
+      "category": "health",
+      "subCategory": "physical-training"
+    },
+    "wantsToLearn": ["cognitive-techniques", "creative-writing", "marketing-advertising"]
   },
   {
     "id": "user-13",
@@ -219,7 +251,13 @@
     "bio": "Ценю терпение, доброжелательность и хорошую атмосферу в любой компании.",
     "login": "viktoria.volkova",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-13",
+      "category": "art",
+      "subCategory": "decor-diy"
+    },
+    "wantsToLearn": ["art-therapy"]
   },
   {
     "id": "user-14",
@@ -233,7 +271,13 @@
     "bio": "Люблю проводить время с близкими, замечать красивые места и сохранять приятные воспоминания.",
     "login": "roman.solovyov",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-14",
+      "category": "art",
+      "subCategory": "decor-diy"
+    },
+    "wantsToLearn": ["time-management"]
   },
   {
     "id": "user-15",
@@ -247,7 +291,13 @@
     "bio": "Оптимистичная и заботливая. Радуюсь простым вещам, уютным вечерам и искренним разговорам.",
     "login": "polina.vasilyeva",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-15",
+      "category": "home-coziness",
+      "subCategory": "houseplants"
+    },
+    "wantsToLearn": ["repair", "sleep"]
   },
   {
     "id": "user-16",
@@ -261,7 +311,13 @@
     "bio": "Практичный и спокойный человек, которому нравятся понятные планы. Правда, список дел иногда нужен просто для моральной поддержки.",
     "login": "nikita.fedorov",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-16",
+      "category": "education",
+      "subCategory": "learning-skills"
+    },
+    "wantsToLearn": ["entrepreneurship", "repair", "spanish"]
   },
   {
     "id": "user-17",
@@ -275,7 +331,13 @@
     "bio": "Люблю знакомиться с интересными людьми и находить поводы для хорошего настроения.",
     "login": "daria.mikhailova",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-17",
+      "category": "education",
+      "subCategory": "learning-skills"
+    },
+    "wantsToLearn": ["french", "photo", "teaching-skills"]
   },
   {
     "id": "user-18",
@@ -289,7 +351,13 @@
     "bio": "Любознательный и терпеливый. Ценю ясность, уважение и возможность обменяться мнениями.",
     "login": "mikhail.andreev",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-18",
+      "category": "education",
+      "subCategory": "learning-skills"
+    },
+    "wantsToLearn": ["marketing-advertising"]
   },
   {
     "id": "user-19",
@@ -303,7 +371,13 @@
     "bio": "Ценю гармонию, приятную компанию и небольшие радости обычного дня. Умею превратить выбор фильма в отдельное вечернее мероприятие.",
     "login": "elena.makarova",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-19",
+      "category": "art",
+      "subCategory": "decor-diy"
+    },
+    "wantsToLearn": ["physical-training"]
   },
   {
     "id": "user-20",
@@ -317,7 +391,13 @@
     "bio": "Предпочитаю содержательные разговоры, спокойную обстановку и встречи без спешки.",
     "login": "pavel.egorov",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-20",
+      "category": "art",
+      "subCategory": "decor-diy"
+    },
+    "wantsToLearn": ["french", "learning-skills"]
   },
   {
     "id": "user-21",
@@ -331,7 +411,13 @@
     "bio": "Открытая и энергичная. Люблю проводить время в компании и поддерживать близких.",
     "login": "kseniya.nikolaeva",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-21",
+      "category": "business",
+      "subCategory": "personal-brand"
+    },
+    "wantsToLearn": ["mindfulness", "nutrition", "team-management"]
   },
   {
     "id": "user-22",
@@ -345,7 +431,13 @@
     "bio": "Ответственный и доброжелательный. Ценю честность, взаимное уважение и чувство меры.",
     "login": "timur.orlov",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-22",
+      "category": "home-coziness",
+      "subCategory": "home-finances"
+    },
+    "wantsToLearn": ["team-management"]
   },
   {
     "id": "user-23",
@@ -359,7 +451,13 @@
     "bio": "Стараюсь сохранять баланс между делами и отдыхом. Иногда отдых начинается с торжественного переноса дел на завтра.",
     "login": "veronika.zaitseva",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-23",
+      "category": "business",
+      "subCategory": "time-management"
+    },
+    "wantsToLearn": ["coaching"]
   },
   {
     "id": "user-24",
@@ -373,7 +471,13 @@
     "bio": "Люблю дружескую атмосферу, добрый юмор и возможность провести время с интересными людьми.",
     "login": "gleb.borisov",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-24",
+      "category": "education",
+      "subCategory": "cognitive-techniques"
+    },
+    "wantsToLearn": ["personal-brand", "resume-interview", "team-management"]
   },
   {
     "id": "user-25",
@@ -387,7 +491,13 @@
     "bio": "Ценю воображение, тёплое общение и вечера в хорошей компании.",
     "login": "lyudmila.yakova",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-25",
+      "category": "education",
+      "subCategory": "cognitive-techniques"
+    },
+    "wantsToLearn": ["english", "mental-health", "video-editing"]
   },
   {
     "id": "user-26",
@@ -401,7 +511,13 @@
     "bio": "Спокойный и внимательный собеседник. Рад новым знакомствам и приятным планам, особенно если в них предусмотрен кофе.",
     "login": "vladislav.grigoryev",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-26",
+      "category": "art",
+      "subCategory": "decor-diy"
+    },
+    "wantsToLearn": ["english", "teaching-skills"]
   },
   {
     "id": "user-27",
@@ -415,7 +531,13 @@
     "bio": "Люблю красивые детали, уютные пространства и общение с людьми, которые смотрят на мир по-своему.",
     "login": "arina.romanova",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-27",
+      "category": "art",
+      "subCategory": "illustration"
+    },
+    "wantsToLearn": ["home-finances", "personal-brand"]
   },
   {
     "id": "user-28",
@@ -429,7 +551,13 @@
     "bio": "Уравновешенный человек, которому важны тишина, уважение и комфортная атмосфера.",
     "login": "stanislav.kiselev",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-28",
+      "category": "health",
+      "subCategory": "mindfulness"
+    },
+    "wantsToLearn": ["art-therapy", "japanese"]
   },
   {
     "id": "user-29",
@@ -443,7 +571,13 @@
     "bio": "Ценю яркие впечатления, лёгкость в общении и возможность посмеяться вместе.",
     "login": "evgenia.mironova",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-29",
+      "category": "art",
+      "subCategory": "video-editing"
+    },
+    "wantsToLearn": ["balance-life-work", "creative-writing", "team-management"]
   },
   {
     "id": "user-30",
@@ -457,7 +591,13 @@
     "bio": "Люблю узнавать новые места и проводить время с друзьями. Умею собрать компанию быстрее, чем выбрать место встречи.",
     "login": "boris.kozlov",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-30",
+      "category": "education",
+      "subCategory": "personal-development"
+    },
+    "wantsToLearn": ["cognitive-techniques", "storage"]
   },
   {
     "id": "user-31",
@@ -471,7 +611,13 @@
     "bio": "Доброжелательная и открытая. Ценю внимание к людям, искренность и приятные разговоры.",
     "login": "tatiana.ilyina",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-31",
+      "category": "art",
+      "subCategory": "music-sound"
+    },
+    "wantsToLearn": ["balance-life-work", "german", "japanese"]
   },
   {
     "id": "user-32",
@@ -485,7 +631,13 @@
     "bio": "Люблю непринуждённое общение, хорошие истории и возможность посмотреть на привычное иначе.",
     "login": "denis.gusev",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-32",
+      "category": "languages",
+      "subCategory": "english"
+    },
+    "wantsToLearn": ["mindfulness"]
   },
   {
     "id": "user-33",
@@ -499,7 +651,13 @@
     "bio": "Спокойная и отзывчивая. Радуюсь встречам с близкими и небольшим приятным событиям.",
     "login": "nadezhda.titova",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-33",
+      "category": "art",
+      "subCategory": "illustration"
+    },
+    "wantsToLearn": ["balance-life-work", "video-editing"]
   },
   {
     "id": "user-34",
@@ -513,7 +671,13 @@
     "bio": "Ценю дружескую поддержку, открытость и возможность познакомиться с новыми людьми.",
     "login": "vadim.korolev",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-34",
+      "category": "art",
+      "subCategory": "photo"
+    },
+    "wantsToLearn": ["exam-preparation", "houseplants", "music-sound"]
   },
   {
     "id": "user-35",
@@ -527,7 +691,13 @@
     "bio": "Люблю уют, тёплую компанию и простые поводы собраться вместе. Считаю, что «ещё пять минут» — вполне официальный план.",
     "login": "yana.medvedeva",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-35",
+      "category": "home-coziness",
+      "subCategory": "food-preparation"
+    },
+    "wantsToLearn": ["physical-training", "sleep"]
   },
   {
     "id": "user-36",
@@ -541,7 +711,13 @@
     "bio": "Активный и доброжелательный, ценю свежие впечатления и хорошую компанию.",
     "login": "fedor.markov",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-36",
+      "category": "health",
+      "subCategory": "physical-training"
+    },
+    "wantsToLearn": ["cleaning-organization"]
   },
   {
     "id": "user-37",
@@ -555,7 +731,13 @@
     "bio": "Внимательная и терпеливая. Люблю спокойную обстановку и добрые слова.",
     "login": "alyona.belova",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-37",
+      "category": "art",
+      "subCategory": "decor-diy"
+    },
+    "wantsToLearn": ["chinese", "cleaning-organization", "music-sound"]
   },
   {
     "id": "user-38",
@@ -569,7 +751,13 @@
     "bio": "Ценю домашний уют, заботу о близких и размеренный отдых после насыщенного дня.",
     "login": "vasily.tarasov",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-38",
+      "category": "home-coziness",
+      "subCategory": "houseplants"
+    },
+    "wantsToLearn": ["physical-training", "storage"]
   },
   {
     "id": "user-39",
@@ -583,7 +771,13 @@
     "bio": "Люблю порядок в повседневных делах, дружелюбную атмосферу и ясное общение. Иногда навожу порядок просто ради удовольствия от галочек.",
     "login": "inna.bogdanova",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-39",
+      "category": "education",
+      "subCategory": "learning-skills"
+    },
+    "wantsToLearn": ["personal-development"]
   },
   {
     "id": "user-40",
@@ -597,7 +791,13 @@
     "bio": "Открытый к диалогу и новым знакомствам. Ценю взаимную поддержку и уважение.",
     "login": "grigory.voronov",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-40",
+      "category": "education",
+      "subCategory": "learning-skills"
+    },
+    "wantsToLearn": ["exam-preparation", "houseplants"]
   },
   {
     "id": "user-41",
@@ -611,7 +811,13 @@
     "bio": "Люблю проводить время с близкими, гулять по любимым районам и открывать уютные места.",
     "login": "svetlana.filippova",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-41",
+      "category": "education",
+      "subCategory": "learning-skills"
+    },
+    "wantsToLearn": ["creative-writing", "illustration", "photo"]
   },
   {
     "id": "user-42",
@@ -625,7 +831,13 @@
     "bio": "Спокойный и вдумчивый. Предпочитаю искреннее общение и людей, на которых можно положиться.",
     "login": "konstantin.davydov",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-42",
+      "category": "art",
+      "subCategory": "decor-diy"
+    },
+    "wantsToLearn": ["coaching", "learning-skills", "time-management"]
   },
   {
     "id": "user-43",
@@ -639,7 +851,13 @@
     "bio": "Ценю доброжелательность, чувство юмора и встречи, после которых остаются хорошие воспоминания.",
     "login": "marina.karpova",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-43",
+      "category": "business",
+      "subCategory": "personal-brand"
+    },
+    "wantsToLearn": ["mindfulness", "personal-development"]
   },
   {
     "id": "user-44",
@@ -653,7 +871,13 @@
     "bio": "Открытый и внимательный к людям. Люблю непринуждённые беседы и тёплые встречи.",
     "login": "semyon.antonov",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-44",
+      "category": "home-coziness",
+      "subCategory": "home-finances"
+    },
+    "wantsToLearn": ["acting"]
   },
   {
     "id": "user-45",
@@ -667,7 +891,13 @@
     "bio": "Предпочитаю простоту, честность и дружеское общение без лишней формальности.",
     "login": "larisa.zhukova",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-45",
+      "category": "business",
+      "subCategory": "time-management"
+    },
+    "wantsToLearn": ["cognitive-techniques", "sales-negotiations"]
   },
   {
     "id": "user-46",
@@ -681,7 +911,13 @@
     "bio": "Люблю проводить время в хорошей компании и делиться историями. В любой компании могу найти человека, который тоже пришёл за десертом.",
     "login": "eduard.baranov",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-46",
+      "category": "education",
+      "subCategory": "cognitive-techniques"
+    },
+    "wantsToLearn": ["french", "photo"]
   },
   {
     "id": "user-47",
@@ -695,7 +931,13 @@
     "bio": "Доброжелательная и любознательная. Рада интересным знакомствам и приятным разговорам.",
     "login": "zhanna.krylova",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-47",
+      "category": "art",
+      "subCategory": "decor-diy"
+    },
+    "wantsToLearn": ["learning-skills"]
   },
   {
     "id": "user-48",
@@ -709,7 +951,13 @@
     "bio": "Люблю уютные места, встречи с друзьями и небольшие поводы устроить себе хороший день.",
     "login": "oleg.ermolov",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-48",
+      "category": "art",
+      "subCategory": "video-editing"
+    },
+    "wantsToLearn": ["exam-preparation", "spanish"]
   },
   {
     "id": "user-49",
@@ -723,7 +971,13 @@
     "bio": "Ценю разнообразие взглядов, лёгкость в общении и возможность расширять круг знакомств.",
     "login": "natalia.golubeva",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-49",
+      "category": "languages",
+      "subCategory": "spanish"
+    },
+    "wantsToLearn": ["yoga"]
   },
   {
     "id": "user-50",
@@ -737,6 +991,12 @@
     "bio": "Спокойный и позитивный человек. Люблю тёплую компанию, прогулки и хорошие беседы.",
     "login": "yaroslav.danilov",
     "password": "SkillSwapMock2025!",
-    "likes": []
+    "likes": [],
+    "canTeach": {
+      "id": "skill-50",
+      "category": "health",
+      "subCategory": "mindfulness"
+    },
+    "wantsToLearn": ["cognitive-techniques", "spanish", "video-editing"]
   }
 ]
