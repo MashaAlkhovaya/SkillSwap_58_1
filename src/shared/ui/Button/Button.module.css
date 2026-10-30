@@ -1,0 +1,104 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-sm);
+  font-family: var(--font-sans);
+  border-radius: var(--radius-lg);
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  padding: var(--space-sm) var(--space-md);
+}
+
+.size_sm {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--font-size-sm);
+  min-height: 32px;
+}
+
+.size_md {
+  padding: var(--space-md) var(--space-lg);
+  font-size: var(--font-size-base);
+  min-height: 48px;
+}
+
+.size_lg {
+  padding: var(--space-lg) var(--space-2xl);
+  font-size: var(--font-size-lg);
+  min-height: 56px;
+}
+
+/* Primary: зелёная кнопка с заливкой */
+.variant_primary {
+  background-color: #abd27a;
+  color: #253017;
+}
+
+.variant_primary:hover:not(:disabled) {
+  filter: brightness(0.95);
+}
+
+.variant_primary:focus-visible:not(:disabled) {
+  outline: 2px solid rgb(171 210 122 / 50%);
+  outline-offset: 2px;
+}
+
+/* Secondary: кнопка с зелёной обводкой */
+.variant_secondary {
+  background: transparent;
+  color: #253017;
+  border: 1px solid #abd27a;
+}
+
+.variant_secondary:hover:not(:disabled) {
+  background: #f0fdf3;
+}
+
+.variant_secondary:focus-visible:not(:disabled) {
+  outline: 2px solid rgb(171 210 122 / 60%);
+  outline-offset: 2px;
+}
+
+/* Tertiary: светлая кнопка без обводки */
+.variant_tertiary {
+  background: var(--color-bg);
+  color: #253017;
+  border: none;
+}
+
+.variant_tertiary:hover:not(:disabled) {
+  background: var(--color-bg-secondary);
+}
+
+.variant_tertiary:focus-visible:not(:disabled) {
+  outline: 2px solid var(--color-text);
+  outline-offset: 2px;
+}
+
+.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  filter: grayscale(1);
+}
+
+.disabled:hover {
+  filter: grayscale(1);
+}
+
+.label {
+  flex-shrink: 0;
+}
+
+.icon,
+.trailingIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon svg,
+.trailingIcon svg {
+  width: 24px;
+  height: 24px;
+  fill: currentcolor;
+}
