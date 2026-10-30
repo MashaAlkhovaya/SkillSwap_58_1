@@ -1,4 +1,4 @@
-import { YEARS_WORDS } from './constants'
+import { YEARS_WORDS, MAX_FILE_SIZE, ALLOWED_IMAGE_TYPES } from './constants'
 
 /** Форматирует дату в читаемый вид */
 export function formatDate(dateString: string): string {
@@ -54,4 +54,14 @@ export function getAgeWithDeclension(birthDate: string): string {
 
   const word = getDeclension(age, YEARS_WORDS)
   return `${age} ${word}`
+}
+
+export function validateImageFile(file: File): string | null {
+  if (!ALLOWED_IMAGE_TYPES.some((type) => type === file.type)) {
+    return 'Можно загружать только картинки (JPEG, PNG, WEBP)'
+  }
+  if (file.size > MAX_FILE_SIZE) {
+    return 'Размер файла не должен превышать 2 МБ'
+  }
+  return null
 }
