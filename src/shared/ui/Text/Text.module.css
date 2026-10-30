@@ -1,0 +1,56 @@
+.root {
+  font-family: var(--font-sans);
+  color: inherit;
+}
+
+.sm {
+  font-size: var(--font-size-sm);
+}
+
+.base {
+  font-size: var(--font-size-base);
+}
+
+.lg {
+  font-size: var(--font-size-lg);
+}
+
+.xl {
+  font-size: var(--font-size-xl);
+}
+
+.size2xl {
+  font-size: var(--font-size-2xl);
+}
+
+.regular {
+  font-weight: var(--font-weight-regular);
+}
+
+.medium {
+  font-weight: var(--font-weight-medium);
+}
+
+.bold {
+  font-weight: var(--font-weight-semibold);
+}
+
+.italic {
+  font-style: italic;
+}
+
+.text {
+  color: var(--color-text);
+}
+
+.error {
+  color: var(--color-error);
+}
+
+.secondary {
+  color: var(--color-text-secondary);
+}
+
+.success {
+  color: var(--color-success);
+}
