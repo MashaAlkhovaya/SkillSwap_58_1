@@ -1,0 +1,109 @@
+.dropdownContainer {
+  position: relative;
+  width: 250px;
+  font-family: sans-serif;
+  color: #333;
+}
+
+.dropdownTrigger {
+  width: 100%;
+  padding: 12px 16px;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  font-size: 16px;
+  text-align: left;
+  box-sizing: border-box;
+  gap: 8px;
+}
+
+.triggerInput {
+  flex: 1;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+}
+
+.triggerInput::placeholder {
+  color: inherit;
+  opacity: 1;
+}
+
+.open {
+  border-color: #999;
+}
+
+.arrow {
+  display: inline-block;
+  transition: transform 0.2s;
+}
+
+.arrowButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.arrowOpen {
+  transform: rotate(180deg);
+}
+
+.dropdownMenu {
+  position: absolute;
+  top: calc(100% - 1px);
+  left: 0;
+  width: 100%;
+  background: white;
+  border: 1px solid #ccc;
+  border-radius: 12px;
+  padding: 8px 0;
+  margin: 0;
+  list-style: none;
+}
+
+.emptyMessage {
+  padding: 10px 16px;
+  color: #999;
+}
+
+.dropdownItem {
+  padding: 10px 16px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.dropdownItem:hover {
+  background: #f5f5f5;
+}
+
+.activeItem {
+  background: #f5f5f5;
+}
+
+.disabledItem {
+  color: #999;
+  cursor: not-allowed;
+}
+
+.disabledItem:hover {
+  background: transparent;
+}
+
+.selected {
+  background: #f5f5f5;
+}
