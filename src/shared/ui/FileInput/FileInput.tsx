@@ -5,7 +5,7 @@ import { FileInputIcon } from './FileInputIcon'
 import { AvatarPlaceholderIcon } from './AvatarPlaceholderIcon'
 import { validateImageFile } from '@/shared/lib/helpers'
 
-interface FileInputProps {
+export interface FileInputProps {
   onChange: (file: File) => void
   variant?: 'skill' | 'avatar'
 }
