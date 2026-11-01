@@ -1,15 +1,16 @@
 .page {
   display: flex;
-  flex-direction: column;
+  align-items: center;
+  justify-content: center;
   min-height: 100vh;
-  padding: 32px 36px 36px;
+  padding: 32px 36px;
   background-color: #f5f6f1;
 }
 
 .layout {
   display: grid;
-  flex: 1;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 556px 556px;
   gap: var(--space-lg);
-  align-items: stretch;
+  width: 1136px;
+  height: 692px;
 }

@@ -1,8 +1,11 @@
+import { useState } from 'react'
 import { Button } from '@/shared/ui/Button'
 import { TextInput } from '@/shared/ui/TextInput'
 import styles from './AuthWidget.module.css'
 
 export function AuthWidget() {
+  const [passwordVisible, setPasswordVisible] = useState(false)
+
   return (
     <section className={styles.card} aria-label="Вход">
       <div className={styles.panel}>
@@ -38,13 +41,19 @@ export function AuthWidget() {
             </label>
             <TextInput
               id="auth-password"
-              type="password"
+              type={passwordVisible ? 'text' : 'password'}
               placeholder="Введите пароль"
               className={styles.input}
               rightContent={
-                <span className={styles.eye} aria-hidden="true">
-                  <EyeIcon />
-                </span>
+                <button
+                  type="button"
+                  className={styles.eye}
+                  aria-label={passwordVisible ? 'Скрыть пароль' : 'Показать пароль'}
+                  aria-pressed={passwordVisible}
+                  onClick={() => setPasswordVisible((visible) => !visible)}
+                >
+                  <EyeIcon crossed={passwordVisible} />
+                </button>
               }
             />
           </div>
@@ -92,7 +101,7 @@ function AppleIcon() {
   )
 }
 
-function EyeIcon() {
+function EyeIcon({ crossed }: { crossed: boolean }) {
   return (
     <svg width="24" height="24" viewBox="0 0 24 24" fill="none" aria-hidden="true">
       <path
@@ -101,6 +110,9 @@ function EyeIcon() {
         strokeWidth="1.5"
       />
       <circle cx="12" cy="12" r="2.5" stroke="currentColor" strokeWidth="1.5" />
+      {crossed ? (
+        <path d="M5 19 19 5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      ) : null}
     </svg>
   )
 }
