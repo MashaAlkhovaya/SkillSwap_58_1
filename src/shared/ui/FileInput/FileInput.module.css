@@ -38,8 +38,8 @@
 
 /** AVATAR */
 .dropzoneAvatar {
-  width: 54px;
-  height: 54px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   display: flex;
   justify-content: center;
@@ -63,8 +63,8 @@
 }
 
 .previewAvatar {
-  width: 54px;
-  height: 54px;
+  width: 72px;
+  height: 72px;
   border-radius: 50%;
   object-fit: cover;
 }
@@ -102,11 +102,4 @@
   letter-spacing: 0.02em;
   color: inherit;
   margin: 0;
-}
-
-.error {
-  font-family: var(--font-sans);
-  font-size: var(--font-size-sm);
-  color: var(--color-error);
-  margin-top: var(--space-sm);
 }

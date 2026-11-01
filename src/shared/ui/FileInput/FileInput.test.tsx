@@ -30,32 +30,6 @@ describe('FileInput', () => {
     expect(handleChange).toHaveBeenCalledWith(file)
   })
 
-  it('должен показывать ошибку при неверном формате файла', () => {
-    const handleChange = vi.fn()
-    render(<FileInput onChange={handleChange} />)
-
-    const pdfFile = new File(['test'], 'doc.pdf', { type: 'application/pdf' })
-    const input = document.querySelector('input[type="file"]') as HTMLInputElement
-
-    fireEvent.change(input, { target: { files: [pdfFile] } })
-
-    expect(screen.getByText(/Можно загружать только картинки/i)).toBeInTheDocument()
-    expect(handleChange).not.toHaveBeenCalled()
-  })
-
-  it('должен показывать ошибку при превышении размера файла', () => {
-    const handleChange = vi.fn()
-    render(<FileInput onChange={handleChange} />)
-
-    const largeFile = new File(['a'.repeat(3 * 1024 * 1024)], 'big.png', { type: 'image/png' })
-    const input = document.querySelector('input[type="file"]') as HTMLInputElement
-
-    fireEvent.change(input, { target: { files: [largeFile] } })
-
-    expect(screen.getByText(/не должен превышать 2 МБ/i)).toBeInTheDocument()
-    expect(handleChange).not.toHaveBeenCalled()
-  })
-
   it('должен обрабатывать Drop файла', () => {
     const handleChange = vi.fn()
     render(<FileInput onChange={handleChange} />)

@@ -3,7 +3,6 @@ import clsx from 'clsx'
 import styles from './FileInput.module.css'
 import { FileInputIcon } from './FileInputIcon'
 import { AvatarPlaceholderIcon } from './AvatarPlaceholderIcon'
-import { validateImageFile } from '@/shared/lib/helpers'
 
 export interface FileInputProps {
   onChange: (file: File) => void
@@ -12,17 +11,10 @@ export interface FileInputProps {
 
 export function FileInput({ onChange, variant = 'skill' }: FileInputProps) {
   const [preview, setPreview] = useState<string | null>(null)
-  const [error, setError] = useState<string | null>(null)
   const [isDragOver, setIsDragOver] = useState(false)
   const inputRef = useRef<HTMLInputElement>(null)
 
   const handleFile = (file: File) => {
-    const validationError = validateImageFile(file)
-    if (validationError) {
-      setError(validationError)
-      return
-    }
-    setError(null)
     const previewUrl = URL.createObjectURL(file)
     setPreview(previewUrl)
     onChange(file)
@@ -86,7 +78,6 @@ export function FileInput({ onChange, variant = 'skill' }: FileInputProps) {
           </>
         )}
       </div>
-      {error && <p className={styles.error}>{error}</p>}
     </div>
   )
 }
