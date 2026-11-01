@@ -1,0 +1,16 @@
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 32px 36px;
+  background-color: #f5f6f1;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 556px 556px;
+  gap: var(--space-lg);
+  width: 1136px;
+  height: 692px;
+}
