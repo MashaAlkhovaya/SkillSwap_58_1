@@ -1,3 +1,7 @@
 export { Logo } from './Logo'
 export { Text } from './Text/Text'
 export { Title } from './Title'
+export { Radio } from './Radio'
+export { RadioGroup } from './Radio'
+export { Checkbox } from './Checkbox'
+export { CheckboxGroup } from './Checkbox'
