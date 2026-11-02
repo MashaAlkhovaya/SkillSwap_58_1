@@ -21,6 +21,10 @@
   --space-xl: 32px;
   --space-2xl: 48px;
 
+  /* Footer */
+  --footer-padding-inline: 36px;
+  --footer-link-gap: 12px;
+
   /* Typography */
   --font-family-base: 'Roboto', 'Open Sans', system-ui, -apple-system, sans-serif;
   --font-family-heading: 'Jost', 'Open Sans', system-ui, -apple-system, sans-serif;

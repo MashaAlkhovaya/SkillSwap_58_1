@@ -6,6 +6,12 @@ export const ROUTES = {
   CREATE: '/create',
   LOGIN: '/login',
   REGISTER: '/register',
+  ABOUT: '/about',
+  ALL_SKILLS: '/skills',
+  CONTACTS: '/contacts',
+  BLOG: '/blog',
+  PRIVACY: '/privacy',
+  TERMS: '/terms',
 } as const
 
 export const SKILL_CATEGORIES = [
