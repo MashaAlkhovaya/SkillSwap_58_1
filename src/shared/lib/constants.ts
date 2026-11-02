@@ -119,3 +119,7 @@ export const CITIES = [
 export type City = (typeof CITIES)[number]
 
 export const YEARS_WORDS = ['год', 'года', 'лет'] as const
+
+// 2 MB
+export const MAX_FILE_SIZE = 2 * 1024 * 1024
+export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const
