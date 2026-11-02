@@ -2,79 +2,47 @@ import { fireEvent, render, screen } from '@testing-library/react'
 import { SelectCustom } from './index'
 
 const options = [
-  { value: '', label: 'Выберите вариант', key: 'placeholder', title: true },
   { value: 'one', label: 'Первый вариант', key: 'one' },
   { value: 'two', label: 'Второй вариант', key: 'two' },
 ]
 
 describe('SelectCustom', () => {
-  it('показывает title-опцию как начальный, невыбираемый placeholder', () => {
-    render(<SelectCustom options={options} onChange={vi.fn()} />)
+  it('связывает label с полем выбора', () => {
+    render(<SelectCustom label="Выберите вариант" options={options} onChange={vi.fn()} />)
 
-    const trigger = screen.getByRole('combobox')
-
-    expect(trigger).toHaveAttribute('placeholder', 'Выберите вариант')
-
-    fireEvent.keyDown(trigger, { key: 'ArrowDown' })
-
-    const placeholder = screen.getByRole('option', { name: 'Выберите вариант' })
-
-    expect(placeholder).toHaveAttribute('aria-disabled', 'true')
-
-    fireEvent.click(placeholder)
-
-    expect(trigger).toHaveAttribute('placeholder', 'Выберите вариант')
+    expect(screen.getByLabelText('Выберите вариант')).toBe(screen.getByRole('combobox'))
   })
 
-  it('передаёт onChange для выбранной опции', () => {
+  it('передаёт выбранное значение в onChange как массив', () => {
     const onChange = vi.fn()
     render(<SelectCustom options={options} onChange={onChange} />)
 
     fireEvent.keyDown(screen.getByRole('combobox'), { key: 'ArrowDown' })
     fireEvent.click(screen.getByRole('option', { name: 'Первый вариант' }))
 
-    expect(onChange).toHaveBeenCalledWith('one')
+    expect(onChange).toHaveBeenCalledWith(['one'])
     expect(onChange).toHaveBeenCalledTimes(1)
-    expect(screen.getByRole('combobox')).toHaveAttribute('placeholder', 'Первый вариант')
   })
 
   it('открывает список и выбирает пункт мышью', () => {
     const onChange = vi.fn()
     render(<SelectCustom options={options} onChange={onChange} />)
 
-    fireEvent.click(screen.getByRole('combobox'))
+    const input = screen.getByRole('combobox')
+    fireEvent.keyDown(input, { key: 'ArrowDown' })
 
-    expect(screen.getByRole('combobox')).toHaveAttribute('aria-expanded', 'true')
+    expect(input).toHaveAttribute('aria-expanded', 'true')
     fireEvent.click(screen.getByRole('option', { name: 'Первый вариант' }))
 
-    expect(onChange).toHaveBeenCalledWith('one')
+    expect(onChange).toHaveBeenCalledWith(['one'])
     expect(onChange).toHaveBeenCalledTimes(1)
-    expect(screen.getByRole('combobox')).toHaveAttribute('placeholder', 'Первый вариант')
-    expect(screen.getByRole('combobox')).toHaveAttribute('aria-expanded', 'false')
+    expect(input).toHaveAttribute('aria-expanded', 'false')
   })
 
-  it('закрывает список повторным кликом по стрелке', () => {
-    render(<SelectCustom options={options} onChange={vi.fn()} />)
-
-    fireEvent.click(screen.getByRole('button', { name: 'Открыть список' }))
-    expect(screen.getByRole('combobox')).toHaveAttribute('aria-expanded', 'true')
-
-    fireEvent.click(screen.getByRole('button', { name: 'Закрыть список' }))
-    expect(screen.getByRole('combobox')).toHaveAttribute('aria-expanded', 'false')
-  })
-
-  it('исключает кнопку-стрелку из последовательности Tab', () => {
-    render(<SelectCustom options={options} onChange={vi.fn()} />)
-
-    expect(screen.getByRole('button', { name: 'Открыть список' })).toHaveAttribute('tabindex', '-1')
-  })
-
-  it('фильтрует варианты по введённому label без учёта регистра', () => {
+  it('фильтрует варианты по введённому label', () => {
     render(<SelectCustom options={options} onChange={vi.fn()} />)
 
     const input = screen.getByRole('combobox')
-    fireEvent.focus(input)
-    expect(input).toHaveAttribute('placeholder', '')
     fireEvent.change(input, {
       target: { value: 'ВТОРОЙ' },
     })
@@ -82,10 +50,9 @@ describe('SelectCustom', () => {
     expect(input).toHaveAttribute('aria-expanded', 'true')
     expect(screen.getByRole('option', { name: 'Второй вариант' })).toBeInTheDocument()
     expect(screen.queryByRole('option', { name: 'Первый вариант' })).not.toBeInTheDocument()
-    expect(screen.queryByRole('option', { name: 'Выберите вариант' })).not.toBeInTheDocument()
   })
 
-  it('показывает сообщение, если вариантов с введённым label нет', () => {
+  it('показывает стандартное сообщение, если вариантов нет', () => {
     render(<SelectCustom options={options} onChange={vi.fn()} />)
 
     const input = screen.getByRole('combobox')
@@ -93,7 +60,7 @@ describe('SelectCustom', () => {
       target: { value: 'неизвестный вариант' },
     })
 
-    expect(screen.getByText('Ничего не найдено')).toBeInTheDocument()
+    expect(screen.getByText('No options')).toBeInTheDocument()
     expect(screen.queryAllByRole('option')).toHaveLength(0)
   })
 
@@ -107,37 +74,28 @@ describe('SelectCustom', () => {
     })
     fireEvent.click(screen.getByRole('option', { name: 'Второй вариант' }))
 
-    expect(onChange).toHaveBeenCalledWith('two')
-    expect(input).toHaveAttribute('placeholder', 'Второй вариант')
+    expect(onChange).toHaveBeenCalledWith(['two'])
     expect(input).toHaveValue('')
     expect(input).toHaveAttribute('aria-expanded', 'false')
   })
 
-  it('переходит к доступному пункту стрелкой вниз и выбирает его через Enter', () => {
+  it('показывает кнопку очистки и передаёт пустой массив после очистки', () => {
     const onChange = vi.fn()
     render(<SelectCustom options={options} onChange={onChange} />)
 
-    const trigger = screen.getByRole('combobox')
-    fireEvent.keyDown(trigger, { key: 'ArrowDown' })
+    const input = screen.getByRole('combobox')
+    fireEvent.keyDown(input, { key: 'ArrowDown' })
+    fireEvent.click(screen.getByRole('option', { name: 'Первый вариант' }))
 
-    const item = screen.getByRole('option', { name: 'Первый вариант' })
-    expect(trigger).toHaveAttribute('aria-activedescendant', item.id)
+    fireEvent.click(screen.getByRole('button', { name: 'Очистить выбор' }))
 
-    fireEvent.keyDown(trigger, { key: 'Enter' })
-
-    expect(onChange).toHaveBeenCalledWith('one')
-    expect(trigger).toHaveAttribute('placeholder', 'Первый вариант')
-    expect(trigger).toHaveAttribute('aria-expanded', 'false')
+    expect(onChange).toHaveBeenNthCalledWith(1, ['one'])
+    expect(onChange).toHaveBeenNthCalledWith(2, [])
   })
 
-  it('закрывает список по Escape без изменения выбора', () => {
-    render(<SelectCustom options={options} onChange={vi.fn()} />)
+  it('отключает поле выбора, когда disabled равен true', () => {
+    const { container } = render(<SelectCustom options={options} onChange={vi.fn()} disabled />)
 
-    const trigger = screen.getByRole('combobox')
-    fireEvent.keyDown(trigger, { key: 'ArrowDown' })
-    fireEvent.keyDown(trigger, { key: 'Escape' })
-
-    expect(trigger).toHaveAttribute('aria-expanded', 'false')
-    expect(trigger).toHaveAttribute('placeholder', 'Выберите вариант')
+    expect(container.querySelector('input')).toBeDisabled()
   })
 })

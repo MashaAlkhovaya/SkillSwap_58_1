@@ -3,12 +3,11 @@ import { fn } from 'storybook/test'
 import { SelectCustom } from './index'
 
 const SELECT_OPTIONS = [
-  { value: '', label: 'что-то надо выбрать', key: 'placeholder', title: true },
-  { value: '1', label: 'one', key: '1' },
-  { value: '2', label: 'two', key: '2' },
-  { value: '3', label: 'three', key: '3' },
-  { value: '4', label: 'four', key: '4' },
-  { value: '5', label: 'five', key: '5' },
+  { value: '1', label: 'one' },
+  { value: '2', label: 'two' },
+  { value: '3', label: 'three' },
+  { value: '4', label: 'four' },
+  { value: '5', label: 'five' },
 ]
 
 const meta: Meta<typeof SelectCustom> = {
@@ -19,7 +18,7 @@ const meta: Meta<typeof SelectCustom> = {
     docs: {
       description: {
         component:
-          'Кастомный выпадающий список с поиском по label и поддержкой клавиатурной навигации. При фокусе placeholder скрывается, а ввод текста автоматически открывает и фильтрует список. Элемент с title отображается как начальный, недоступный для выбора placeholder.',
+          'Выпадающий список с поиском по label, поддержкой клавиатурной навигации и кнопкой очистки выбора. Выбранный value передаётся в onChange как массив; очистка передаёт пустой массив.',
       },
     },
   },
@@ -40,13 +39,17 @@ type Story = StoryObj<typeof SelectCustom>
 
 export const Default: Story = {
   args: {
+    label: 'Выберите вариант',
     options: SELECT_OPTIONS,
+    placeholder: 'Начните вводить или выберите вариант',
   },
 }
 
 export const WithoutPlaceholder: Story = {
   args: {
-    options: SELECT_OPTIONS.filter((option) => !option.title),
+    label: 'Без placeholder',
+    options: SELECT_OPTIONS,
+    placeholder: '',
   },
 }
 
