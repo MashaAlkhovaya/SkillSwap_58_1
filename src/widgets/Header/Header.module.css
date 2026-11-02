@@ -1,0 +1,22 @@
+.header {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  white-space: nowrap;
+  width: 100%;
+  gap: var(--space-xl);
+  padding: 36px 36px 20px;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+.center {
+  flex-grow: 1;
+}
+
+.left,
+.right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
+}
