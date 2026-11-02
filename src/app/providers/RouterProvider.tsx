@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 import { ROUTES } from '@/shared/lib/constants'
+import { MainLayout } from '../Layouts/MainLayout'
 
 // Lazy-загрузка страниц — каждая страница грузится только при переходе на неё
 const CatalogPage = lazy(() => import('@/pages/CatalogPage'))
@@ -16,17 +17,22 @@ export function AppRouter() {
     <BrowserRouter>
       <Suspense fallback={<div>Загрузка...</div>}>
         <Routes>
-          <Route path={ROUTES.HOME} element={<CatalogPage />} />
-          <Route path={ROUTES.SKILL} element={<SkillPage />} />
-          <Route path={ROUTES.FAVORITES} element={<FavoritesPage />} />
-          <Route path={ROUTES.LOGIN} element={<LoginPage />} />
-          <Route path={ROUTES.REGISTER} element={<LoginPage />} />
+          {/* 1. Главный маршрут — это наш лейаут */}
+          <Route element={<MainLayout />}>
+            {/* 2. Вложенные маршруты (они отрендерятся на месте <Outlet />) */}
+            <Route path={ROUTES.HOME} element={<CatalogPage />} />
+            <Route path={ROUTES.SKILL} element={<SkillPage />} />
+            <Route path={ROUTES.FAVORITES} element={<FavoritesPage />} />
+            <Route path={ROUTES.LOGIN} element={<LoginPage />} />
+            <Route path={ROUTES.REGISTER} element={<LoginPage />} />
 
-          {/* Защищённые маршруты — добавь PrivateRoute обёртку */}
-          <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
-          <Route path={ROUTES.CREATE} element={<CreateSkillPage />} />
+            {/* Защищённые маршруты — добавь PrivateRoute обёртку */}
+            <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+            <Route path={ROUTES.CREATE} element={<CreateSkillPage />} />
 
-          <Route path="*" element={<NotFoundPage />} />
+            {/* 3. Обработка 404 */}
+            <Route path="*" element={<NotFoundPage />} />
+          </Route>
         </Routes>
       </Suspense>
     </BrowserRouter>
