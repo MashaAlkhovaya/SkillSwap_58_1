@@ -1,0 +1,1 @@
+export { CatalogUserCard } from './CatalogUserCard'
