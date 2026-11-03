@@ -1,19 +1,19 @@
 import { Outlet } from 'react-router-dom'
-//import { Header } from '@widgets/Header'; // Путь к будущему хедеру
-//import { Footer } from '@widgets/Footer'; // Путь к будущему футеру
+import { Header } from 'src/widgets/Header'
+import { Footer } from 'src/widgets/Footer/Footer'
 import styles from './MainLayout.module.css'
 
 export const MainLayout = () => {
   return (
     <div className={styles.layout}>
-      {/* TODO: здесь будет Header (из другой задачи) */}
+      <Header />
 
       <main className={styles.content}>
         {/* Outlet — это место, куда будут подставляться страницы */}
         <Outlet />
       </main>
 
-      {/* TODO: здесь будет Footer */}
+      <Footer />
     </div>
   )
 }
