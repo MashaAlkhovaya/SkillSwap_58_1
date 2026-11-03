@@ -4,8 +4,7 @@ import { TextInput } from '../TextInput'
 import { Button } from '../Button'
 import { DayPicker } from 'react-day-picker'
 import { ru } from 'date-fns/locale'
-//import 'react-day-picker/style.css';
-import 'react-day-picker/dist/style.css'
+import 'react-day-picker/style.css'
 import styles from './DateInput.module.css'
 
 interface DateInputProps {
@@ -61,6 +60,28 @@ const CalendarIcon = () => (
     />
   </svg>
 )
+const CustomChevron = () => (
+  <svg
+    width="16"
+    height="8"
+    viewBox="0 0 16 8"
+    fill="none"
+    xmlns="http://www.w3.org/2000/svg"
+    style={{ pointerEvents: 'none' }}
+  >
+    <path
+      d="M8 7.93539C7.35391 7.93539 6.70782 7.68618 6.21863 7.197L0.20075 1.17912C-0.0669166 0.91145 -0.0669166 0.468416 0.20075 0.20075C0.468416 -0.0669166 0.911451 -0.0669166 1.17912 0.20075L7.197 6.21863C7.64003 6.66167 8.35997 6.66167 8.803 6.21863L14.8209 0.20075C15.0885 -0.0669166 15.5316 -0.0669166 15.7992 0.20075C16.0669 0.468416 16.0669 0.91145 15.7992 1.17912L9.78137 7.197C9.29218 7.68618 8.64609 7.93539 8 7.93539Z"
+      fill="#253017"
+    />
+  </svg>
+)
+
+const MAX_DIGITS = 8
+const formatDigits = (digits: string) => {
+  const d = digits.slice(0, MAX_DIGITS)
+  const parts = [d.slice(0, 2), d.slice(2, 4), d.slice(4, MAX_DIGITS)].filter(Boolean)
+  return parts.join('.')
+}
 
 export const DateInput = ({
   name,
@@ -71,16 +92,11 @@ export const DateInput = ({
   className,
 }: DateInputProps) => {
   const [isOpen, setIsOpen] = useState(false)
-  const popupRef = useRef<HTMLDivElement | null>(null)
-
-  // Дата, выбранная в календаре
+  const wrapperRef = useRef<HTMLDivElement | null>(null)
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
     value instanceof Date ? value : undefined,
   )
-
-  // Ручной ввод как строка (валидацию не делаем)
   const [manualInput, setManualInput] = useState<string>(typeof value === 'string' ? value : '')
-
   const displayValue =
     manualInput || (value instanceof Date ? new Date(value).toLocaleDateString('ru-RU') : '')
 
@@ -90,14 +106,15 @@ export const DateInput = ({
     }
   }
 
+  const openPopup = () => {
+    if (!disabled) setIsOpen(true)
+  }
+
   const handleConfirm = () => {
     let result: Date | string | null = null
-
-    // Приоритет: если есть ручной ввод — отправляем строку
     if (manualInput.trim() !== '') {
       result = manualInput
     } else if (selectedDate !== undefined) {
-      // Иначе — дата из календаря
       result = selectedDate
     }
 
@@ -112,27 +129,22 @@ export const DateInput = ({
   }
 
   const handleManualInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const str = e.target.value
-    setManualInput(str)
-    // Не парсим дату здесь — валидация на этапе отправки формы
+    const digits = e.target.value.replace(/\D/g, '')
+    setManualInput(formatDigits(digits))
   }
 
-  // Закрывать календарь, если кликнули вне его + Escape
   useEffect(() => {
     const handleCloseEvents = (event: Event) => {
-      if (!isOpen || !popupRef.current) return
+      if (!isOpen || !wrapperRef.current) return
 
-      // 1. Клик вне
-      if (event.type === 'mousedown' && !popupRef.current.contains(event.target as Node)) {
+      if (event.type === 'mousedown' && !wrapperRef.current.contains(event.target as Node)) {
         setIsOpen(false)
       }
 
-      // 2. Нажатие Escape
       if (event.type === 'keydown' && (event as KeyboardEvent).key === 'Escape') {
         setIsOpen(false)
       }
     }
-
     document.addEventListener('mousedown', handleCloseEvents)
     document.addEventListener('keydown', handleCloseEvents)
     return () => {
@@ -141,13 +153,12 @@ export const DateInput = ({
     }
   }, [isOpen])
 
-  //для дропдаунов
   const currentYear = new Date().getFullYear()
   const startMonth = new Date(1950, 0)
   const endMonth = new Date(currentYear, 11)
 
   return (
-    <div className={clsx('date-input-wrapper', className, styles.wrapper)}>
+    <div ref={wrapperRef} className={clsx('date-input-wrapper', className, styles.wrapper)}>
       {label && (
         <label htmlFor={name} className={styles.label}>
           {label}
@@ -157,9 +168,12 @@ export const DateInput = ({
         <TextInput
           id={name}
           type="text"
+          inputMode="numeric"
           placeholder="дд.мм.гггг"
+          maxLength={10}
           value={displayValue}
           onChange={handleManualInputChange}
+          onFocus={openPopup}
           aria-label={label || 'Дата'}
           data-testid="date-input-field"
           disabled={disabled}
@@ -186,20 +200,32 @@ export const DateInput = ({
       {isOpen && !disabled && (
         <div
           id="date-picker-popup"
-          ref={popupRef}
+          // ref={popupRef}
           className={styles.popup}
           data-testid="date-picker-popup"
         >
           <DayPicker
             mode="single"
             selected={selectedDate}
-            onSelect={setSelectedDate}
+            onSelect={(date) => {
+              setSelectedDate(date)
+              if (date) {
+                setManualInput(
+                  `${String(date.getDate()).padStart(2, '0')}.` +
+                    `${String(date.getMonth() + 1).padStart(2, '0')}.` +
+                    `${date.getFullYear()}`,
+                )
+              }
+            }}
             locale={ru}
             captionLayout="dropdown"
             hideNavigation={true}
             startMonth={startMonth}
             endMonth={endMonth}
             showOutsideDays={true}
+            components={{
+              Chevron: CustomChevron,
+            }}
             classNames={{
               months: styles.monthsContainer,
               month_caption: styles.monthCaption,

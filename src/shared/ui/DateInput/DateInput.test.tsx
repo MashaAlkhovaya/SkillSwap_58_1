@@ -3,6 +3,8 @@ import userEvent from '@testing-library/user-event'
 import { describe, expect, vi } from 'vitest'
 import { DateInput } from './DateInput'
 
+const user = userEvent.setup()
+
 describe('DateInput', () => {
   const user = userEvent.setup()
 
@@ -60,9 +62,7 @@ describe('DateInput', () => {
     const input = screen.getByTestId('date-input-field')
     await user.type(input, '12.03.2020')
 
-    const toggleBtn = screen.getByTestId('calendar-toggle')
-    await user.click(toggleBtn)
-
+    // календарь уже открыт фокусом после type — кликать по toggle не нужно
     const confirmBtn = screen.getByTestId('confirm-btn')
     await user.click(confirmBtn)
 
@@ -127,4 +127,27 @@ describe('DateInput', () => {
     const input = screen.getByTestId('date-input-field')
     expect(input).toHaveValue('10.10.2010')
   })
+})
+
+//11. открывает календарь при фокусе на инпуте
+test('открывает календарь при фокусе на инпуте', async () => {
+  render(<DateInput name="birthDate" />)
+
+  await user.click(screen.getByTestId('date-input-field'))
+
+  expect(screen.getByTestId('date-picker-popup')).toBeInTheDocument()
+})
+
+//12. форматирование даты при ручном вводе и нет возможности внести лишнее
+test('маскирует ввод: расставляет точки и не даёт ввести лишнее', async () => {
+  const onChange = vi.fn()
+  render(<DateInput name="birthDate" onChange={onChange} />)
+
+  const input = screen.getByTestId('date-input-field')
+  await user.type(input, '1203202') // 7 цифр
+
+  expect(input).toHaveValue('12.03.202')
+
+  await user.type(input, '0123456789')
+  expect(input).toHaveValue('12.03.2020')
 })

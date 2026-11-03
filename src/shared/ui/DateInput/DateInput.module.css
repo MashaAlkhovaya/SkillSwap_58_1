@@ -79,20 +79,23 @@
   background: var(--color-bg-secondary);
 }
 
-/* Контейнер всей сетки */
 .monthsContainer {
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
-/*  Контейнер шапки месяца */
 .monthCaption {
   display: flex;
   justify-content: center;
   align-items: center;
   width: 100%;
   margin-bottom: 20px;
+  text-transform: capitalize;
+}
+
+.monthCaption * + * {
+  margin-left: 10px;
 }
 
 .captionLabel {
@@ -118,7 +121,6 @@
   background-color: #a1ce5e;
 }
 
-/* футер для кнопок */
 .footer {
   display: flex;
   justify-content: space-around;
