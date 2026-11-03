@@ -1,14 +1,16 @@
 import { useState } from 'react'
+import { useAuthForm } from '@/features/auth/model/useAuthForm'
 import { Button } from '@/shared/ui/Button'
 import { TextInput } from '@/shared/ui/TextInput'
 import styles from './AuthWidget.module.css'
 
 export function AuthWidget() {
+  const { register, handleSubmit, errors, isSubmitting, error } = useAuthForm()
   const [passwordVisible, setPasswordVisible] = useState(false)
 
   return (
     <section className={styles.card} aria-label="Вход">
-      <div className={styles.panel}>
+      <form className={styles.panel} onSubmit={handleSubmit} noValidate>
         <div className={styles.socials}>
           <button type="button" className={styles.social}>
             <GoogleIcon />
@@ -30,9 +32,15 @@ export function AuthWidget() {
             <TextInput
               id="auth-email"
               type="email"
+              autoComplete="username"
               placeholder="Введите email"
               className={styles.input}
+              aria-invalid={Boolean(errors.login)}
+              {...register('login')}
             />
+            {errors.login?.message ? (
+              <p className={styles.fieldError}>{errors.login.message}</p>
+            ) : null}
           </div>
 
           <div className={styles.field}>
@@ -42,8 +50,11 @@ export function AuthWidget() {
             <TextInput
               id="auth-password"
               type={passwordVisible ? 'text' : 'password'}
+              autoComplete="current-password"
               placeholder="Введите пароль"
               className={styles.input}
+              aria-invalid={Boolean(errors.password)}
+              {...register('password')}
               rightContent={
                 <button
                   type="button"
@@ -56,13 +67,22 @@ export function AuthWidget() {
                 </button>
               }
             />
+            {errors.password?.message ? (
+              <p className={styles.fieldError}>{errors.password.message}</p>
+            ) : null}
           </div>
         </div>
 
-        <Button type="button" variant="primary" className={styles.submit}>
+        {error ? (
+          <p className={styles.error} role="alert">
+            {error}
+          </p>
+        ) : null}
+
+        <Button type="submit" variant="primary" className={styles.submit} disabled={isSubmitting}>
           Войти
         </Button>
-      </div>
+      </form>
     </section>
   )
 }
