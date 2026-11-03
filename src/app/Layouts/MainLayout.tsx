@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom'
-import { Header } from 'src/widgets/Header'
-import { Footer } from 'src/widgets/Footer/Footer'
+import { Header } from '@/widgets/Header'
+import { Footer } from '@/widgets/Footer'
 import styles from './MainLayout.module.css'
 
 export const MainLayout = () => {
