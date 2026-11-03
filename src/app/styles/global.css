@@ -20,6 +20,8 @@
   --space-lg: 24px;
   --space-xl: 32px;
   --space-2xl: 48px;
+  --btn-padding-y: 12px;
+  --btn-padding-x: 24px;
 
   /* Footer */
   --footer-padding-inline: 36px;
