@@ -1,0 +1,100 @@
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  max-width: 324px;
+  min-width: 0;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+  margin-bottom: 8px;
+}
+
+.userInfo {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.name {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  padding-right: 40px;
+}
+
+.favoriteButton {
+  position: absolute;
+  top: 16px;
+  right: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  min-width: 36px;
+  padding: 0;
+  color: var(--color-text);
+  background: transparent;
+  border: none;
+  box-shadow: none;
+}
+
+.favoriteActive {
+  color: #a8d276;
+}
+
+.favoriteButton > span:first-child {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.favoriteButton > span:nth-child(2) {
+  display: none;
+}
+
+.skillsSection {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+}
+
+.skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  min-width: 0;
+}
+
+.detailsButton {
+  width: 100%;
+  height: 48px;
+  align-self: stretch;
+  margin-top: 8px;
+}
+
+@media (width <= 480px) {
+  .card {
+    gap: 18px;
+    padding: 20px;
+  }
+
+  .header {
+    gap: 10px;
+  }
+
+  .userInfo {
+    padding-right: 0;
+  }
+}
