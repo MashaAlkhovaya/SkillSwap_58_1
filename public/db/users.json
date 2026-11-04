@@ -5,11 +5,10 @@
     "email": "anna.smirnova@example.com",
     "avatarUrl": "/db/avatars/figma/anna.jpg",
     "createdAt": "2025-01-16T11:15:00.000Z",
-    "birthDate": "1995-02-08",
+    "birthDate": "1995-02-08T00:00:00.000Z",
     "gender": "female",
     "city": "Санкт-Петербург",
     "bio": "Доброжелательная и любознательная, ценю искреннее общение и тёплые встречи с близкими.",
-    "login": "anna.smirnova",
     "password": "SkillSwapMock2025!",
     "likes": ["user-02"],
     "canTeach": {
@@ -17,7 +16,10 @@
       "category": "art",
       "subCategory": "music-sound"
     },
-    "wantsToLearn": ["acting", "german", "team-management"]
+    "wantsToLearn": {
+      "categories": ["art", "languages", "business"],
+      "subCategories": ["acting", "german", "team-management"]
+    }
   },
   {
     "id": "user-02",
@@ -25,11 +27,10 @@
     "email": "maxim.ivanov@example.com",
     "avatarUrl": "/db/avatars/figma/maxim.jpg",
     "createdAt": "2025-01-20T12:15:00.000Z",
-    "birthDate": "1990-07-15",
+    "birthDate": "1990-07-15T00:00:00.000Z",
     "gender": "male",
     "city": "Москва",
     "bio": "Спокойный и открытый к новым знакомствам. Люблю хорошие фильмы и уютные вечера; плед уже считает меня членом семьи.",
-    "login": "maxim.ivanov",
     "password": "SkillSwapMock2025!",
     "likes": ["user-03", "user-04"],
     "canTeach": {
@@ -37,7 +38,10 @@
       "category": "art",
       "subCategory": "music-sound"
     },
-    "wantsToLearn": ["speed-reading", "team-management"]
+    "wantsToLearn": {
+      "categories": ["education", "business"],
+      "subCategories": ["speed-reading", "team-management"]
+    }
   },
   {
     "id": "user-03",
@@ -45,11 +49,10 @@
     "email": "ekaterina.petrova@example.com",
     "avatarUrl": "/db/avatars/figma/ekaterina.jpg",
     "createdAt": "2025-01-24T13:15:00.000Z",
-    "birthDate": "1993-11-22",
+    "birthDate": "1993-11-22T00:00:00.000Z",
     "gender": "female",
     "city": "Казань",
     "bio": "Ценю душевные разговоры, семейные традиции и возможность узнавать людей с разными взглядами.",
-    "login": "ekaterina.petrova",
     "password": "SkillSwapMock2025!",
     "likes": ["user-04", "user-05", "user-06"],
     "canTeach": {
@@ -57,7 +60,10 @@
       "category": "languages",
       "subCategory": "english"
     },
-    "wantsToLearn": ["german", "home-finances", "teaching-skills"]
+    "wantsToLearn": {
+      "categories": ["languages", "home-coziness", "education"],
+      "subCategories": ["german", "home-finances", "teaching-skills"]
+    }
   },
   {
     "id": "user-04",
@@ -65,11 +71,10 @@
     "email": "dmitry.sokolov@example.com",
     "avatarUrl": null,
     "createdAt": "2025-01-28T14:15:00.000Z",
-    "birthDate": "1988-04-03",
+    "birthDate": "1988-04-03T00:00:00.000Z",
     "gender": "male",
     "city": "Екатеринбург",
     "bio": "Люблю проводить выходные с друзьями, открывать новые места в городе и пробовать что-то необычное.",
-    "login": "dmitry.sokolov",
     "password": "SkillSwapMock2025!",
     "likes": ["user-05", "user-06", "user-07", "user-08"],
     "canTeach": {
@@ -77,7 +82,10 @@
       "category": "languages",
       "subCategory": "spanish"
     },
-    "wantsToLearn": ["chinese", "sales-negotiations", "yoga"]
+    "wantsToLearn": {
+      "categories": ["languages", "business", "health"],
+      "subCategories": ["chinese", "sales-negotiations", "yoga"]
+    }
   },
   {
     "id": "user-05",
@@ -85,11 +93,10 @@
     "email": "maria.volkova@example.com",
     "avatarUrl": "/db/avatars/figma/maria.jpg",
     "createdAt": "2025-02-01T15:15:00.000Z",
-    "birthDate": "1997-09-19",
+    "birthDate": "1997-09-19T00:00:00.000Z",
     "gender": "female",
     "city": "Новосибирск",
     "bio": "Внимательная к деталям и ценю красоту в повседневных мелочах. Иногда нахожу повод устроить тихий вечер даже в очень занятом дне.",
-    "login": "maria.volkova",
     "password": "SkillSwapMock2025!",
     "likes": ["user-06", "user-07", "user-08", "user-09", "user-10"],
     "canTeach": {
@@ -97,7 +104,10 @@
       "category": "art",
       "subCategory": "illustration"
     },
-    "wantsToLearn": ["japanese", "personal-brand"]
+    "wantsToLearn": {
+      "categories": ["languages", "business"],
+      "subCategories": ["japanese", "personal-brand"]
+    }
   },
   {
     "id": "user-06",
@@ -105,11 +115,10 @@
     "email": "alexey.kuznetsov@example.com",
     "avatarUrl": null,
     "createdAt": "2025-02-05T16:15:00.000Z",
-    "birthDate": "1992-01-27",
+    "birthDate": "1992-01-27T00:00:00.000Z",
     "gender": "male",
     "city": "Нижний Новгород",
     "bio": "Сдержанный, надёжный и всегда готов поддержать разговор за чашкой кофе.",
-    "login": "alexey.kuznetsov",
     "password": "SkillSwapMock2025!",
     "likes": ["user-07", "user-08"],
     "canTeach": {
@@ -117,7 +126,10 @@
       "category": "art",
       "subCategory": "illustration"
     },
-    "wantsToLearn": ["cleaning-organization", "music-sound", "spanish"]
+    "wantsToLearn": {
+      "categories": ["home-coziness", "art", "languages"],
+      "subCategories": ["cleaning-organization", "music-sound", "spanish"]
+    }
   },
   {
     "id": "user-07",
@@ -125,11 +137,10 @@
     "email": "olga.popova@example.com",
     "avatarUrl": null,
     "createdAt": "2025-02-09T17:15:00.000Z",
-    "birthDate": "1989-06-11",
+    "birthDate": "1989-06-11T00:00:00.000Z",
     "gender": "female",
     "city": "Москва",
     "bio": "Легко нахожу общий язык с людьми. Ценю уют, добрый юмор и небольшие спонтанные планы.",
-    "login": "olga.popova",
     "password": "SkillSwapMock2025!",
     "likes": ["user-08", "user-09", "user-10", "user-11"],
     "canTeach": {
@@ -137,7 +148,10 @@
       "category": "art",
       "subCategory": "photo"
     },
-    "wantsToLearn": ["houseplants"]
+    "wantsToLearn": {
+      "categories": ["home-coziness"],
+      "subCategories": ["houseplants"]
+    }
   },
   {
     "id": "user-08",
@@ -145,11 +159,10 @@
     "email": "ilya.lebedev@example.com",
     "avatarUrl": null,
     "createdAt": "2025-02-13T18:15:00.000Z",
-    "birthDate": "1996-12-05",
+    "birthDate": "1996-12-05T00:00:00.000Z",
     "gender": "male",
     "city": "Самара",
     "bio": "Люблю активные выходные, новые впечатления и встречи в хорошей компании. Мой навигатор иногда делает вид, что знает дорогу лучше меня.",
-    "login": "ilya.lebedev",
     "password": "SkillSwapMock2025!",
     "likes": ["user-09"],
     "canTeach": {
@@ -157,7 +170,10 @@
       "category": "art",
       "subCategory": "photo"
     },
-    "wantsToLearn": ["illustration"]
+    "wantsToLearn": {
+      "categories": ["art"],
+      "subCategories": ["illustration"]
+    }
   },
   {
     "id": "user-09",
@@ -165,11 +181,10 @@
     "email": "sofia.kozlova@example.com",
     "avatarUrl": "/db/avatars/figma/sofia.jpg",
     "createdAt": "2025-02-17T10:15:00.000Z",
-    "birthDate": "1994-03-14",
+    "birthDate": "1994-03-14T00:00:00.000Z",
     "gender": "female",
     "city": "Санкт-Петербург",
     "bio": "Ценю домашний уют, тёплое общение и возможность иногда выбраться за город.",
-    "login": "sofia.kozlova",
     "password": "SkillSwapMock2025!",
     "likes": ["user-10", "user-11", "user-12"],
     "canTeach": {
@@ -177,7 +192,10 @@
       "category": "home-coziness",
       "subCategory": "food-preparation"
     },
-    "wantsToLearn": ["art-therapy", "home-finances", "nutrition"]
+    "wantsToLearn": {
+      "categories": ["art", "home-coziness", "health"],
+      "subCategories": ["art-therapy", "home-finances", "nutrition"]
+    }
   },
   {
     "id": "user-10",
@@ -185,11 +203,10 @@
     "email": "artem.novikov@example.com",
     "avatarUrl": null,
     "createdAt": "2025-02-21T11:15:00.000Z",
-    "birthDate": "1991-08-26",
+    "birthDate": "1991-08-26T00:00:00.000Z",
     "gender": "male",
     "city": "Казань",
     "bio": "Общительный и любознательный. Люблю знакомиться с новыми людьми и узнавать их истории.",
-    "login": "artem.novikov",
     "password": "SkillSwapMock2025!",
     "likes": ["user-11", "user-12", "user-13", "user-14", "user-15"],
     "canTeach": {
@@ -197,7 +214,10 @@
       "category": "home-coziness",
       "subCategory": "food-preparation"
     },
-    "wantsToLearn": ["exam-preparation"]
+    "wantsToLearn": {
+      "categories": ["languages"],
+      "subCategories": ["exam-preparation"]
+    }
   },
   {
     "id": "user-11",
@@ -205,11 +225,10 @@
     "email": "alina.morozova@example.com",
     "avatarUrl": null,
     "createdAt": "2025-02-25T12:15:00.000Z",
-    "birthDate": "1998-05-09",
+    "birthDate": "1998-05-09T00:00:00.000Z",
     "gender": "female",
     "city": "Екатеринбург",
     "bio": "Предпочитаю спокойный ритм жизни, внимательное отношение и приятные беседы. Могу отменить спешку, но не чай.",
-    "login": "alina.morozova",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -217,7 +236,10 @@
       "category": "health",
       "subCategory": "yoga"
     },
-    "wantsToLearn": ["music-sound", "video-editing"]
+    "wantsToLearn": {
+      "categories": ["art"],
+      "subCategories": ["music-sound", "video-editing"]
+    }
   },
   {
     "id": "user-12",
@@ -225,11 +247,10 @@
     "email": "kirill.petrov@example.com",
     "avatarUrl": null,
     "createdAt": "2025-03-01T13:15:00.000Z",
-    "birthDate": "1987-10-17",
+    "birthDate": "1987-10-17T00:00:00.000Z",
     "gender": "male",
     "city": "Новосибирск",
     "bio": "Всегда рад новым знакомствам. В свободное время люблю прогулки и встречи с друзьями.",
-    "login": "kirill.petrov",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -237,7 +258,10 @@
       "category": "health",
       "subCategory": "physical-training"
     },
-    "wantsToLearn": ["cognitive-techniques", "creative-writing", "marketing-advertising"]
+    "wantsToLearn": {
+      "categories": ["education", "art", "business"],
+      "subCategories": ["cognitive-techniques", "creative-writing", "marketing-advertising"]
+    }
   },
   {
     "id": "user-13",
@@ -245,11 +269,10 @@
     "email": "viktoria.volkova@example.com",
     "avatarUrl": "/db/avatars/figma/viktoria.jpg",
     "createdAt": "2025-03-05T14:15:00.000Z",
-    "birthDate": "1993-01-06",
+    "birthDate": "1993-01-06T00:00:00.000Z",
     "gender": "female",
     "city": "Москва",
     "bio": "Ценю терпение, доброжелательность и хорошую атмосферу в любой компании.",
-    "login": "viktoria.volkova",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -257,7 +280,10 @@
       "category": "art",
       "subCategory": "decor-diy"
     },
-    "wantsToLearn": ["art-therapy"]
+    "wantsToLearn": {
+      "categories": ["art"],
+      "subCategories": ["art-therapy"]
+    }
   },
   {
     "id": "user-14",
@@ -265,11 +291,10 @@
     "email": "roman.solovyov@example.com",
     "avatarUrl": null,
     "createdAt": "2025-03-09T15:15:00.000Z",
-    "birthDate": "1985-06-23",
+    "birthDate": "1985-06-23T00:00:00.000Z",
     "gender": "male",
     "city": "Нижний Новгород",
     "bio": "Люблю проводить время с близкими, замечать красивые места и сохранять приятные воспоминания.",
-    "login": "roman.solovyov",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -277,7 +302,10 @@
       "category": "art",
       "subCategory": "decor-diy"
     },
-    "wantsToLearn": ["time-management"]
+    "wantsToLearn": {
+      "categories": ["business"],
+      "subCategories": ["time-management"]
+    }
   },
   {
     "id": "user-15",
@@ -285,11 +313,10 @@
     "email": "polina.vasilyeva@example.com",
     "avatarUrl": null,
     "createdAt": "2025-03-13T16:15:00.000Z",
-    "birthDate": "2000-11-12",
+    "birthDate": "2000-11-12T00:00:00.000Z",
     "gender": "female",
     "city": "Самара",
     "bio": "Оптимистичная и заботливая. Радуюсь простым вещам, уютным вечерам и искренним разговорам.",
-    "login": "polina.vasilyeva",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -297,7 +324,10 @@
       "category": "home-coziness",
       "subCategory": "houseplants"
     },
-    "wantsToLearn": ["repair", "sleep"]
+    "wantsToLearn": {
+      "categories": ["home-coziness", "health"],
+      "subCategories": ["repair", "sleep"]
+    }
   },
   {
     "id": "user-16",
@@ -305,11 +335,10 @@
     "email": "nikita.fedorov@example.com",
     "avatarUrl": null,
     "createdAt": "2025-03-17T17:15:00.000Z",
-    "birthDate": "1992-04-20",
+    "birthDate": "1992-04-20T00:00:00.000Z",
     "gender": "male",
     "city": "Санкт-Петербург",
     "bio": "Практичный и спокойный человек, которому нравятся понятные планы. Правда, список дел иногда нужен просто для моральной поддержки.",
-    "login": "nikita.fedorov",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -317,7 +346,10 @@
       "category": "education",
       "subCategory": "learning-skills"
     },
-    "wantsToLearn": ["entrepreneurship", "repair", "spanish"]
+    "wantsToLearn": {
+      "categories": ["business", "home-coziness", "languages"],
+      "subCategories": ["entrepreneurship", "repair", "spanish"]
+    }
   },
   {
     "id": "user-17",
@@ -325,11 +357,10 @@
     "email": "daria.mikhailova@example.com",
     "avatarUrl": "/db/avatars/figma/daria.jpg",
     "createdAt": "2025-03-21T18:15:00.000Z",
-    "birthDate": "1996-09-02",
+    "birthDate": "1996-09-02T00:00:00.000Z",
     "gender": "female",
     "city": "Казань",
     "bio": "Люблю знакомиться с интересными людьми и находить поводы для хорошего настроения.",
-    "login": "daria.mikhailova",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -337,7 +368,10 @@
       "category": "education",
       "subCategory": "learning-skills"
     },
-    "wantsToLearn": ["french", "photo", "teaching-skills"]
+    "wantsToLearn": {
+      "categories": ["languages", "art", "education"],
+      "subCategories": ["french", "photo", "teaching-skills"]
+    }
   },
   {
     "id": "user-18",
@@ -345,11 +379,10 @@
     "email": "mikhail.andreev@example.com",
     "avatarUrl": "/db/avatars/figma/mikhail.jpg",
     "createdAt": "2025-03-25T10:15:00.000Z",
-    "birthDate": "1988-02-16",
+    "birthDate": "1988-02-16T00:00:00.000Z",
     "gender": "male",
     "city": "Екатеринбург",
     "bio": "Любознательный и терпеливый. Ценю ясность, уважение и возможность обменяться мнениями.",
-    "login": "mikhail.andreev",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -357,7 +390,10 @@
       "category": "education",
       "subCategory": "learning-skills"
     },
-    "wantsToLearn": ["marketing-advertising"]
+    "wantsToLearn": {
+      "categories": ["business"],
+      "subCategories": ["marketing-advertising"]
+    }
   },
   {
     "id": "user-19",
@@ -365,11 +401,10 @@
     "email": "elena.makarova@example.com",
     "avatarUrl": "/db/avatars/figma/elena.jpg",
     "createdAt": "2025-03-29T11:15:00.000Z",
-    "birthDate": "1999-07-28",
+    "birthDate": "1999-07-28T00:00:00.000Z",
     "gender": "female",
     "city": "Новосибирск",
     "bio": "Ценю гармонию, приятную компанию и небольшие радости обычного дня. Умею превратить выбор фильма в отдельное вечернее мероприятие.",
-    "login": "elena.makarova",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -377,7 +412,10 @@
       "category": "art",
       "subCategory": "decor-diy"
     },
-    "wantsToLearn": ["physical-training"]
+    "wantsToLearn": {
+      "categories": ["health"],
+      "subCategories": ["physical-training"]
+    }
   },
   {
     "id": "user-20",
@@ -385,11 +423,10 @@
     "email": "pavel.egorov@example.com",
     "avatarUrl": null,
     "createdAt": "2025-04-02T12:15:00.000Z",
-    "birthDate": "1990-12-09",
+    "birthDate": "1990-12-09T00:00:00.000Z",
     "gender": "male",
     "city": "Москва",
     "bio": "Предпочитаю содержательные разговоры, спокойную обстановку и встречи без спешки.",
-    "login": "pavel.egorov",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -397,7 +434,10 @@
       "category": "art",
       "subCategory": "decor-diy"
     },
-    "wantsToLearn": ["french", "learning-skills"]
+    "wantsToLearn": {
+      "categories": ["languages", "education"],
+      "subCategories": ["french", "learning-skills"]
+    }
   },
   {
     "id": "user-21",
@@ -405,11 +445,10 @@
     "email": "kseniya.nikolaeva@example.com",
     "avatarUrl": null,
     "createdAt": "2025-04-06T13:15:00.000Z",
-    "birthDate": "1995-05-24",
+    "birthDate": "1995-05-24T00:00:00.000Z",
     "gender": "female",
     "city": "Нижний Новгород",
     "bio": "Открытая и энергичная. Люблю проводить время в компании и поддерживать близких.",
-    "login": "kseniya.nikolaeva",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -417,7 +456,10 @@
       "category": "business",
       "subCategory": "personal-brand"
     },
-    "wantsToLearn": ["mindfulness", "nutrition", "team-management"]
+    "wantsToLearn": {
+      "categories": ["health", "business"],
+      "subCategories": ["mindfulness", "nutrition", "team-management"]
+    }
   },
   {
     "id": "user-22",
@@ -425,11 +467,10 @@
     "email": "timur.orlov@example.com",
     "avatarUrl": null,
     "createdAt": "2025-04-10T14:15:00.000Z",
-    "birthDate": "1986-10-04",
+    "birthDate": "1986-10-04T00:00:00.000Z",
     "gender": "male",
     "city": "Самара",
     "bio": "Ответственный и доброжелательный. Ценю честность, взаимное уважение и чувство меры.",
-    "login": "timur.orlov",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -437,7 +478,10 @@
       "category": "home-coziness",
       "subCategory": "home-finances"
     },
-    "wantsToLearn": ["team-management"]
+    "wantsToLearn": {
+      "categories": ["business"],
+      "subCategories": ["team-management"]
+    }
   },
   {
     "id": "user-23",
@@ -445,11 +489,10 @@
     "email": "veronika.zaitseva@example.com",
     "avatarUrl": null,
     "createdAt": "2025-04-14T15:15:00.000Z",
-    "birthDate": "2001-03-18",
+    "birthDate": "2001-03-18T00:00:00.000Z",
     "gender": "female",
     "city": "Санкт-Петербург",
     "bio": "Стараюсь сохранять баланс между делами и отдыхом. Иногда отдых начинается с торжественного переноса дел на завтра.",
-    "login": "veronika.zaitseva",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -457,7 +500,10 @@
       "category": "business",
       "subCategory": "time-management"
     },
-    "wantsToLearn": ["coaching"]
+    "wantsToLearn": {
+      "categories": ["education"],
+      "subCategories": ["coaching"]
+    }
   },
   {
     "id": "user-24",
@@ -465,11 +511,10 @@
     "email": "gleb.borisov@example.com",
     "avatarUrl": null,
     "createdAt": "2025-04-18T16:15:00.000Z",
-    "birthDate": "1993-08-07",
+    "birthDate": "1993-08-07T00:00:00.000Z",
     "gender": "male",
     "city": "Казань",
     "bio": "Люблю дружескую атмосферу, добрый юмор и возможность провести время с интересными людьми.",
-    "login": "gleb.borisov",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -477,7 +522,10 @@
       "category": "education",
       "subCategory": "cognitive-techniques"
     },
-    "wantsToLearn": ["personal-brand", "resume-interview", "team-management"]
+    "wantsToLearn": {
+      "categories": ["business"],
+      "subCategories": ["personal-brand", "resume-interview", "team-management"]
+    }
   },
   {
     "id": "user-25",
@@ -485,11 +533,10 @@
     "email": "lyudmila.yakova@example.com",
     "avatarUrl": null,
     "createdAt": "2025-04-22T17:15:00.000Z",
-    "birthDate": "1984-01-29",
+    "birthDate": "1984-01-29T00:00:00.000Z",
     "gender": "female",
     "city": "Екатеринбург",
     "bio": "Ценю воображение, тёплое общение и вечера в хорошей компании.",
-    "login": "lyudmila.yakova",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -497,7 +544,10 @@
       "category": "education",
       "subCategory": "cognitive-techniques"
     },
-    "wantsToLearn": ["english", "mental-health", "video-editing"]
+    "wantsToLearn": {
+      "categories": ["languages", "health", "art"],
+      "subCategories": ["english", "mental-health", "video-editing"]
+    }
   },
   {
     "id": "user-26",
@@ -505,11 +555,10 @@
     "email": "vladislav.grigoryev@example.com",
     "avatarUrl": null,
     "createdAt": "2025-04-26T18:15:00.000Z",
-    "birthDate": "1997-06-13",
+    "birthDate": "1997-06-13T00:00:00.000Z",
     "gender": "male",
     "city": "Новосибирск",
     "bio": "Спокойный и внимательный собеседник. Рад новым знакомствам и приятным планам, особенно если в них предусмотрен кофе.",
-    "login": "vladislav.grigoryev",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -517,7 +566,10 @@
       "category": "art",
       "subCategory": "decor-diy"
     },
-    "wantsToLearn": ["english", "teaching-skills"]
+    "wantsToLearn": {
+      "categories": ["languages", "education"],
+      "subCategories": ["english", "teaching-skills"]
+    }
   },
   {
     "id": "user-27",
@@ -525,11 +577,10 @@
     "email": "arina.romanova@example.com",
     "avatarUrl": null,
     "createdAt": "2025-04-30T10:15:00.000Z",
-    "birthDate": "2002-11-21",
+    "birthDate": "2002-11-21T00:00:00.000Z",
     "gender": "female",
     "city": "Москва",
     "bio": "Люблю красивые детали, уютные пространства и общение с людьми, которые смотрят на мир по-своему.",
-    "login": "arina.romanova",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -537,7 +588,10 @@
       "category": "art",
       "subCategory": "illustration"
     },
-    "wantsToLearn": ["home-finances", "personal-brand"]
+    "wantsToLearn": {
+      "categories": ["home-coziness", "business"],
+      "subCategories": ["home-finances", "personal-brand"]
+    }
   },
   {
     "id": "user-28",
@@ -545,11 +599,10 @@
     "email": "stanislav.kiselev@example.com",
     "avatarUrl": null,
     "createdAt": "2025-05-04T11:15:00.000Z",
-    "birthDate": "1989-04-10",
+    "birthDate": "1989-04-10T00:00:00.000Z",
     "gender": "male",
     "city": "Нижний Новгород",
     "bio": "Уравновешенный человек, которому важны тишина, уважение и комфортная атмосфера.",
-    "login": "stanislav.kiselev",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -557,7 +610,10 @@
       "category": "health",
       "subCategory": "mindfulness"
     },
-    "wantsToLearn": ["art-therapy", "japanese"]
+    "wantsToLearn": {
+      "categories": ["art", "languages"],
+      "subCategories": ["art-therapy", "japanese"]
+    }
   },
   {
     "id": "user-29",
@@ -565,11 +621,10 @@
     "email": "evgenia.mironova@example.com",
     "avatarUrl": null,
     "createdAt": "2025-05-08T12:15:00.000Z",
-    "birthDate": "1994-09-25",
+    "birthDate": "1994-09-25T00:00:00.000Z",
     "gender": "female",
     "city": "Самара",
     "bio": "Ценю яркие впечатления, лёгкость в общении и возможность посмеяться вместе.",
-    "login": "evgenia.mironova",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -577,7 +632,10 @@
       "category": "art",
       "subCategory": "video-editing"
     },
-    "wantsToLearn": ["balance-life-work", "creative-writing", "team-management"]
+    "wantsToLearn": {
+      "categories": ["health", "art", "business"],
+      "subCategories": ["balance-life-work", "creative-writing", "team-management"]
+    }
   },
   {
     "id": "user-30",
@@ -585,11 +643,10 @@
     "email": "boris.kozlov@example.com",
     "avatarUrl": null,
     "createdAt": "2025-05-12T13:15:00.000Z",
-    "birthDate": "1987-02-01",
+    "birthDate": "1987-02-01T00:00:00.000Z",
     "gender": "male",
     "city": "Санкт-Петербург",
     "bio": "Люблю узнавать новые места и проводить время с друзьями. Умею собрать компанию быстрее, чем выбрать место встречи.",
-    "login": "boris.kozlov",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -597,7 +654,10 @@
       "category": "education",
       "subCategory": "personal-development"
     },
-    "wantsToLearn": ["cognitive-techniques", "storage"]
+    "wantsToLearn": {
+      "categories": ["education", "home-coziness"],
+      "subCategories": ["cognitive-techniques", "storage"]
+    }
   },
   {
     "id": "user-31",
@@ -605,11 +665,10 @@
     "email": "tatiana.ilyina@example.com",
     "avatarUrl": null,
     "createdAt": "2025-05-16T14:15:00.000Z",
-    "birthDate": "1998-07-16",
+    "birthDate": "1998-07-16T00:00:00.000Z",
     "gender": "female",
     "city": "Казань",
     "bio": "Доброжелательная и открытая. Ценю внимание к людям, искренность и приятные разговоры.",
-    "login": "tatiana.ilyina",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -617,7 +676,10 @@
       "category": "art",
       "subCategory": "music-sound"
     },
-    "wantsToLearn": ["balance-life-work", "german", "japanese"]
+    "wantsToLearn": {
+      "categories": ["health", "languages"],
+      "subCategories": ["balance-life-work", "german", "japanese"]
+    }
   },
   {
     "id": "user-32",
@@ -625,11 +687,10 @@
     "email": "denis.gusev@example.com",
     "avatarUrl": null,
     "createdAt": "2025-05-20T15:15:00.000Z",
-    "birthDate": "1991-12-27",
+    "birthDate": "1991-12-27T00:00:00.000Z",
     "gender": "male",
     "city": "Екатеринбург",
     "bio": "Люблю непринуждённое общение, хорошие истории и возможность посмотреть на привычное иначе.",
-    "login": "denis.gusev",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -637,7 +698,10 @@
       "category": "languages",
       "subCategory": "english"
     },
-    "wantsToLearn": ["mindfulness"]
+    "wantsToLearn": {
+      "categories": ["health"],
+      "subCategories": ["mindfulness"]
+    }
   },
   {
     "id": "user-33",
@@ -645,11 +709,10 @@
     "email": "nadezhda.titova@example.com",
     "avatarUrl": null,
     "createdAt": "2025-05-24T16:15:00.000Z",
-    "birthDate": "1986-05-05",
+    "birthDate": "1986-05-05T00:00:00.000Z",
     "gender": "female",
     "city": "Новосибирск",
     "bio": "Спокойная и отзывчивая. Радуюсь встречам с близкими и небольшим приятным событиям.",
-    "login": "nadezhda.titova",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -657,7 +720,10 @@
       "category": "art",
       "subCategory": "illustration"
     },
-    "wantsToLearn": ["balance-life-work", "video-editing"]
+    "wantsToLearn": {
+      "categories": ["health", "art"],
+      "subCategories": ["balance-life-work", "video-editing"]
+    }
   },
   {
     "id": "user-34",
@@ -665,11 +731,10 @@
     "email": "vadim.korolev@example.com",
     "avatarUrl": null,
     "createdAt": "2025-05-28T17:15:00.000Z",
-    "birthDate": "1999-10-14",
+    "birthDate": "1999-10-14T00:00:00.000Z",
     "gender": "male",
     "city": "Москва",
     "bio": "Ценю дружескую поддержку, открытость и возможность познакомиться с новыми людьми.",
-    "login": "vadim.korolev",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -677,7 +742,10 @@
       "category": "art",
       "subCategory": "photo"
     },
-    "wantsToLearn": ["exam-preparation", "houseplants", "music-sound"]
+    "wantsToLearn": {
+      "categories": ["languages", "home-coziness", "art"],
+      "subCategories": ["exam-preparation", "houseplants", "music-sound"]
+    }
   },
   {
     "id": "user-35",
@@ -685,11 +753,10 @@
     "email": "yana.medvedeva@example.com",
     "avatarUrl": null,
     "createdAt": "2025-06-01T18:15:00.000Z",
-    "birthDate": "1993-03-22",
+    "birthDate": "1993-03-22T00:00:00.000Z",
     "gender": "female",
     "city": "Нижний Новгород",
     "bio": "Люблю уют, тёплую компанию и простые поводы собраться вместе. Считаю, что «ещё пять минут» — вполне официальный план.",
-    "login": "yana.medvedeva",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -697,7 +764,10 @@
       "category": "home-coziness",
       "subCategory": "food-preparation"
     },
-    "wantsToLearn": ["physical-training", "sleep"]
+    "wantsToLearn": {
+      "categories": ["health"],
+      "subCategories": ["physical-training", "sleep"]
+    }
   },
   {
     "id": "user-36",
@@ -705,11 +775,10 @@
     "email": "fedor.markov@example.com",
     "avatarUrl": null,
     "createdAt": "2025-06-05T10:15:00.000Z",
-    "birthDate": "1985-08-30",
+    "birthDate": "1985-08-30T00:00:00.000Z",
     "gender": "male",
     "city": "Самара",
     "bio": "Активный и доброжелательный, ценю свежие впечатления и хорошую компанию.",
-    "login": "fedor.markov",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -717,7 +786,10 @@
       "category": "health",
       "subCategory": "physical-training"
     },
-    "wantsToLearn": ["cleaning-organization"]
+    "wantsToLearn": {
+      "categories": ["home-coziness"],
+      "subCategories": ["cleaning-organization"]
+    }
   },
   {
     "id": "user-37",
@@ -725,11 +797,10 @@
     "email": "alyona.belova@example.com",
     "avatarUrl": null,
     "createdAt": "2025-06-09T11:15:00.000Z",
-    "birthDate": "2000-01-11",
+    "birthDate": "2000-01-11T00:00:00.000Z",
     "gender": "female",
     "city": "Санкт-Петербург",
     "bio": "Внимательная и терпеливая. Люблю спокойную обстановку и добрые слова.",
-    "login": "alyona.belova",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -737,7 +808,10 @@
       "category": "art",
       "subCategory": "decor-diy"
     },
-    "wantsToLearn": ["chinese", "cleaning-organization", "music-sound"]
+    "wantsToLearn": {
+      "categories": ["languages", "home-coziness", "art"],
+      "subCategories": ["chinese", "cleaning-organization", "music-sound"]
+    }
   },
   {
     "id": "user-38",
@@ -745,11 +819,10 @@
     "email": "vasily.tarasov@example.com",
     "avatarUrl": null,
     "createdAt": "2025-06-13T12:15:00.000Z",
-    "birthDate": "1992-06-19",
+    "birthDate": "1992-06-19T00:00:00.000Z",
     "gender": "male",
     "city": "Казань",
     "bio": "Ценю домашний уют, заботу о близких и размеренный отдых после насыщенного дня.",
-    "login": "vasily.tarasov",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -757,7 +830,10 @@
       "category": "home-coziness",
       "subCategory": "houseplants"
     },
-    "wantsToLearn": ["physical-training", "storage"]
+    "wantsToLearn": {
+      "categories": ["health", "home-coziness"],
+      "subCategories": ["physical-training", "storage"]
+    }
   },
   {
     "id": "user-39",
@@ -765,11 +841,10 @@
     "email": "inna.bogdanova@example.com",
     "avatarUrl": null,
     "createdAt": "2025-06-17T13:15:00.000Z",
-    "birthDate": "1988-11-03",
+    "birthDate": "1988-11-03T00:00:00.000Z",
     "gender": "female",
     "city": "Екатеринбург",
     "bio": "Люблю порядок в повседневных делах, дружелюбную атмосферу и ясное общение. Иногда навожу порядок просто ради удовольствия от галочек.",
-    "login": "inna.bogdanova",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -777,7 +852,10 @@
       "category": "education",
       "subCategory": "learning-skills"
     },
-    "wantsToLearn": ["personal-development"]
+    "wantsToLearn": {
+      "categories": ["education"],
+      "subCategories": ["personal-development"]
+    }
   },
   {
     "id": "user-40",
@@ -785,11 +863,10 @@
     "email": "grigory.voronov@example.com",
     "avatarUrl": null,
     "createdAt": "2025-06-21T14:15:00.000Z",
-    "birthDate": "1996-04-25",
+    "birthDate": "1996-04-25T00:00:00.000Z",
     "gender": "male",
     "city": "Новосибирск",
     "bio": "Открытый к диалогу и новым знакомствам. Ценю взаимную поддержку и уважение.",
-    "login": "grigory.voronov",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -797,7 +874,10 @@
       "category": "education",
       "subCategory": "learning-skills"
     },
-    "wantsToLearn": ["exam-preparation", "houseplants"]
+    "wantsToLearn": {
+      "categories": ["languages", "home-coziness"],
+      "subCategories": ["exam-preparation", "houseplants"]
+    }
   },
   {
     "id": "user-41",
@@ -805,11 +885,10 @@
     "email": "svetlana.filippova@example.com",
     "avatarUrl": null,
     "createdAt": "2025-06-25T15:15:00.000Z",
-    "birthDate": "1990-09-08",
+    "birthDate": "1990-09-08T00:00:00.000Z",
     "gender": "female",
     "city": "Москва",
     "bio": "Люблю проводить время с близкими, гулять по любимым районам и открывать уютные места.",
-    "login": "svetlana.filippova",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -817,7 +896,10 @@
       "category": "education",
       "subCategory": "learning-skills"
     },
-    "wantsToLearn": ["creative-writing", "illustration", "photo"]
+    "wantsToLearn": {
+      "categories": ["art"],
+      "subCategories": ["creative-writing", "illustration", "photo"]
+    }
   },
   {
     "id": "user-42",
@@ -825,11 +907,10 @@
     "email": "konstantin.davydov@example.com",
     "avatarUrl": "/db/avatars/figma/konstantin.jpg",
     "createdAt": "2025-06-29T16:15:00.000Z",
-    "birthDate": "1984-02-20",
+    "birthDate": "1984-02-20T00:00:00.000Z",
     "gender": "male",
     "city": "Нижний Новгород",
     "bio": "Спокойный и вдумчивый. Предпочитаю искреннее общение и людей, на которых можно положиться.",
-    "login": "konstantin.davydov",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -837,7 +918,10 @@
       "category": "art",
       "subCategory": "decor-diy"
     },
-    "wantsToLearn": ["coaching", "learning-skills", "time-management"]
+    "wantsToLearn": {
+      "categories": ["education", "business"],
+      "subCategories": ["coaching", "learning-skills", "time-management"]
+    }
   },
   {
     "id": "user-43",
@@ -845,11 +929,10 @@
     "email": "marina.karpova@example.com",
     "avatarUrl": null,
     "createdAt": "2025-07-03T17:15:00.000Z",
-    "birthDate": "1997-07-02",
+    "birthDate": "1997-07-02T00:00:00.000Z",
     "gender": "female",
     "city": "Самара",
     "bio": "Ценю доброжелательность, чувство юмора и встречи, после которых остаются хорошие воспоминания.",
-    "login": "marina.karpova",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -857,7 +940,10 @@
       "category": "business",
       "subCategory": "personal-brand"
     },
-    "wantsToLearn": ["mindfulness", "personal-development"]
+    "wantsToLearn": {
+      "categories": ["health", "education"],
+      "subCategories": ["mindfulness", "personal-development"]
+    }
   },
   {
     "id": "user-44",
@@ -865,11 +951,10 @@
     "email": "semyon.antonov@example.com",
     "avatarUrl": null,
     "createdAt": "2025-07-07T18:15:00.000Z",
-    "birthDate": "1989-12-15",
+    "birthDate": "1989-12-15T00:00:00.000Z",
     "gender": "male",
     "city": "Санкт-Петербург",
     "bio": "Открытый и внимательный к людям. Люблю непринуждённые беседы и тёплые встречи.",
-    "login": "semyon.antonov",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -877,7 +962,10 @@
       "category": "home-coziness",
       "subCategory": "home-finances"
     },
-    "wantsToLearn": ["acting"]
+    "wantsToLearn": {
+      "categories": ["art"],
+      "subCategories": ["acting"]
+    }
   },
   {
     "id": "user-45",
@@ -885,11 +973,10 @@
     "email": "larisa.zhukova@example.com",
     "avatarUrl": null,
     "createdAt": "2025-07-11T10:15:00.000Z",
-    "birthDate": "1995-05-27",
+    "birthDate": "1995-05-27T00:00:00.000Z",
     "gender": "female",
     "city": "Казань",
     "bio": "Предпочитаю простоту, честность и дружеское общение без лишней формальности.",
-    "login": "larisa.zhukova",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -897,7 +984,10 @@
       "category": "business",
       "subCategory": "time-management"
     },
-    "wantsToLearn": ["cognitive-techniques", "sales-negotiations"]
+    "wantsToLearn": {
+      "categories": ["education", "business"],
+      "subCategories": ["cognitive-techniques", "sales-negotiations"]
+    }
   },
   {
     "id": "user-46",
@@ -905,11 +995,10 @@
     "email": "eduard.baranov@example.com",
     "avatarUrl": null,
     "createdAt": "2025-07-15T11:15:00.000Z",
-    "birthDate": "1987-10-09",
+    "birthDate": "1987-10-09T00:00:00.000Z",
     "gender": "male",
     "city": "Екатеринбург",
     "bio": "Люблю проводить время в хорошей компании и делиться историями. В любой компании могу найти человека, который тоже пришёл за десертом.",
-    "login": "eduard.baranov",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -917,7 +1006,10 @@
       "category": "education",
       "subCategory": "cognitive-techniques"
     },
-    "wantsToLearn": ["french", "photo"]
+    "wantsToLearn": {
+      "categories": ["languages", "art"],
+      "subCategories": ["french", "photo"]
+    }
   },
   {
     "id": "user-47",
@@ -925,11 +1017,10 @@
     "email": "zhanna.krylova@example.com",
     "avatarUrl": null,
     "createdAt": "2025-07-19T12:15:00.000Z",
-    "birthDate": "2001-03-06",
+    "birthDate": "2001-03-06T00:00:00.000Z",
     "gender": "female",
     "city": "Новосибирск",
     "bio": "Доброжелательная и любознательная. Рада интересным знакомствам и приятным разговорам.",
-    "login": "zhanna.krylova",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -937,7 +1028,10 @@
       "category": "art",
       "subCategory": "decor-diy"
     },
-    "wantsToLearn": ["learning-skills"]
+    "wantsToLearn": {
+      "categories": ["education"],
+      "subCategories": ["learning-skills"]
+    }
   },
   {
     "id": "user-48",
@@ -945,11 +1039,10 @@
     "email": "oleg.ermolov@example.com",
     "avatarUrl": null,
     "createdAt": "2025-07-23T13:15:00.000Z",
-    "birthDate": "1994-08-18",
+    "birthDate": "1994-08-18T00:00:00.000Z",
     "gender": "male",
     "city": "Москва",
     "bio": "Люблю уютные места, встречи с друзьями и небольшие поводы устроить себе хороший день.",
-    "login": "oleg.ermolov",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -957,7 +1050,10 @@
       "category": "art",
       "subCategory": "video-editing"
     },
-    "wantsToLearn": ["exam-preparation", "spanish"]
+    "wantsToLearn": {
+      "categories": ["languages"],
+      "subCategories": ["exam-preparation", "spanish"]
+    }
   },
   {
     "id": "user-49",
@@ -965,11 +1061,10 @@
     "email": "natalia.golubeva@example.com",
     "avatarUrl": null,
     "createdAt": "2025-07-27T14:15:00.000Z",
-    "birthDate": "1986-01-24",
+    "birthDate": "1986-01-24T00:00:00.000Z",
     "gender": "female",
     "city": "Нижний Новгород",
     "bio": "Ценю разнообразие взглядов, лёгкость в общении и возможность расширять круг знакомств.",
-    "login": "natalia.golubeva",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -977,7 +1072,10 @@
       "category": "languages",
       "subCategory": "spanish"
     },
-    "wantsToLearn": ["yoga"]
+    "wantsToLearn": {
+      "categories": ["health"],
+      "subCategories": ["yoga"]
+    }
   },
   {
     "id": "user-50",
@@ -985,11 +1083,10 @@
     "email": "yaroslav.danilov@example.com",
     "avatarUrl": null,
     "createdAt": "2025-07-31T15:15:00.000Z",
-    "birthDate": "1998-06-07",
+    "birthDate": "1998-06-07T00:00:00.000Z",
     "gender": "male",
     "city": "Самара",
     "bio": "Спокойный и позитивный человек. Люблю тёплую компанию, прогулки и хорошие беседы.",
-    "login": "yaroslav.danilov",
     "password": "SkillSwapMock2025!",
     "likes": [],
     "canTeach": {
@@ -997,6 +1094,9 @@
       "category": "health",
       "subCategory": "mindfulness"
     },
-    "wantsToLearn": ["cognitive-techniques", "spanish", "video-editing"]
+    "wantsToLearn": {
+      "categories": ["education", "languages", "art"],
+      "subCategories": ["cognitive-techniques", "spanish", "video-editing"]
+    }
   }
 ]
