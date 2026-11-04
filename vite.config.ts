@@ -11,4 +11,10 @@ export default defineConfig({
       '@': resolve(__dirname, './src'),
     },
   },
+  // Мок-сервер из server/: фронт ходит по относительному /api и не знает про порт
+  server: {
+    proxy: {
+      '/api': 'http://localhost:4000',
+    },
+  },
 })
