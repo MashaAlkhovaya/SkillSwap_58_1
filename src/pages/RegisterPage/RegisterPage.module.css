@@ -1,0 +1,20 @@
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 32px 36px;
+  background-color: #f5f6f1;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: 556px 556px;
+  gap: var(--space-lg);
+  width: 1136px;
+  height: 692px;
+}
+
+.stepper {
+  grid-column: 1 / -1;
+  justify-self: center;
+}
