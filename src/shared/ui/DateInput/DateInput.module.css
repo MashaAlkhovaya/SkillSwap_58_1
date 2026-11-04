@@ -1,0 +1,135 @@
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  width: 100%;
+  position: relative;
+}
+
+.label {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+}
+
+.inputWrapper {
+  position: relative;
+  width: 100%;
+  max-width: 206px;
+}
+
+.inputWrapper:focus {
+  outline: none;
+}
+
+.input {
+  padding: 12px 20px;
+  border: 1px solid #69735d;
+  border-radius: var(--radius-md);
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.input:focus {
+  outline: none;
+  box-shadow: none;
+}
+
+.calendarBtn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 8px;
+  border-radius: var(--radius-md);
+  z-index: 2;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+}
+
+.calendarBtn:hover:not(:disabled) {
+  background-color: var(--color-bg-secondary);
+}
+
+.calendarBtn svg {
+  width: 20px;
+  height: 20px;
+  fill: var(--color-text-secondary);
+}
+
+.calendarBtn:hover svg {
+  fill: var(--color-primary);
+}
+
+.popup {
+  position: absolute;
+  top: calc(100% + var(--space-sm));
+  left: 0;
+  background: #fff;
+  border-radius: var(--radius-lg);
+  padding: 16px;
+  width: fit-content;
+  border: 1px solid #69735d;
+  overflow: hidden;
+  z-index: 10;
+}
+
+[data-theme='dark'] .popup {
+  border-color: var(--color-border);
+  background: var(--color-bg-secondary);
+}
+
+.monthsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.monthCaption {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 20px;
+  text-transform: capitalize;
+}
+
+.monthCaption * + * {
+  margin-left: 10px;
+}
+
+.captionLabel {
+  display: none;
+}
+
+.weekday {
+  color: #508826;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.day {
+  border-radius: 50%;
+}
+
+.dayOutside {
+  color: #9ca197;
+  opacity: 0.5;
+}
+
+.daySelected {
+  background-color: #a1ce5e;
+}
+
+.footer {
+  display: flex;
+  justify-content: space-around;
+  gap: var(--space-sm);
+  margin-top: 16px;
+  width: 100%;
+  padding: 0 16px 16px;
+}
+
+[data-theme='dark'] .footer {
+  border-top-color: var(--color-border);
+}
