@@ -18,17 +18,32 @@ for (const name of ['users', 'skills']) {
 const users = JSON.parse(fs.readFileSync(path.join(DATA, 'users.json'), 'utf-8'))
 const skills = JSON.parse(fs.readFileSync(path.join(DATA, 'skills.json'), 'utf-8'))
 
+// Популярность — это входящие лайки: likes у юзера хранит, КОГО лайкнул он сам.
+// Считаем один раз при старте, до рестарта это константа. Появится ручка «лайкнуть» —
+// индекс придётся обновлять вместе с массивом likes.
+const likesReceived = new Map()
+for (const user of users) {
+  for (const id of user.likes) likesReceived.set(id, (likesReceived.get(id) || 0) + 1)
+}
+
 /** Пишет массив на диск. Синхронно — чтобы два запроса не перекрыли запись друг друга */
 const save = (name, arr) =>
   fs.writeFileSync(path.join(DATA, `${name}.json`), JSON.stringify(arr, null, 2))
 
 // ─── Хелперы ─────────────────────────────────────────────
-/** Срезает пароль: наружу пользователь уходит только через эту функцию */
-const publicUser = ({ password: _password, ...rest }) => rest
+/**
+ * Срезает пароль и подставляет счётчик входящих лайков: наружу пользователь
+ * уходит только через эту функцию. Счётчик не хранится в JSON намеренно —
+ * он выводится из likes и разошёлся бы с ними при ручной правке моков.
+ */
+const publicUser = ({ password: _password, ...rest }) => ({
+  ...rest,
+  likesReceived: likesReceived.get(rest.id) || 0,
+})
 
 // Сортировка перед нарезкой обязательна и всегда одна и та же, иначе вторая
-// страница может повторить элемент с первой. По возрастанию createdAt — чтобы
-// новый зарегистрированный юзер уходил в конец и не сдвигал уже отданные страницы.
+// страница может повторить элемент с первой. Для навыков порядок произвольный,
+// важно лишь, что он детерминированный: id склеен с датой как запасной ключ.
 const byDate = (a, b) => (a.createdAt + a.id).localeCompare(b.createdAt + b.id)
 
 /** Нарезает массив на страницу. hasMore нужен фронту, чтобы остановить infinite scroll */
@@ -39,6 +54,32 @@ function paginate(req, all) {
   const items = all.slice(start, start + limit)
   return { items, page, limit, total: all.length, hasMore: start + items.length < all.length }
 }
+
+// ─── Сортировки пользователей ────────────────────────────
+/** FNV-1a. Один и тот же сид даёт один и тот же порядок, другой сид — другой */
+const hash = (str) => {
+  let h = 2166136261
+  for (let i = 0; i < str.length; i += 1) {
+    h ^= str.charCodeAt(i)
+    h = Math.imul(h, 16777619)
+  }
+  return h >>> 0
+}
+
+// Запасной ключ: у большинства юзеров лайков поровну (ноль), и без него sort
+// вправе переставить их как угодно — вторая страница повторит кого-то с первой
+const byId = (a, b) => a.id.localeCompare(b.id)
+
+const USER_SORTS = {
+  new: () => (a, b) => b.createdAt.localeCompare(a.createdAt) || byId(a, b),
+  popular: () => (a, b) =>
+    (likesReceived.get(b.id) || 0) - (likesReceived.get(a.id) || 0) || byId(a, b),
+  // Перестановка, а не перемешивание: порядок — чистая функция от сида и id
+  random: (seed) => (a, b) => hash(seed + a.id) - hash(seed + b.id) || byId(a, b),
+}
+
+/** Сид «рекомендуем»: общий для всех, меняется раз в сутки, переживает рестарт */
+const daySeed = () => new Date().toISOString().slice(0, 10)
 
 const app = express()
 app.use(express.json())
@@ -80,7 +121,12 @@ app.get('/api/skills/:id', (req, res) => {
 
 // ─── Пользователи ────────────────────────────────────────
 app.get('/api/users', (req, res) => {
-  const { items, ...meta } = paginate(req, [...users].sort(byDate))
+  const sort = String(req.query.sort || 'new')
+  const makeComparator = USER_SORTS[sort]
+  if (!makeComparator) return res.status(400).json({ message: `Неизвестная сортировка: ${sort}` })
+
+  // Сид считаем один раз на запрос: компаратор вызовется сотни раз
+  const { items, ...meta } = paginate(req, [...users].sort(makeComparator(daySeed())))
   res.json({ items: items.map(publicUser), ...meta })
 })
 
