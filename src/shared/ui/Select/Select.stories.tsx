@@ -3,12 +3,11 @@ import { fn } from 'storybook/test'
 import { Select } from './index'
 
 const SELECT_OPTIONS = [
-  { value: '', label: 'что-то надо выбрать', key: '0', title: true },
-  { value: '1', label: 'one', key: '1' },
-  { value: '2', label: 'two', key: '2' },
-  { value: '3', label: 'three', key: '3' },
-  { value: '4', label: 'four', key: '4' },
-  { value: '5', label: 'five', key: '5' },
+  { value: '1', label: 'one' },
+  { value: '2', label: 'two' },
+  { value: '3', label: 'three' },
+  { value: '4', label: 'four' },
+  { value: '5', label: 'five' },
 ]
 
 const meta: Meta<typeof Select> = {
@@ -19,19 +18,17 @@ const meta: Meta<typeof Select> = {
     docs: {
       description: {
         component:
-          'Нативный выпадающий список. Если среди options есть элемент с title, он используется как отключённый placeholder.',
+          'Выпадающий список с поиском по label, поддержкой клавиатурной навигации и кнопкой очистки выбора. Выбранный value передаётся в onChange как массив; очистка передаёт пустой массив.',
       },
     },
   },
   argTypes: {
     onChange: { action: 'changed' },
     disabled: { control: 'boolean' },
-    name: { control: 'text' },
     options: { control: 'object' },
     className: { control: false },
   },
   args: {
-    name: 'demo-native-select',
     disabled: false,
     onChange: fn(),
   },
@@ -42,14 +39,17 @@ type Story = StoryObj<typeof Select>
 
 export const Default: Story = {
   args: {
-    disabled: false,
+    label: 'Выберите вариант',
     options: SELECT_OPTIONS,
+    placeholder: 'Начните вводить или выберите вариант',
   },
 }
 
 export const WithoutPlaceholder: Story = {
   args: {
-    options: SELECT_OPTIONS.filter((option) => !option.title),
+    label: 'Без placeholder',
+    options: SELECT_OPTIONS,
+    placeholder: '',
   },
 }
 

@@ -1,42 +1,59 @@
-import clsx from 'clsx'
 import styles from './Select.module.css'
 import { useId } from 'react'
+import ReactSelect, { type ClearIndicatorProps } from 'react-select'
 
-interface SelectItemProps {
+interface SelectItem {
   value: string
   label: string
-  key: string
-  title?: boolean
 }
 
 interface SelectProps {
-  name: string
-  options: SelectItemProps[]
-  onChange: (value: string) => void
+  label?: string
+  placeholder?: string
+  options: SelectItem[]
+  onChange: (values: string[]) => void
   disabled?: boolean
   className?: string
 }
 
-export const Select = ({ name, options, onChange, disabled = false, className }: SelectProps) => {
-  const id = useId()
-  const placeholder = options.find((item) => item.title)
+const ClearIndicator = ({ clearValue }: ClearIndicatorProps<SelectItem>) => (
+  <button
+    type="button"
+    className={styles.clearIndicator}
+    aria-label="Очистить выбор"
+    onMouseDown={(event) => event.preventDefault()}
+    onClick={clearValue}
+  >
+    ×
+  </button>
+)
 
+export const Select = ({
+  label,
+  placeholder,
+  options,
+  onChange,
+  disabled = false,
+  className,
+}: SelectProps) => {
+  const id = useId()
   return (
-    <div className={clsx(styles.wrapper, disabled && styles.wrapperDisabled, className)}>
-      <select
-        id={id}
-        name={name}
-        disabled={disabled}
-        className={clsx(styles.input, disabled && styles.inputDisabled)}
-        defaultValue={placeholder?.value}
-        onChange={(event) => onChange(event.target.value)}
-      >
-        {options.map((item) => (
-          <option value={item.value} disabled={item.title} key={item.key} label={item.label}>
-            {item.label}
-          </option>
-        ))}
-      </select>
+    <div>
+      {label && <label htmlFor={id}>{label}</label>}
+      <ReactSelect<SelectItem>
+        inputId={id}
+        options={options}
+        placeholder={placeholder ?? ''}
+        isDisabled={disabled}
+        isClearable
+        onChange={(selected) => onChange(selected ? [selected.value] : [])}
+        components={{ ClearIndicator }}
+        className={className}
+        classNames={{
+          control: () => styles.control,
+          option: () => styles.option,
+        }}
+      />
     </div>
   )
 }
