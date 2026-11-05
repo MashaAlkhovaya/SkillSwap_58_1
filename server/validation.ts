@@ -80,21 +80,7 @@ export function parseRegistration(value: unknown): RegisterRequest {
   const subCategoryIds: SubCategoryId[] = SKILL_CATEGORIES.flatMap((category) =>
     category.subcategories.map((subCategory) => subCategory.id),
   )
-  const interests = record(data.wantsToLearn)
-  const categories = choices(interests.categories, categoryIds, 'wantsToLearn.categories')
-  const subCategories = choices(
-    interests.subCategories,
-    subCategoryIds,
-    'wantsToLearn.subCategories',
-  )
-  for (const id of subCategories) {
-    const parent = SKILL_CATEGORIES.find((category) =>
-      category.subcategories.some((subCategory) => subCategory.id === id),
-    )
-    if (!parent || !categories.includes(parent.id)) {
-      throw new HttpError(400, 'Для каждой подкатегории обучения выберите её категорию')
-    }
-  }
+  const wantsToLearn = choices(data.wantsToLearn, subCategoryIds, 'wantsToLearn')
 
   const skill = record(data.canTeach)
   const category = choice(skill.category, categoryIds, 'canTeach.category')
@@ -110,7 +96,7 @@ export function parseRegistration(value: unknown): RegisterRequest {
     birthDate,
     gender: choice(data.gender, ['female', 'male'] as const, 'gender'),
     city: choice(data.city, CITIES, 'city'),
-    wantsToLearn: { categories, subCategories },
+    wantsToLearn,
     canTeach: {
       title: text(skill.title, 'canTeach.title', 3, 50),
       description: text(skill.description, 'canTeach.description', 1, 500),

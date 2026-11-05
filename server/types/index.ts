@@ -1,6 +1,6 @@
 import type { AuthUser, Skill, User } from '../../src/shared/types'
 
-export type StoredUser = Omit<User, 'likesReceived'> & { password: string }
+export type StoredUser = User & { password: string }
 
 export interface LoginRequest {
   email: string

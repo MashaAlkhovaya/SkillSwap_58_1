@@ -22,7 +22,7 @@ function payload(): RegisterRequest {
     birthDate: '1995-02-08T00:00:00.000Z',
     gender: 'female',
     city: 'Москва',
-    wantsToLearn: { categories: ['languages', 'art'], subCategories: ['english', 'acting'] },
+    wantsToLearn: ['english', 'acting'],
     canTeach: {
       title: 'Уроки рисования',
       category: 'art',
@@ -79,7 +79,7 @@ test('полная регистрация создаёт профиль, нав�
   assert.equal(me.city, data.city)
   assert.deepEqual(me.wantsToLearn, data.wantsToLearn)
   assert(!('password' in me) && !('login' in me))
-  assert.equal(me.likesReceived, 0)
+  assert(!('likesReceived' in me))
   const skill = await json<Skill>(await fetch(`${baseUrl}/skills/${me.canTeach.id}`))
   assert.equal(skill.authorId, me.id)
   assert.equal(skill.title, data.canTeach.title)
@@ -106,7 +106,7 @@ test('полная регистрация создаёт профиль, нав�
   const savedSkills: Skill[] = JSON.parse(
     fs.readFileSync(path.join(dataDir, 'skills.json'), 'utf8'),
   )
-  assert(savedUsers.some((user) => user.id === auth.id))
+  assert.deepEqual(savedUsers.find((user) => user.id === auth.id)?.wantsToLearn, data.wantsToLearn)
   assert(savedSkills.some((item) => item.id === skill.id))
   // Новый экземпляр читает созданные записи с диска, ссылки сохраняются после перезапуска.
   const restarted = createApp({ dataDir, defaultDelay: 0 }).listen(0, '127.0.0.1')
@@ -185,39 +185,51 @@ const invalid: [string, (data: Record<string, unknown>) => void][] = [
     },
   ],
   [
-    'пустые категории',
+    'объект вместо массива интересов',
     (data) => {
-      data.wantsToLearn = { categories: [], subCategories: ['english'] }
+      data.wantsToLearn = { categories: ['languages'], subCategories: ['english'] }
     },
   ],
   [
-    'пустые подкатегории',
+    'пустые интересы',
     (data) => {
-      data.wantsToLearn = { categories: ['languages'], subCategories: [] }
+      data.wantsToLearn = []
     },
   ],
   [
-    'неизвестный ID',
+    'строка вместо массива интересов',
     (data) => {
-      data.wantsToLearn = { categories: ['unknown'], subCategories: ['english'] }
+      data.wantsToLearn = 'english'
     },
   ],
   [
     'неизвестная подкатегория',
     (data) => {
-      data.wantsToLearn = { categories: ['languages'], subCategories: ['unknown'] }
+      data.wantsToLearn = ['unknown']
     },
   ],
   [
-    'нет родительской категории',
+    'категория вместо подкатегории',
     (data) => {
-      data.wantsToLearn = { categories: ['art'], subCategories: ['english'] }
+      data.wantsToLearn = ['languages']
     },
   ],
   [
     'повторяющиеся ID',
     (data) => {
-      data.wantsToLearn = { categories: ['art', 'art'], subCategories: ['acting'] }
+      data.wantsToLearn = ['acting', 'acting']
+    },
+  ],
+  [
+    'нестроковый ID',
+    (data) => {
+      data.wantsToLearn = ['english', 1]
+    },
+  ],
+  [
+    'null вместо массива интересов',
+    (data) => {
+      data.wantsToLearn = null
     },
   ],
   [
@@ -338,8 +350,58 @@ test('публичные пользователи без секретов, па�
   const body = await json<Paginated<User>>(response)
   assert.equal(body.items.length, 10)
   assert.equal(body.hasMore, true)
-  body.items.forEach((user) => assert(!('password' in user) && !('login' in user)))
+  body.items.forEach((user) => {
+    assert(!('password' in user) && !('login' in user))
+    assert(!('likesReceived' in user))
+    assert(Array.isArray(user.wantsToLearn))
+    assert(user.wantsToLearn.every((id) => typeof id === 'string'))
+  })
+  const seeded = await json<User>(await fetch(`${baseUrl}/users/user-01`))
+  assert(!('likesReceived' in seeded))
+  assert.deepEqual(seeded.wantsToLearn, ['acting', 'german', 'team-management'])
   assert.equal((await fetch(`${baseUrl}/users?sort=toString`)).status, 400)
   assert.equal((await fetch(`${baseUrl}/auth/me`)).status, 401)
   assert.equal((await fetch(`${baseUrl}/skills/missing`)).status, 404)
+})
+
+test('popular сортирует по входящим лайкам без передачи счётчика клиенту', async () => {
+  const popularDataDir = fs.mkdtempSync(path.join(os.tmpdir(), 'skillswap-popular-'))
+  const [template]: StoredUser[] = JSON.parse(
+    fs.readFileSync(path.join(dataDir, 'users.json'), 'utf8'),
+  )
+  // Исходящих лайков: 3, 1, 2, 0; входящих: 0, 2, 1, 3.
+  const likes = [['user-02', 'user-03', 'user-04'], ['user-04'], ['user-02', 'user-04'], []]
+  const users: StoredUser[] = likes.map((userLikes, index) => ({
+    ...template,
+    id: `user-0${index + 1}`,
+    likes: userLikes,
+  }))
+  fs.writeFileSync(path.join(popularDataDir, 'users.json'), JSON.stringify(users))
+  const popularServer = createApp({ dataDir: popularDataDir, defaultDelay: 0 }).listen(
+    0,
+    '127.0.0.1',
+  )
+  try {
+    await once(popularServer, 'listening')
+    const address = popularServer.address()
+    assert(address && typeof address !== 'string')
+    const url = `http://127.0.0.1:${address.port}/api/users?sort=popular&limit=2`
+    const first = await json<Paginated<User>>(await fetch(`${url}&page=1`))
+    const second = await json<Paginated<User>>(await fetch(`${url}&page=2`))
+    assert.deepEqual(
+      first.items.map((user) => user.id),
+      ['user-04', 'user-02'],
+    )
+    assert.deepEqual(
+      second.items.map((user) => user.id),
+      ['user-03', 'user-01'],
+    )
+    assert.equal(first.total, 4)
+    assert.equal(first.hasMore, true)
+    assert.equal(second.hasMore, false)
+    for (const user of [...first.items, ...second.items]) assert(!('likesReceived' in user))
+  } finally {
+    await new Promise<void>((resolve) => popularServer.close(() => resolve()))
+    fs.rmSync(popularDataDir, { recursive: true, force: true })
+  }
 })

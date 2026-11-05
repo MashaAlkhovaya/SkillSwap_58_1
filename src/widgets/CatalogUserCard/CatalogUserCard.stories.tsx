@@ -47,7 +47,10 @@ function CatalogUserCardPreview() {
 
         name: showStressTest ? 'Александра Константинопольская Оченьдлинная' : user.name,
 
-        city: showStressTest ? 'Санкт-Петербург Очень длинное название города' : user.city,
+        // Длинное название вне справочника нужно только для проверки вёрстки.
+        city: showStressTest
+          ? ('Санкт-Петербург Очень длинное название города' as User['city'])
+          : user.city,
 
         canTeach: showStressTest
           ? {

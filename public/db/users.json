@@ -16,10 +16,7 @@
       "category": "art",
       "subCategory": "music-sound"
     },
-    "wantsToLearn": {
-      "categories": ["art", "languages", "business"],
-      "subCategories": ["acting", "german", "team-management"]
-    }
+    "wantsToLearn": ["acting", "german", "team-management"]
   },
   {
     "id": "user-02",
@@ -38,10 +35,7 @@
       "category": "art",
       "subCategory": "music-sound"
     },
-    "wantsToLearn": {
-      "categories": ["education", "business"],
-      "subCategories": ["speed-reading", "team-management"]
-    }
+    "wantsToLearn": ["speed-reading", "team-management"]
   },
   {
     "id": "user-03",
@@ -60,10 +54,7 @@
       "category": "languages",
       "subCategory": "english"
     },
-    "wantsToLearn": {
-      "categories": ["languages", "home-coziness", "education"],
-      "subCategories": ["german", "home-finances", "teaching-skills"]
-    }
+    "wantsToLearn": ["german", "home-finances", "teaching-skills"]
   },
   {
     "id": "user-04",
@@ -82,10 +73,7 @@
       "category": "languages",
       "subCategory": "spanish"
     },
-    "wantsToLearn": {
-      "categories": ["languages", "business", "health"],
-      "subCategories": ["chinese", "sales-negotiations", "yoga"]
-    }
+    "wantsToLearn": ["chinese", "sales-negotiations", "yoga"]
   },
   {
     "id": "user-05",
@@ -104,10 +92,7 @@
       "category": "art",
       "subCategory": "illustration"
     },
-    "wantsToLearn": {
-      "categories": ["languages", "business"],
-      "subCategories": ["japanese", "personal-brand"]
-    }
+    "wantsToLearn": ["japanese", "personal-brand"]
   },
   {
     "id": "user-06",
@@ -126,10 +111,7 @@
       "category": "art",
       "subCategory": "illustration"
     },
-    "wantsToLearn": {
-      "categories": ["home-coziness", "art", "languages"],
-      "subCategories": ["cleaning-organization", "music-sound", "spanish"]
-    }
+    "wantsToLearn": ["cleaning-organization", "music-sound", "spanish"]
   },
   {
     "id": "user-07",
@@ -148,10 +130,7 @@
       "category": "art",
       "subCategory": "photo"
     },
-    "wantsToLearn": {
-      "categories": ["home-coziness"],
-      "subCategories": ["houseplants"]
-    }
+    "wantsToLearn": ["houseplants"]
   },
   {
     "id": "user-08",
@@ -170,10 +149,7 @@
       "category": "art",
       "subCategory": "photo"
     },
-    "wantsToLearn": {
-      "categories": ["art"],
-      "subCategories": ["illustration"]
-    }
+    "wantsToLearn": ["illustration"]
   },
   {
     "id": "user-09",
@@ -192,10 +168,7 @@
       "category": "home-coziness",
       "subCategory": "food-preparation"
     },
-    "wantsToLearn": {
-      "categories": ["art", "home-coziness", "health"],
-      "subCategories": ["art-therapy", "home-finances", "nutrition"]
-    }
+    "wantsToLearn": ["art-therapy", "home-finances", "nutrition"]
   },
   {
     "id": "user-10",
@@ -214,10 +187,7 @@
       "category": "home-coziness",
       "subCategory": "food-preparation"
     },
-    "wantsToLearn": {
-      "categories": ["languages"],
-      "subCategories": ["exam-preparation"]
-    }
+    "wantsToLearn": ["exam-preparation"]
   },
   {
     "id": "user-11",
@@ -236,10 +206,7 @@
       "category": "health",
       "subCategory": "yoga"
     },
-    "wantsToLearn": {
-      "categories": ["art"],
-      "subCategories": ["music-sound", "video-editing"]
-    }
+    "wantsToLearn": ["music-sound", "video-editing"]
   },
   {
     "id": "user-12",
@@ -258,10 +225,7 @@
       "category": "health",
       "subCategory": "physical-training"
     },
-    "wantsToLearn": {
-      "categories": ["education", "art", "business"],
-      "subCategories": ["cognitive-techniques", "creative-writing", "marketing-advertising"]
-    }
+    "wantsToLearn": ["cognitive-techniques", "creative-writing", "marketing-advertising"]
   },
   {
     "id": "user-13",
@@ -280,10 +244,7 @@
       "category": "art",
       "subCategory": "decor-diy"
     },
-    "wantsToLearn": {
-      "categories": ["art"],
-      "subCategories": ["art-therapy"]
-    }
+    "wantsToLearn": ["art-therapy"]
   },
   {
     "id": "user-14",
@@ -302,10 +263,7 @@
       "category": "art",
       "subCategory": "decor-diy"
     },
-    "wantsToLearn": {
-      "categories": ["business"],
-      "subCategories": ["time-management"]
-    }
+    "wantsToLearn": ["time-management"]
   },
   {
     "id": "user-15",
@@ -324,10 +282,7 @@
       "category": "home-coziness",
       "subCategory": "houseplants"
     },
-    "wantsToLearn": {
-      "categories": ["home-coziness", "health"],
-      "subCategories": ["repair", "sleep"]
-    }
+    "wantsToLearn": ["repair", "sleep"]
   },
   {
     "id": "user-16",
@@ -346,10 +301,7 @@
       "category": "education",
       "subCategory": "learning-skills"
     },
-    "wantsToLearn": {
-      "categories": ["business", "home-coziness", "languages"],
-      "subCategories": ["entrepreneurship", "repair", "spanish"]
-    }
+    "wantsToLearn": ["entrepreneurship", "repair", "spanish"]
   },
   {
     "id": "user-17",
@@ -368,10 +320,7 @@
       "category": "education",
       "subCategory": "learning-skills"
     },
-    "wantsToLearn": {
-      "categories": ["languages", "art", "education"],
-      "subCategories": ["french", "photo", "teaching-skills"]
-    }
+    "wantsToLearn": ["french", "photo", "teaching-skills"]
   },
   {
     "id": "user-18",
@@ -390,10 +339,7 @@
       "category": "education",
       "subCategory": "learning-skills"
     },
-    "wantsToLearn": {
-      "categories": ["business"],
-      "subCategories": ["marketing-advertising"]
-    }
+    "wantsToLearn": ["marketing-advertising"]
   },
   {
     "id": "user-19",
@@ -412,10 +358,7 @@
       "category": "art",
       "subCategory": "decor-diy"
     },
-    "wantsToLearn": {
-      "categories": ["health"],
-      "subCategories": ["physical-training"]
-    }
+    "wantsToLearn": ["physical-training"]
   },
   {
     "id": "user-20",
@@ -434,10 +377,7 @@
       "category": "art",
       "subCategory": "decor-diy"
     },
-    "wantsToLearn": {
-      "categories": ["languages", "education"],
-      "subCategories": ["french", "learning-skills"]
-    }
+    "wantsToLearn": ["french", "learning-skills"]
   },
   {
     "id": "user-21",
@@ -456,10 +396,7 @@
       "category": "business",
       "subCategory": "personal-brand"
     },
-    "wantsToLearn": {
-      "categories": ["health", "business"],
-      "subCategories": ["mindfulness", "nutrition", "team-management"]
-    }
+    "wantsToLearn": ["mindfulness", "nutrition", "team-management"]
   },
   {
     "id": "user-22",
@@ -478,10 +415,7 @@
       "category": "home-coziness",
       "subCategory": "home-finances"
     },
-    "wantsToLearn": {
-      "categories": ["business"],
-      "subCategories": ["team-management"]
-    }
+    "wantsToLearn": ["team-management"]
   },
   {
     "id": "user-23",
@@ -500,10 +434,7 @@
       "category": "business",
       "subCategory": "time-management"
     },
-    "wantsToLearn": {
-      "categories": ["education"],
-      "subCategories": ["coaching"]
-    }
+    "wantsToLearn": ["coaching"]
   },
   {
     "id": "user-24",
@@ -522,10 +453,7 @@
       "category": "education",
       "subCategory": "cognitive-techniques"
     },
-    "wantsToLearn": {
-      "categories": ["business"],
-      "subCategories": ["personal-brand", "resume-interview", "team-management"]
-    }
+    "wantsToLearn": ["personal-brand", "resume-interview", "team-management"]
   },
   {
     "id": "user-25",
@@ -544,10 +472,7 @@
       "category": "education",
       "subCategory": "cognitive-techniques"
     },
-    "wantsToLearn": {
-      "categories": ["languages", "health", "art"],
-      "subCategories": ["english", "mental-health", "video-editing"]
-    }
+    "wantsToLearn": ["english", "mental-health", "video-editing"]
   },
   {
     "id": "user-26",
@@ -566,10 +491,7 @@
       "category": "art",
       "subCategory": "decor-diy"
     },
-    "wantsToLearn": {
-      "categories": ["languages", "education"],
-      "subCategories": ["english", "teaching-skills"]
-    }
+    "wantsToLearn": ["english", "teaching-skills"]
   },
   {
     "id": "user-27",
@@ -588,10 +510,7 @@
       "category": "art",
       "subCategory": "illustration"
     },
-    "wantsToLearn": {
-      "categories": ["home-coziness", "business"],
-      "subCategories": ["home-finances", "personal-brand"]
-    }
+    "wantsToLearn": ["home-finances", "personal-brand"]
   },
   {
     "id": "user-28",
@@ -610,10 +529,7 @@
       "category": "health",
       "subCategory": "mindfulness"
     },
-    "wantsToLearn": {
-      "categories": ["art", "languages"],
-      "subCategories": ["art-therapy", "japanese"]
-    }
+    "wantsToLearn": ["art-therapy", "japanese"]
   },
   {
     "id": "user-29",
@@ -632,10 +548,7 @@
       "category": "art",
       "subCategory": "video-editing"
     },
-    "wantsToLearn": {
-      "categories": ["health", "art", "business"],
-      "subCategories": ["balance-life-work", "creative-writing", "team-management"]
-    }
+    "wantsToLearn": ["balance-life-work", "creative-writing", "team-management"]
   },
   {
     "id": "user-30",
@@ -654,10 +567,7 @@
       "category": "education",
       "subCategory": "personal-development"
     },
-    "wantsToLearn": {
-      "categories": ["education", "home-coziness"],
-      "subCategories": ["cognitive-techniques", "storage"]
-    }
+    "wantsToLearn": ["cognitive-techniques", "storage"]
   },
   {
     "id": "user-31",
@@ -676,10 +586,7 @@
       "category": "art",
       "subCategory": "music-sound"
     },
-    "wantsToLearn": {
-      "categories": ["health", "languages"],
-      "subCategories": ["balance-life-work", "german", "japanese"]
-    }
+    "wantsToLearn": ["balance-life-work", "german", "japanese"]
   },
   {
     "id": "user-32",
@@ -698,10 +605,7 @@
       "category": "languages",
       "subCategory": "english"
     },
-    "wantsToLearn": {
-      "categories": ["health"],
-      "subCategories": ["mindfulness"]
-    }
+    "wantsToLearn": ["mindfulness"]
   },
   {
     "id": "user-33",
@@ -720,10 +624,7 @@
       "category": "art",
       "subCategory": "illustration"
     },
-    "wantsToLearn": {
-      "categories": ["health", "art"],
-      "subCategories": ["balance-life-work", "video-editing"]
-    }
+    "wantsToLearn": ["balance-life-work", "video-editing"]
   },
   {
     "id": "user-34",
@@ -742,10 +643,7 @@
       "category": "art",
       "subCategory": "photo"
     },
-    "wantsToLearn": {
-      "categories": ["languages", "home-coziness", "art"],
-      "subCategories": ["exam-preparation", "houseplants", "music-sound"]
-    }
+    "wantsToLearn": ["exam-preparation", "houseplants", "music-sound"]
   },
   {
     "id": "user-35",
@@ -764,10 +662,7 @@
       "category": "home-coziness",
       "subCategory": "food-preparation"
     },
-    "wantsToLearn": {
-      "categories": ["health"],
-      "subCategories": ["physical-training", "sleep"]
-    }
+    "wantsToLearn": ["physical-training", "sleep"]
   },
   {
     "id": "user-36",
@@ -786,10 +681,7 @@
       "category": "health",
       "subCategory": "physical-training"
     },
-    "wantsToLearn": {
-      "categories": ["home-coziness"],
-      "subCategories": ["cleaning-organization"]
-    }
+    "wantsToLearn": ["cleaning-organization"]
   },
   {
     "id": "user-37",
@@ -808,10 +700,7 @@
       "category": "art",
       "subCategory": "decor-diy"
     },
-    "wantsToLearn": {
-      "categories": ["languages", "home-coziness", "art"],
-      "subCategories": ["chinese", "cleaning-organization", "music-sound"]
-    }
+    "wantsToLearn": ["chinese", "cleaning-organization", "music-sound"]
   },
   {
     "id": "user-38",
@@ -830,10 +719,7 @@
       "category": "home-coziness",
       "subCategory": "houseplants"
     },
-    "wantsToLearn": {
-      "categories": ["health", "home-coziness"],
-      "subCategories": ["physical-training", "storage"]
-    }
+    "wantsToLearn": ["physical-training", "storage"]
   },
   {
     "id": "user-39",
@@ -852,10 +738,7 @@
       "category": "education",
       "subCategory": "learning-skills"
     },
-    "wantsToLearn": {
-      "categories": ["education"],
-      "subCategories": ["personal-development"]
-    }
+    "wantsToLearn": ["personal-development"]
   },
   {
     "id": "user-40",
@@ -874,10 +757,7 @@
       "category": "education",
       "subCategory": "learning-skills"
     },
-    "wantsToLearn": {
-      "categories": ["languages", "home-coziness"],
-      "subCategories": ["exam-preparation", "houseplants"]
-    }
+    "wantsToLearn": ["exam-preparation", "houseplants"]
   },
   {
     "id": "user-41",
@@ -896,10 +776,7 @@
       "category": "education",
       "subCategory": "learning-skills"
     },
-    "wantsToLearn": {
-      "categories": ["art"],
-      "subCategories": ["creative-writing", "illustration", "photo"]
-    }
+    "wantsToLearn": ["creative-writing", "illustration", "photo"]
   },
   {
     "id": "user-42",
@@ -918,10 +795,7 @@
       "category": "art",
       "subCategory": "decor-diy"
     },
-    "wantsToLearn": {
-      "categories": ["education", "business"],
-      "subCategories": ["coaching", "learning-skills", "time-management"]
-    }
+    "wantsToLearn": ["coaching", "learning-skills", "time-management"]
   },
   {
     "id": "user-43",
@@ -940,10 +814,7 @@
       "category": "business",
       "subCategory": "personal-brand"
     },
-    "wantsToLearn": {
-      "categories": ["health", "education"],
-      "subCategories": ["mindfulness", "personal-development"]
-    }
+    "wantsToLearn": ["mindfulness", "personal-development"]
   },
   {
     "id": "user-44",
@@ -962,10 +833,7 @@
       "category": "home-coziness",
       "subCategory": "home-finances"
     },
-    "wantsToLearn": {
-      "categories": ["art"],
-      "subCategories": ["acting"]
-    }
+    "wantsToLearn": ["acting"]
   },
   {
     "id": "user-45",
@@ -984,10 +852,7 @@
       "category": "business",
       "subCategory": "time-management"
     },
-    "wantsToLearn": {
-      "categories": ["education", "business"],
-      "subCategories": ["cognitive-techniques", "sales-negotiations"]
-    }
+    "wantsToLearn": ["cognitive-techniques", "sales-negotiations"]
   },
   {
     "id": "user-46",
@@ -1006,10 +871,7 @@
       "category": "education",
       "subCategory": "cognitive-techniques"
     },
-    "wantsToLearn": {
-      "categories": ["languages", "art"],
-      "subCategories": ["french", "photo"]
-    }
+    "wantsToLearn": ["french", "photo"]
   },
   {
     "id": "user-47",
@@ -1028,10 +890,7 @@
       "category": "art",
       "subCategory": "decor-diy"
     },
-    "wantsToLearn": {
-      "categories": ["education"],
-      "subCategories": ["learning-skills"]
-    }
+    "wantsToLearn": ["learning-skills"]
   },
   {
     "id": "user-48",
@@ -1050,10 +909,7 @@
       "category": "art",
       "subCategory": "video-editing"
     },
-    "wantsToLearn": {
-      "categories": ["languages"],
-      "subCategories": ["exam-preparation", "spanish"]
-    }
+    "wantsToLearn": ["exam-preparation", "spanish"]
   },
   {
     "id": "user-49",
@@ -1072,10 +928,7 @@
       "category": "languages",
       "subCategory": "spanish"
     },
-    "wantsToLearn": {
-      "categories": ["health"],
-      "subCategories": ["yoga"]
-    }
+    "wantsToLearn": ["yoga"]
   },
   {
     "id": "user-50",
@@ -1094,9 +947,6 @@
       "category": "health",
       "subCategory": "mindfulness"
     },
-    "wantsToLearn": {
-      "categories": ["education", "languages", "art"],
-      "subCategories": ["cognitive-techniques", "spanish", "video-editing"]
-    }
+    "wantsToLearn": ["cognitive-techniques", "spanish", "video-editing"]
   }
 ]

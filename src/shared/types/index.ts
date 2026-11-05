@@ -34,12 +34,8 @@ export interface User {
   bio: string
   createdAt: string
   likes: string[]
-  likesReceived: number
   canTeach: TeachSkill
-  wantsToLearn: {
-    categories: CategoryId[]
-    subCategories: SubCategoryId[]
-  }
+  wantsToLearn: SubCategoryId[]
 }
 
 // ─── Request ─────────────────────────────────────────────

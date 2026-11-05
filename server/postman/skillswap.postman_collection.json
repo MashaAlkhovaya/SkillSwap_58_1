@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "b0c1d2e3-4f56-4789-a0b1-c2d3e4f5a6b7",
     "name": "SkillSwap mock API",
-    "description": "Коллекция для локального мок-сервера из server/index.ts.\n\nПеред запуском поднять сервер: `npm --prefix server run dev` (→ http://localhost:4000/api).\n\nПеременная `baseUrl` по умолчанию бьёт прямо в сервер. Чтобы проверить Vite-прокси, поменяй её на `http://localhost:5173/api` (нужен запущенный `npm run dev`).\n\nПапки можно гонять целиком через Runner — запросы идут по порядку и передают друг другу токены через переменные коллекции. После прогона «Авторизации» в базе остаются тестовые юзеры, сброс: `npm --prefix server run reset`.\n\nРегистрация: multipart/form-data, JSON-поле data и 1–5 файлов images (JPEG/PNG/WebP, до 2 МБ каждый). Не задавайте Content-Type вручную: boundary добавит клиент. Рабочая папка для CLI — корень репозитория; для Postman Desktop выберите этот же Working directory. Фикстуры лежат в server/postman/fixtures/. Дата рождения — ISO UTC, как Date.toISOString(). Навык отдаёт только imageUrls; обложку выбирает фронтенд. Сброс базы удаляет также загруженные файлы.",
+    "description": "Коллекция для локального мок-сервера из server/index.ts.\n\nПеред запуском поднять сервер: `npm --prefix server run dev` (→ http://localhost:4000/api).\n\nПеременная `baseUrl` по умолчанию бьёт прямо в сервер. Чтобы проверить Vite-прокси, поменяй её на `http://localhost:5173/api` (нужен запущенный `npm run dev`).\n\nПапки можно гонять целиком через Runner — запросы идут по порядку и передают друг другу токены через переменные коллекции. После прогона «Авторизации» в базе остаются тестовые юзеры, сброс: `npm --prefix server run reset`.\n\nwantsToLearn — непустой массив уникальных ID подкатегорий (SubCategoryId[]).\n\nРегистрация: multipart/form-data, JSON-поле data и 1–5 файлов images (JPEG/PNG/WebP, до 2 МБ каждый). Не задавайте Content-Type вручную: boundary добавит клиент. Рабочая папка для CLI — корень репозитория; для Postman Desktop выберите этот же Working directory. Фикстуры лежат в server/postman/fixtures/. Дата рождения — ISO UTC, как Date.toISOString(). Навык отдаёт только imageUrls; обложку выбирает фронтенд. Сброс базы удаляет также загруженные файлы.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -455,6 +455,17 @@
                   "  body.items.forEach((u) => pm.expect(u).to.not.have.property('password'))",
                   "})",
                   "",
+                  "pm.test('счётчик входящих лайков не передаётся клиенту', () => {",
+                  "  body.items.forEach((u) => pm.expect(u).to.not.have.property('likesReceived'))",
+                  "})",
+                  "",
+                  "pm.test('интересы — массивы строк', () => {",
+                  "  body.items.forEach((u) => {",
+                  "    pm.expect(u.wantsToLearn).to.be.an('array')",
+                  "    u.wantsToLearn.forEach((id) => pm.expect(id).to.be.a('string'))",
+                  "  })",
+                  "})",
+                  "",
                   "pm.test('поля профиля на месте', () => {",
                   "  pm.expect(body.items[0]).to.include.keys(",
                   "    'id', 'name', 'email', 'avatarUrl', 'city', 'bio', 'likes', 'canTeach', 'wantsToLearn'",
@@ -485,7 +496,7 @@
                 }
               ]
             },
-            "description": "likes у юзера — это кого он лайкнул сам. Популярность считается по входящим, сервер отдаёт её полем likesReceived."
+            "description": "likes у юзера — это кого он лайкнул сам. Популярность считается по входящим только на сервере. Счётчик likesReceived в ответ не включается."
           },
           "event": [
             {
@@ -497,20 +508,27 @@
                   "",
                   "pm.test('200', () => pm.response.to.have.status(200))",
                   "",
-                  "pm.test('у каждого юзера есть likesReceived', () => {",
-                  "  body.items.forEach((u) => pm.expect(u.likesReceived).to.be.a('number'))",
+                  "pm.test('счётчик входящих лайков не передаётся клиенту', () => {",
+                  "  body.items.forEach((u) => pm.expect(u).to.not.have.property('likesReceived'))",
                   "})",
                   "",
-                  "pm.test('счётчик не возрастает по списку', () => {",
-                  "  const counts = body.items.map((u) => u.likesReceived)",
-                  "  counts.forEach((value, i) => {",
-                  "    if (i > 0) pm.expect(value).to.be.at.most(counts[i - 1])",
-                  "  })",
-                  "})",
+                  "// Для независимой проверки порядка собираем исходящие лайки со всех страниц.",
+                  "const users = []",
+                  "let page = 1",
+                  "let result",
+                  "do {",
+                  "  const response = await pm.sendRequest(`${pm.variables.get('baseUrl')}/users?limit=100&page=${page++}`)",
+                  "  pm.expect(response.code).to.eql(200)",
+                  "  result = response.json()",
+                  "  users.push(...result.items)",
+                  "} while (result.hasMore)",
                   "",
-                  "pm.test('сортировка не совпала с исходящими лайками', () => {",
-                  "  // Если бы считали likes.length, первым шёл бы самый активный, а не самый популярный",
-                  "  pm.expect(body.items[0].likesReceived).to.be.above(0)",
+                  "pm.test('порядок соответствует входящим лайкам', () => {",
+                  "  const ranked = users.map((user) => ({",
+                  "    id: user.id,",
+                  "    count: users.filter((other) => other.likes.includes(user.id)).length,",
+                  "  })).sort((a, b) => b.count - a.count || a.id.localeCompare(b.id))",
+                  "  pm.expect(body.items.map((u) => u.id)).to.eql(ranked.slice(0, body.limit).map((u) => u.id))",
                   "})",
                   "",
                   "// Порядок id пригодится, чтобы сверить его с random",
@@ -659,7 +677,8 @@
                   "",
                   "pm.test('200', () => pm.response.to.have.status(200))",
                   "pm.test('это именно запрошенный юзер', () => pm.expect(body.id).to.eql('user-01'))",
-                  "pm.test('пароля нет', () => pm.expect(body).to.not.have.property('password'))"
+                  "pm.test('пароля нет', () => pm.expect(body).to.not.have.property('password'))",
+                  "pm.test('счётчика входящих лайков нет', () => pm.expect(body).to.not.have.property('likesReceived'))"
                 ]
               }
             }
@@ -712,7 +731,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"languages\",\n      \"art\"\n    ],\n    \"subCategories\": [\n      \"english\",\n      \"acting\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -796,8 +815,9 @@
                   "const body = pm.response.json()",
                   "pm.test('тот же пользователь', () => pm.expect(body.id).to.eql(pm.collectionVariables.get('newUserId')))",
                   "pm.test('данные формы сохранены', () => { pm.expect(body.birthDate).to.eql('1995-02-08T00:00:00.000Z'); pm.expect(body.city).to.eql('Москва'); pm.expect(body.gender).to.eql('female'); pm.expect(body.name).to.eql('Тестовый Юзер') })",
-                  "pm.test('интересы сохранены', () => pm.expect(body.wantsToLearn).to.deep.eql({categories:['languages','art'], subCategories:['english','acting']}))",
+                  "pm.test('интересы сохранены', () => pm.expect(body.wantsToLearn).to.deep.eql(['english','acting']))",
                   "pm.test('есть навык и нет пароля/логина', () => { pm.expect(body.canTeach).to.include.keys('id', 'category', 'subCategory'); pm.expect(body).to.not.have.property('password'); pm.expect(body).to.not.have.property('login') })",
+                  "pm.test('счётчика входящих лайков нет', () => pm.expect(body).to.not.have.property('likesReceived'))",
                   "pm.collectionVariables.set('newSkillId', body.canTeach.id)"
                 ]
               }
@@ -869,7 +889,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \" {{newEmail}} \",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"languages\",\n      \"art\"\n    ],\n    \"subCategories\": [\n      \"english\",\n      \"acting\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \" {{newEmail}} \",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -909,7 +929,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"languages\",\n      \"art\"\n    ],\n    \"subCategories\": [\n      \"english\",\n      \"acting\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -949,7 +969,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \" \",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"languages\",\n      \"art\"\n    ],\n    \"subCategories\": [\n      \"english\",\n      \"acting\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \" \",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -989,7 +1009,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"not-an-email\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"languages\",\n      \"art\"\n    ],\n    \"subCategories\": [\n      \"english\",\n      \"acting\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \"not-an-email\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -1029,7 +1049,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"1234567\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"languages\",\n      \"art\"\n    ],\n    \"subCategories\": [\n      \"english\",\n      \"acting\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"1234567\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -1069,7 +1089,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Лондон\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"languages\",\n      \"art\"\n    ],\n    \"subCategories\": [\n      \"english\",\n      \"acting\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Лондон\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -1109,7 +1129,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"other\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"languages\",\n      \"art\"\n    ],\n    \"subCategories\": [\n      \"english\",\n      \"acting\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"other\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -1149,7 +1169,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"languages\",\n      \"art\"\n    ],\n    \"subCategories\": [\n      \"english\",\n      \"acting\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -1189,7 +1209,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-30T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"languages\",\n      \"art\"\n    ],\n    \"subCategories\": [\n      \"english\",\n      \"acting\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-30T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -1229,7 +1249,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"2995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"languages\",\n      \"art\"\n    ],\n    \"subCategories\": [\n      \"english\",\n      \"acting\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"2995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -1255,7 +1275,7 @@
           ]
         },
         {
-          "name": "Регистрация — пустые категории (400)",
+          "name": "Регистрация — объект вместо массива интересов (400)",
           "request": {
             "method": "POST",
             "header": [],
@@ -1269,7 +1289,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [],\n    \"subCategories\": [\n      \"english\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"languages\"\n    ],\n    \"subCategories\": [\n      \"english\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -1295,7 +1315,7 @@
           ]
         },
         {
-          "name": "Регистрация — пустые подкатегории (400)",
+          "name": "Регистрация — пустые интересы (400)",
           "request": {
             "method": "POST",
             "header": [],
@@ -1309,7 +1329,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"languages\"\n    ],\n    \"subCategories\": []\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -1335,7 +1355,7 @@
           ]
         },
         {
-          "name": "Регистрация — подкатегория без родителя (400)",
+          "name": "Регистрация — строка вместо массива интересов (400)",
           "request": {
             "method": "POST",
             "header": [],
@@ -1349,7 +1369,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"art\"\n    ],\n    \"subCategories\": [\n      \"english\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": \"english\",\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -1375,7 +1395,7 @@
           ]
         },
         {
-          "name": "Регистрация — неизвестный ID (400)",
+          "name": "Регистрация — категория вместо подкатегории (400)",
           "request": {
             "method": "POST",
             "header": [],
@@ -1389,7 +1409,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"missing\"\n    ],\n    \"subCategories\": [\n      \"english\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"languages\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -1429,7 +1449,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"art\"\n    ],\n    \"subCategories\": [\n      \"missing\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"missing\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -1469,7 +1489,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"art\",\n      \"art\"\n    ],\n    \"subCategories\": [\n      \"acting\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"acting\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -1509,7 +1529,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"languages\",\n      \"art\"\n    ],\n    \"subCategories\": [\n      \"english\",\n      \"acting\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"english\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"english\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -1549,7 +1569,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"languages\",\n      \"art\"\n    ],\n    \"subCategories\": [\n      \"english\",\n      \"acting\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"ab\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"ab\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -1589,7 +1609,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"languages\",\n      \"art\"\n    ],\n    \"subCategories\": [\n      \"english\",\n      \"acting\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -1629,7 +1649,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"languages\",\n      \"art\"\n    ],\n    \"subCategories\": [\n      \"english\",\n      \"acting\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -1669,7 +1689,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"languages\",\n      \"art\"\n    ],\n    \"subCategories\": [\n      \"english\",\n      \"acting\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 }
@@ -1704,7 +1724,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"languages\",\n      \"art\"\n    ],\n    \"subCategories\": [\n      \"english\",\n      \"acting\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -1769,7 +1789,7 @@
               "formdata": [
                 {
                   "key": "data",
-                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"languages\",\n      \"art\"\n    ],\n    \"subCategories\": [\n      \"english\",\n      \"acting\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
                   "type": "text",
                   "contentType": "application/json"
                 },
@@ -2056,6 +2076,7 @@
                   "})",
                   "pm.test('полный профиль без пароля', () => {",
                   "  pm.expect(body).to.include.keys('id', 'name', 'email', 'likes', 'wantsToLearn')",
+                  "  pm.expect(body.wantsToLearn).to.be.an('array')",
                   "  pm.expect(body).to.not.have.property('password')",
                   "})"
                 ]

@@ -77,10 +77,7 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
   for (const user of users) {
     for (const id of user.likes) likesReceived.set(id, (likesReceived.get(id) || 0) + 1)
   }
-  const publicUser = ({ password: _password, ...rest }: StoredUser): User => ({
-    ...rest,
-    likesReceived: likesReceived.get(rest.id) || 0,
-  })
+  const publicUser = ({ password: _password, ...rest }: StoredUser): User => rest
   const authUser = (user: StoredUser): AuthUser => ({
     id: user.id,
     name: user.name,
