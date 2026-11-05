@@ -35,10 +35,19 @@ describe('RegisterPage', () => {
   it.each([
     [-1, 1],
     [5, 3],
+    [Number.NaN, 1],
+    [2.8, 2],
   ])('ограничивает текущий шаг допустимым диапазоном (%i → %i)', (currentStep, expectedStep) => {
     render(<RegisterPage currentStep={currentStep} totalSteps={3} />)
 
     expect(screen.getByText(`Шаг ${expectedStep} из 3`)).toBeInTheDocument()
+  })
+
+  it('нормализует некорректное общее количество шагов', () => {
+    render(<RegisterPage currentStep={3} totalSteps={0} />)
+
+    expect(screen.getByText('Шаг 1 из 1')).toBeInTheDocument()
+    expect(screen.getAllByTestId('stepper-line')).toHaveLength(1)
   })
 
   it('отображает блок авторизации с полями email и пароля', () => {

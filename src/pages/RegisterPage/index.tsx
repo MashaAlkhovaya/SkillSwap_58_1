@@ -8,13 +8,15 @@ interface RegisterPageProps {
 }
 
 export default function RegisterPage({ currentStep, totalSteps }: RegisterPageProps) {
-  const step = Math.min(Math.max(currentStep, 1), totalSteps)
+  const stepsCount = Number.isFinite(totalSteps) ? Math.max(Math.trunc(totalSteps), 1) : 1
+  const requestedStep = Number.isFinite(currentStep) ? Math.trunc(currentStep) : 1
+  const step = Math.min(Math.max(requestedStep, 1), stepsCount)
 
   return (
     <main className={styles.page}>
       <div className={styles.layout}>
         <div className={styles.stepper}>
-          <Stepper currentStep={step} totalSteps={totalSteps} />
+          <Stepper currentStep={step} totalSteps={stepsCount} />
         </div>
         <AuthWidget />
         <AuthDecoration currentStep={step} />

@@ -4,7 +4,7 @@ import userInfo from './user-info.svg'
 import schoolBoard from './school-board.svg'
 import styles from './RegistrationDecoration.module.css'
 
-type RegistrationStep = 1 | 2 | 3
+export type RegistrationStep = 1 | 2 | 3
 
 interface RegistrationDecorationProps {
   step: RegistrationStep
