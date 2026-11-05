@@ -1,0 +1,2332 @@
+{
+  "info": {
+    "_postman_id": "b0c1d2e3-4f56-4789-a0b1-c2d3e4f5a6b7",
+    "name": "SkillSwap mock API",
+    "description": "Коллекция для локального мок-сервера из server/index.ts.\n\nПеред запуском поднять сервер: `npm --prefix server run dev` (→ http://localhost:4000/api).\n\nПеременная `baseUrl` по умолчанию бьёт прямо в сервер. Чтобы проверить Vite-прокси, поменяй её на `http://localhost:5173/api` (нужен запущенный `npm run dev`).\n\nПапки можно гонять целиком через Runner — запросы идут по порядку и передают друг другу токены через переменные коллекции. После прогона «Авторизации» в базе остаются тестовые юзеры, сброс: `npm --prefix server run reset`.\n\nwantsToLearn — непустой массив уникальных ID подкатегорий (SubCategoryId[]).\n\nРегистрация: multipart/form-data, JSON-поле data и 1–5 файлов images (JPEG/PNG/WebP, до 2 МБ каждый). Не задавайте Content-Type вручную: boundary добавит клиент. Рабочая папка для CLI — корень репозитория; для Postman Desktop выберите этот же Working directory. Фикстуры лежат в server/postman/fixtures/. Дата рождения — ISO UTC, как Date.toISOString(). Навык отдаёт только imageUrls; обложку выбирает фронтенд. Сброс базы удаляет также загруженные файлы.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:4000/api",
+      "type": "string"
+    },
+    {
+      "key": "demoPassword",
+      "value": "SkillSwapMock2025!",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "newEmail",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "newUserId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "newToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "demoEmail",
+      "value": "anna.smirnova@example.com",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Навыки",
+      "item": [
+        {
+          "name": "Список — первая страница",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skills?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["skills"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Базовая пагинация под infinite scroll."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json()",
+                  "",
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "pm.test('конверт {items, page, limit, total, hasMore}', () => {",
+                  "  pm.expect(body).to.have.all.keys('items', 'page', 'limit', 'total', 'hasMore')",
+                  "  pm.expect(body.items).to.be.an('array')",
+                  "})",
+                  "",
+                  "pm.test('отдал ровно limit элементов', () => pm.expect(body.items).to.have.lengthOf(10))",
+                  "",
+                  "pm.test('hasMore=true, пока элементы остались', () => {",
+                  "  pm.expect(body.hasMore).to.eql(body.page * body.limit < body.total)",
+                  "  pm.expect(body.hasMore).to.be.true",
+                  "})",
+                  "",
+                  "pm.test('у навыка есть поля, которые ждёт фронт', () => {",
+                  "  pm.expect(body.items[0]).to.include.keys(",
+                  "    'id', 'title', 'description', 'type', 'category', 'subCategory', 'tags', 'authorId', 'createdAt'",
+                  "  )",
+                  "})",
+                  "",
+                  "// Первый элемент первой страницы пригодится для запроса по id",
+                  "pm.collectionVariables.set('firstSkillId', body.items[0].id)",
+                  "pm.collectionVariables.set('skillsTotal', body.total)",
+                  "pm.collectionVariables.set('lastSkillsPage', String(Math.ceil(body.total / 10)))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Список — вторая страница не повторяет первую",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skills?page=2&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["skills"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "2"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Проверка стабильной сортировки: без неё элемент с первой страницы может приехать ещё раз."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json()",
+                  "",
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "pm.test('первого элемента первой страницы здесь нет', () => {",
+                  "  const firstId = pm.collectionVariables.get('firstSkillId')",
+                  "  pm.expect(body.items.map((s) => s.id)).to.not.include(firstId)",
+                  "})",
+                  "",
+                  "pm.test('внутри страницы нет дублей', () => {",
+                  "  const ids = body.items.map((s) => s.id)",
+                  "  pm.expect(new Set(ids).size).to.eql(ids.length)",
+                  "})"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Список — последняя страница, hasMore=false",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skills?page={{lastSkillsPage}}&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["skills"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "{{lastSkillsPage}}"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Номер последней страницы вычисляется первым запросом списка, включая созданные при регистрации навыки."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json()",
+                  "",
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "pm.test('hasMore=false на последней странице', () => pm.expect(body.hasMore).to.be.false)",
+                  "pm.test('total совпадает с первой страницей', () => pm.expect(body.total).to.eql(Number(pm.collectionVariables.get('skillsTotal'))))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Список — страница за пределами выборки",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skills?page=999&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["skills"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "999"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Пустая страница — это 200 с пустым items, а не 404."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json()",
+                  "",
+                  "pm.test('200 с пустым items', () => {",
+                  "  pm.response.to.have.status(200)",
+                  "  pm.expect(body.items).to.be.an('array').that.is.empty",
+                  "})",
+                  "pm.test('hasMore=false', () => pm.expect(body.hasMore).to.be.false)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Список — limit зажат сотней",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skills?limit=5000",
+              "host": ["{{baseUrl}}"],
+              "path": ["skills"],
+              "query": [
+                {
+                  "key": "limit",
+                  "value": "5000"
+                }
+              ]
+            },
+            "description": "Сервер режет limit до 100, чтобы запросом нельзя было вытащить всю базу."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json()",
+                  "",
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "pm.test('limit в ответе = 100', () => pm.expect(body.limit).to.eql(100))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Фильтр по категории и типу",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skills?category=art&type=teach",
+              "host": ["{{baseUrl}}"],
+              "path": ["skills"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "art"
+                },
+                {
+                  "key": "type",
+                  "value": "teach"
+                },
+                {
+                  "key": "subCategory",
+                  "value": "music-sound",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "Категории в сидах: art, languages, home-coziness, health, education, business. Тип: teach | learn. subCategory выключен — включи, чтобы сузить."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json()",
+                  "",
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "pm.test('выборка непустая', () => pm.expect(body.total).to.be.above(0))",
+                  "",
+                  "pm.test('фильтры применены ко всем элементам', () => {",
+                  "  body.items.forEach((s) => {",
+                  "    pm.expect(s.category).to.eql('art')",
+                  "    pm.expect(s.type).to.eql('teach')",
+                  "  })",
+                  "})",
+                  "",
+                  "pm.test('total считается после фильтра, а не по всей базе', () => {",
+                  "  pm.expect(body.total).to.be.below(Number(pm.collectionVariables.get('skillsTotal')))",
+                  "})"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Поиск по названию (q)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skills?q=йог",
+              "host": ["{{baseUrl}}"],
+              "path": ["skills"],
+              "query": [
+                {
+                  "key": "q",
+                  "value": "йог"
+                }
+              ]
+            },
+            "description": "Поиск по подстроке в title, регистронезависимый."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json()",
+                  "",
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "pm.test('все найденные содержат подстроку в title', () => {",
+                  "  body.items.forEach((s) => pm.expect(s.title.toLowerCase()).to.include('йог'))",
+                  "})"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Навык по id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skills/skill-01",
+              "host": ["{{baseUrl}}"],
+              "path": ["skills", "skill-01"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json()",
+                  "",
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "pm.test('это именно запрошенный навык', () => pm.expect(body.id).to.eql('skill-01'))",
+                  "pm.test('отдан объект, а не конверт со списком', () => pm.expect(body).to.not.have.property('items'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Навык по id — 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skills/skill-999",
+              "host": ["{{baseUrl}}"],
+              "path": ["skills", "skill-999"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404', () => pm.response.to.have.status(404))",
+                  "pm.test('ошибка в формате { message }', () => {",
+                  "  const body = pm.response.json()",
+                  "  pm.expect(body).to.have.property('message')",
+                  "  pm.expect(body.message).to.be.a('string').and.not.empty",
+                  "})"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Пользователи",
+      "item": [
+        {
+          "name": "Список пользователей",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            },
+            "description": "Главная проверка — пароли не утекают наружу."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json()",
+                  "",
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "pm.test('отдал ровно limit элементов', () => pm.expect(body.items).to.have.lengthOf(10))",
+                  "pm.test('hasMore согласован с total', () => {",
+                  "  pm.expect(body.hasMore).to.eql(body.page * body.limit < body.total)",
+                  "})",
+                  "",
+                  "pm.test('в ответе нет слова password', () => {",
+                  "  pm.expect(pm.response.text().toLowerCase()).to.not.include('password')",
+                  "})",
+                  "",
+                  "pm.test('ни у одного юзера нет поля password', () => {",
+                  "  body.items.forEach((u) => pm.expect(u).to.not.have.property('password'))",
+                  "})",
+                  "",
+                  "pm.test('счётчик входящих лайков не передаётся клиенту', () => {",
+                  "  body.items.forEach((u) => pm.expect(u).to.not.have.property('likesReceived'))",
+                  "})",
+                  "",
+                  "pm.test('интересы — массивы строк', () => {",
+                  "  body.items.forEach((u) => {",
+                  "    pm.expect(u.wantsToLearn).to.be.an('array')",
+                  "    u.wantsToLearn.forEach((id) => pm.expect(id).to.be.a('string'))",
+                  "  })",
+                  "})",
+                  "",
+                  "pm.test('поля профиля на месте', () => {",
+                  "  pm.expect(body.items[0]).to.include.keys(",
+                  "    'id', 'name', 'email', 'avatarUrl', 'city', 'bio', 'likes', 'canTeach', 'wantsToLearn'",
+                  "  )",
+                  "})"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Сортировка popular — по входящим лайкам",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users?sort=popular&limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "popular"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            },
+            "description": "likes у юзера — это кого он лайкнул сам. Популярность считается по входящим только на сервере. Счётчик likesReceived в ответ не включается."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json()",
+                  "",
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "pm.test('счётчик входящих лайков не передаётся клиенту', () => {",
+                  "  body.items.forEach((u) => pm.expect(u).to.not.have.property('likesReceived'))",
+                  "})",
+                  "",
+                  "// Для независимой проверки порядка собираем исходящие лайки со всех страниц.",
+                  "const users = []",
+                  "let page = 1",
+                  "let result",
+                  "do {",
+                  "  const response = await pm.sendRequest(`${pm.variables.get('baseUrl')}/users?limit=100&page=${page++}`)",
+                  "  pm.expect(response.code).to.eql(200)",
+                  "  result = response.json()",
+                  "  users.push(...result.items)",
+                  "} while (result.hasMore)",
+                  "",
+                  "pm.test('порядок соответствует входящим лайкам', () => {",
+                  "  const ranked = users.map((user) => ({",
+                  "    id: user.id,",
+                  "    count: users.filter((other) => other.likes.includes(user.id)).length,",
+                  "  })).sort((a, b) => b.count - a.count || a.id.localeCompare(b.id))",
+                  "  pm.expect(body.items.map((u) => u.id)).to.eql(ranked.slice(0, body.limit).map((u) => u.id))",
+                  "})",
+                  "",
+                  "// Порядок id пригодится, чтобы сверить его с random",
+                  "pm.collectionVariables.set('popularOrder', body.items.map((u) => u.id).join(','))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Сортировка random — первый запрос",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users?sort=random&limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "random"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            },
+            "description": "Порядок детерминированный: сид — текущая дата. Запоминаем его, следующий запрос должен вернуть такой же."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json()",
+                  "",
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "pm.test('порядок отличается от popular (это не та же сортировка)', () => {",
+                  "  const order = body.items.map((u) => u.id).join(',')",
+                  "  pm.expect(order).to.not.eql(pm.collectionVariables.get('popularOrder'))",
+                  "})",
+                  "",
+                  "pm.collectionVariables.set('randomOrder', body.items.map((u) => u.id).join(','))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Сортировка random — повтор даёт тот же порядок",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users?sort=random&limit=50",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "random"
+                },
+                {
+                  "key": "limit",
+                  "value": "50"
+                }
+              ]
+            },
+            "description": "Самый важный тест блока: если порядок пересобирается на каждый запрос, infinite scroll будет сыпать дубликатами и терять юзеров."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json()",
+                  "",
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "pm.test('порядок совпал с предыдущим запросом', () => {",
+                  "  pm.expect(body.items.map((u) => u.id).join(',')).to.eql(",
+                  "    pm.collectionVariables.get('randomOrder')",
+                  "  )",
+                  "})"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Сортировка — неизвестное значение (400)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users?sort=bogus",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"],
+              "query": [
+                {
+                  "key": "sort",
+                  "value": "bogus"
+                }
+              ]
+            },
+            "description": "Молчаливый откат к дефолту прятал бы опечатку: блок бы «работал», но сортировал не тем."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400, а не тихий дефолт', () => pm.response.to.have.status(400))",
+                  "pm.test('в сообщении видно, что именно не принято', () => {",
+                  "  pm.expect(pm.response.json().message).to.include('bogus')",
+                  "})"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Пользователь по id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/user-01",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "user-01"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json()",
+                  "",
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "pm.test('это именно запрошенный юзер', () => pm.expect(body.id).to.eql('user-01'))",
+                  "pm.test('пароля нет', () => pm.expect(body).to.not.have.property('password'))",
+                  "pm.test('счётчика входящих лайков нет', () => pm.expect(body).to.not.have.property('likesReceived'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Пользователь по id — 404",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/user-999",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "user-999"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404', () => pm.response.to.have.status(404))",
+                  "pm.test('ошибка в формате { message }', () => {",
+                  "  pm.expect(pm.response.json()).to.have.property('message')",
+                  "})"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Авторизация",
+      "description": "Запускать по порядку: регистрация сохраняет email, ID и токен. Создаёт пользователя, навык и файлы. Рабочая папка — корень репозитория.",
+      "item": [
+        {
+          "name": "Регистрация — успех, 5 изображений (201)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.collectionVariables.set('newEmail', `qa.${Date.now()}.${Math.random().toString(16).slice(2)}@example.com`)"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201', () => pm.response.to.have.status(201))",
+                  "const body = pm.response.json()",
+                  "pm.test('AuthUser без пароля и логина', () => pm.expect(body).to.have.all.keys('id', 'name', 'email', 'token'))",
+                  "pm.test('токен связан с пользователем', () => pm.expect(body.token).to.eql(`token-${body.id}`))",
+                  "pm.collectionVariables.set('newUserId', body.id)",
+                  "pm.collectionVariables.set('newToken', body.token)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — полный профиль и ссылка на навык",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{newToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "const body = pm.response.json()",
+                  "pm.test('тот же пользователь', () => pm.expect(body.id).to.eql(pm.collectionVariables.get('newUserId')))",
+                  "pm.test('данные формы сохранены', () => { pm.expect(body.birthDate).to.eql('1995-02-08T00:00:00.000Z'); pm.expect(body.city).to.eql('Москва'); pm.expect(body.gender).to.eql('female'); pm.expect(body.name).to.eql('Тестовый Юзер') })",
+                  "pm.test('интересы сохранены', () => pm.expect(body.wantsToLearn).to.deep.eql(['english','acting']))",
+                  "pm.test('есть навык и нет пароля/логина', () => { pm.expect(body.canTeach).to.include.keys('id', 'category', 'subCategory'); pm.expect(body).to.not.have.property('password'); pm.expect(body).to.not.have.property('login') })",
+                  "pm.test('счётчика входящих лайков нет', () => pm.expect(body).to.not.have.property('likesReceived'))",
+                  "pm.collectionVariables.set('newSkillId', body.canTeach.id)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — созданный навык доступен",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skills/{{newSkillId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["skills", "{{newSkillId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "const body = pm.response.json()",
+                  "pm.test('автор и данные навыка', () => { pm.expect(body.authorId).to.eql(pm.collectionVariables.get('newUserId')); pm.expect(body.type).to.eql('teach'); pm.expect(body.title).to.eql('Уроки рисования'); pm.expect(body.category).to.eql('art'); pm.expect(body.subCategory).to.eql('illustration'); pm.expect(body.description).to.eql('Научу рисовать акварелью') })",
+                  "pm.test('пять ссылок без отдельной обложки', () => { pm.expect(body.imageUrls).to.have.lengthOf(5); pm.expect(body).to.not.have.property('skillAvatar'); pm.expect(new Set(body.imageUrls).size).to.eql(5) })",
+                  "pm.collectionVariables.set('skillImagePath', body.imageUrls[0].replace(/^\\/api/, ''))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — изображение доступно по ссылке",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}{{skillImagePath}}",
+              "host": ["{{baseUrl}}{{skillImagePath}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "pm.test('PNG', () => pm.expect(pm.response.headers.get('Content-Type')).to.include('image/png'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — email занят (409)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \" {{newEmail}} \",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409', () => pm.response.to.have.status(409))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — нет имени (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — короткое имя (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \" \",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — неверный email (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"not-an-email\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — короткий пароль (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"1234567\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — город вне CITIES (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Лондон\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — неверный пол (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"other\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — дата без времени (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — невозможная дата (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-30T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — будущая дата (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"2995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — объект вместо массива интересов (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": {\n    \"categories\": [\n      \"languages\"\n    ],\n    \"subCategories\": [\n      \"english\"\n    ]\n  },\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — пустые интересы (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — строка вместо массива интересов (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": \"english\",\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — категория вместо подкатегории (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"languages\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — неизвестная подкатегория (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"missing\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — повторяющиеся ID (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"acting\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — подкатегория навыка из другой категории (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"english\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — короткое название (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"ab\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — пустое описание (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — слишком длинное описание (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — нет изображений (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — больше пяти изображений (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — файл не изображение (400)",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/not-image.txt"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация — пустое тело (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Вход — успех по почте (200)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \" {{demoEmail}} \",\n  \"password\": \"{{demoPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "const body = pm.response.json()",
+                  "pm.test('AuthUser', () => pm.expect(body).to.have.all.keys('id', 'name', 'email', 'token'))",
+                  "pm.collectionVariables.set('authToken', body.token)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Вход — зарегистрированный пользователь (200)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "pm.test('тот же пользователь', () => pm.expect(pm.response.json().id).to.eql(pm.collectionVariables.get('newUserId')))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Вход — неверный пароль (401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{demoEmail}}\",\n  \"password\": \"WrongPassword123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401', () => pm.response.to.have.status(401))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))",
+                  "pm.collectionVariables.set('wrongPasswordMessage', pm.response.json().message)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Вход — неизвестная почта (401)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"missing-{{newEmail}}\",\n  \"password\": \"WrongPassword123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401', () => pm.response.to.have.status(401))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))",
+                  "pm.test('одинаковое сообщение', () => pm.expect(pm.response.json().message).to.eql(pm.collectionVariables.get('wrongPasswordMessage')))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Вход — нет обязательных полей (400)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Me — с токеном (200)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json()",
+                  "",
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "pm.test('это владелец токена', () => {",
+                  "  pm.expect(pm.collectionVariables.get('authToken')).to.eql(`token-${body.id}`)",
+                  "})",
+                  "pm.test('полный профиль без пароля', () => {",
+                  "  pm.expect(body).to.include.keys('id', 'name', 'email', 'likes', 'wantsToLearn')",
+                  "  pm.expect(body.wantsToLearn).to.be.an('array')",
+                  "  pm.expect(body).to.not.have.property('password')",
+                  "})"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Me — без токена (401)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('401', () => pm.response.to.have.status(401))",
+                  "pm.test('message есть', () => pm.expect(pm.response.json()).to.have.property('message'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Me — мусорный токен (401)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer token-user-00000"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('401', () => pm.response.to.have.status(401))"]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Имитация и хвост",
+      "description": "Имитация задержки: по умолчанию 1000 мс, delay ограничен диапазоном 1000–5000 мс. Принудительные ошибки удалены.",
+      "item": [
+        {
+          "name": "delay — посмотреть скелетоны",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skills?delay=1500",
+              "host": ["{{baseUrl}}"],
+              "path": ["skills"],
+              "query": [
+                {
+                  "key": "delay",
+                  "value": "1500"
+                }
+              ]
+            },
+            "description": "Задержка 1500 мс; диапазон значений delay — 1000–5000 мс."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "pm.test('ответ пришёл не раньше чем через 1.5 с', () => {",
+                  "  pm.expect(pm.response.responseTime).to.be.at.least(1400)",
+                  "})",
+                  "pm.test('данные отдались как обычно', () => {",
+                  "  pm.expect(pm.response.json().items).to.be.an('array').that.is.not.empty",
+                  "})"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "delay=99999 — ограничение 5 секунд",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skills?delay=99999",
+              "host": ["{{baseUrl}}"],
+              "path": ["skills"],
+              "query": [
+                {
+                  "key": "delay",
+                  "value": "99999"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "pm.test('нижняя граница задержки', () => pm.expect(pm.response.responseTime).to.be.at.least(4900))",
+                  "pm.test('верхняя граница с запасом на окружение', () => pm.expect(pm.response.responseTime).to.be.below(10000))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "delay=0 — минимум 1 секунда",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skills?delay=0",
+              "host": ["{{baseUrl}}"],
+              "path": ["skills"],
+              "query": [
+                {
+                  "key": "delay",
+                  "value": "0"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "pm.test('нижняя граница задержки', () => pm.expect(pm.response.responseTime).to.be.at.least(900))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Задержка по умолчанию",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skills",
+              "host": ["{{baseUrl}}"],
+              "path": ["skills"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "pm.test('нижняя граница задержки', () => pm.expect(pm.response.responseTime).to.be.at.least(900))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Несуществующая ручка (404)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/nope",
+              "host": ["{{baseUrl}}"],
+              "path": ["nope"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('404', () => pm.response.to.have.status(404))",
+                  "pm.test('в сообщении метод и путь', () => {",
+                  "  const message = pm.response.json().message",
+                  "  pm.expect(message).to.include('GET')",
+                  "  pm.expect(message).to.include('/api/nope')",
+                  "})"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CORS preflight (204)",
+          "request": {
+            "method": "OPTIONS",
+            "header": [
+              {
+                "key": "Origin",
+                "value": "http://localhost:5173"
+              },
+              {
+                "key": "Access-Control-Request-Method",
+                "value": "POST"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "description": "Нужно, только если фронт ходит на :4000 мимо Vite-прокси."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('204', () => pm.response.to.have.status(204))",
+                  "pm.test('заголовки CORS выставлены', () => {",
+                  "  pm.expect(pm.response.headers.get('Access-Control-Allow-Origin')).to.eql('*')",
+                  "  pm.expect(pm.response.headers.get('Access-Control-Allow-Methods')).to.include('PATCH')",
+                  "})"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

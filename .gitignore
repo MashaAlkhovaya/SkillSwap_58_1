@@ -10,6 +10,9 @@ dist-ssr
 # Coverage
 coverage
 
+# Мок-сервер: у каждого своя локальная псевдо-БД, сиды берутся из public/db/
+server/data
+
 # Env
 .env
 .env.local
