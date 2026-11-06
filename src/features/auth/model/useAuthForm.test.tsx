@@ -17,9 +17,8 @@ const user = {
   id: 'user-01',
   name: 'Анна',
   email: 'anna.smirnova@example.com',
-  login: 'anna.smirnova',
   password: 'SkillSwapMock2025!',
-} as User
+} as User & { password: string }
 
 function AuthFormProbe() {
   const { register, handleSubmit, errors, isSubmitting, error } = useAuthForm()
@@ -28,14 +27,14 @@ function AuthFormProbe() {
     <form onSubmit={handleSubmit}>
       <label>
         Email
-        <input {...register('login')} />
+        <input {...register('email')} />
       </label>
       <label>
         Пароль
         <input {...register('password')} />
       </label>
       <button type="submit">Войти</button>
-      {errors.login?.message ? <p>{errors.login.message}</p> : null}
+      {errors.email?.message ? <p>{errors.email.message}</p> : null}
       {errors.password?.message ? <p>{errors.password.message}</p> : null}
       {error ? <p role="alert">{error}</p> : null}
       <p>{isSubmitting ? 'отправка' : 'ожидание'}</p>
@@ -90,16 +89,16 @@ describe('useAuthForm', () => {
     expect(fetchUsers).not.toHaveBeenCalled()
   })
 
-  it('показывает общую ошибку, если пара логина и пароля неверная', async () => {
+  it('показывает общую ошибку, если пара email и пароля неверная', async () => {
     vi.mocked(fetchUsers).mockResolvedValue([user])
     const userEvents = userEvent.setup()
     const { store } = renderAuthForm()
 
-    await userEvents.type(screen.getByRole('textbox', { name: 'Email' }), 'anna.smirnova')
+    await userEvents.type(screen.getByRole('textbox', { name: 'Email' }), user.email)
     await userEvents.type(screen.getByLabelText('Пароль'), 'wrong')
     await userEvents.click(screen.getByRole('button', { name: 'Войти' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Неверный логин или пароль')
+    expect(await screen.findByRole('alert')).toHaveTextContent('Неверный email или пароль')
     expect(screen.queryByText('Введите email')).not.toBeInTheDocument()
     expect(screen.queryByText('Введите пароль')).not.toBeInTheDocument()
     expect(store.getState().auth).toEqual({ user: null })
@@ -116,7 +115,7 @@ describe('useAuthForm', () => {
     const userEvents = userEvent.setup()
     const { store } = renderAuthForm()
 
-    await userEvents.type(screen.getByRole('textbox', { name: 'Email' }), user.login)
+    await userEvents.type(screen.getByRole('textbox', { name: 'Email' }), user.email)
     await userEvents.type(screen.getByLabelText('Пароль'), user.password)
     await userEvents.click(screen.getByRole('button', { name: 'Войти' }))
 
