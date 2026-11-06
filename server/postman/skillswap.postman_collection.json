@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "b0c1d2e3-4f56-4789-a0b1-c2d3e4f5a6b7",
     "name": "SkillSwap mock API",
-    "description": "Коллекция для локального мок-сервера из server/index.ts.\n\nПеред запуском поднять сервер: `npm --prefix server run dev` (→ http://localhost:4000/api).\n\nПеременная `baseUrl` по умолчанию бьёт прямо в сервер. Чтобы проверить Vite-прокси, поменяй её на `http://localhost:5173/api` (нужен запущенный `npm run dev`).\n\nПапки можно гонять целиком через Runner — запросы идут по порядку и передают друг другу токены через переменные коллекции. После прогона «Авторизации» в базе остаются тестовые юзеры, сброс: `npm --prefix server run reset`.\n\nwantsToLearn — непустой массив уникальных ID подкатегорий (SubCategoryId[]).\n\nРегистрация: multipart/form-data, JSON-поле data и 1–5 файлов images (JPEG/PNG/WebP, до 2 МБ каждый). Не задавайте Content-Type вручную: boundary добавит клиент. Рабочая папка для CLI — корень репозитория; для Postman Desktop выберите этот же Working directory. Фикстуры лежат в server/postman/fixtures/. Дата рождения — ISO UTC, как Date.toISOString(). Навык отдаёт только imageUrls; обложку выбирает фронтенд. Сброс базы удаляет также загруженные файлы.",
+    "description": "# SkillSwap mock API\n\nЛокальный учебный Express-сервер. Начните с папки **Справочник API**: здесь основные запросы и сохранённые примеры успешных ответов и ошибок. Остальные папки — последовательные проверки API; их порядок важен для переменных сценариев.\n\n## Быстрый старт\n\nИз корня репозитория:\n\n```bash\nnpm --prefix server ci\nnpm --prefix server run dev\n```\n\n`baseUrl = http://localhost:4000/api`. Для Vite-прокси: `http://localhost:5173/api` при запущенном `npm run dev`. Каждый участник запускает сервер у себя. Сохранённые Examples читаются без сервера; отправка запросов требует запущенного API. Публикация документации не публикует сервер.\n\n## Общие правила\n\n- Данные — JSON. Ошибки — `{ message: string }`.\n- Списки — `{ items, page, limit, total, hasMore }`, по умолчанию 10 элементов.\n- Токен нужен только для `GET /auth/me`. Передавайте его как `Authorization: Bearer <token>`.\n- Задержка по умолчанию 1000 мс. Параметр `delay` задаёт 1000–5000 мс. Неизвестные параметры игнорируются; `fail` не имитирует ошибку.\n- Изображения доступны по `/api/uploads/skills/...` без искусственной задержки.\n- Запрос регистрации меняет базу и сохраняет файлы. Не повторяйте его автоматически после сетевой ошибки: проверьте вход с той же почтой.\n- Все учётные данные в файле — демонстрационные. Это локальный мок, а не система реальной авторизации.\n\n## Переменные и сценарии\n\n`demoEmail` и `demoPassword` — тестовый пользователь из public/db. `authToken` заполняется успешным входом. `newEmail`, `newUserId`, `newToken`, `newSkillId`, `skillImagePath` создаются сценариями регистрации. `referenceEmail` — отдельная почта для регистрации из справочника, генерируется локально перед запросом и не мешает тестовым сценариям. Вычисляемые переменные вручную заполнять не нужно.\n\nРабочая папка Postman Desktop — корень репозитория. Файлы — `server/postman/fixtures/`. В Runner запускайте папки целиком по порядку. Прогон регистрации создаёт пользователя, навык и файлы; повторный прогон использует новую почту.\n\n## Примеры и хранение\n\nExamples сняты с работающего сервера на временной базе из сидов. UUID, время создания и тестовая почта могут отличаться при повторном запуске; токены примеров демонстрационные. Примеры ошибок содержат соответствующий неуспешный запрос.\n\nИсходник документации — `server/postman/skillswap.postman_collection.json`, инструкция запуска — `server/README.md`. При изменении API обновляйте коллекцию в том же PR. После импорта изменения файла в Git сами по себе не синхронизируются с Postman. Перед экспортом очистите значения токенов и переменных прогона. Сброс собственной базы: остановите сервер, выполните `npm --prefix server run reset`, затем запустите снова; это также удалит загруженные изображения.\n",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -44,6 +44,890 @@
   ],
   "item": [
     {
+      "name": "Справочник API",
+      "description": "Основные операции для интеграции фронтенда. Раскройте Examples под запросом: сохранены реальные ответы сервера, включая ошибки. Для профиля сначала выполните «Вход». Регистрация создаёт пользователя, навык и пять файлов. Подробные тестовые сценарии находятся в следующих папках.",
+      "item": [
+        {
+          "name": "Вход",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \" {{demoEmail}} \",\n  \"password\": \"{{demoPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "**Авторизация:** не требуется.\n\n**Тело:** JSON, заголовок `Content-Type: application/json`. Обязательны `email: string` (корректная почта) и `password: string` (непустой). Почта обрезается по краям и приводится к нижнему регистру; пароль не преобразуется.\n\nДемонстрационные данные: `{{demoEmail}}`, `{{demoPassword}}` — из локальных сидов проекта.\n\n**Успех:** `200`, `{ id, name, email, token }`. Скрипт успешного запроса сохраняет токен в `authToken` для запроса профиля. **Ошибки:** `400` — некорректное тело; `401` — неправильная почта или пароль. Ответы для неизвестной почты и неверного пароля одинаковые: `{ \"message\": \"Неправильные почта или пароль\" }`."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) pm.collectionVariables.set('authToken', pm.response.json().token)"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 — Вход — успех по почте (200)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/auth/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "login"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \" {{demoEmail}} \",\n  \"password\": \"{{demoPassword}}\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"user-01\",\n  \"name\": \"Анна\",\n  \"email\": \"anna.smirnova@example.com\",\n  \"token\": \"token-user-01\"\n}"
+            },
+            {
+              "name": "401 — Вход — неверный пароль (401)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/auth/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "login"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{demoEmail}}\",\n  \"password\": \"WrongPassword123\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Неправильные почта или пароль\"\n}"
+            },
+            {
+              "name": "400 — Вход — нет обязательных полей (400)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/auth/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "login"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Некорректное поле email\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Мой профиль",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            },
+            "description": "**Авторизация:** Bearer-токен.\n\n**Заголовок:** `Authorization: Bearer <token>`, где токен получен из входа или регистрации. Для основного запроса сначала выполните «Вход — успех по почте (200)»: скрипт заполнит `authToken`. Для сценария регистрации используется `newToken`. **Успех:** `200`, полный профиль пользователя. **Ошибка:** `401`, `{ \"message\": \"Нужна авторизация\" }`. Поля профиля: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются."
+          },
+          "response": [
+            {
+              "name": "200 — Me — с токеном (200)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/auth/me",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "me"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"user-01\",\n  \"name\": \"Анна\",\n  \"email\": \"anna.smirnova@example.com\",\n  \"avatarUrl\": \"/db/avatars/figma/anna.jpg\",\n  \"createdAt\": \"2025-01-16T11:15:00.000Z\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Санкт-Петербург\",\n  \"bio\": \"Доброжелательная и любознательная, ценю искреннее общение и тёплые встречи с близкими.\",\n  \"likes\": [\n    \"user-02\"\n  ],\n  \"canTeach\": {\n    \"id\": \"skill-01\",\n    \"category\": \"art\",\n    \"subCategory\": \"music-sound\"\n  },\n  \"wantsToLearn\": [\n    \"acting\",\n    \"german\",\n    \"team-management\"\n  ]\n}"
+            },
+            {
+              "name": "401 — Me — без токена (401)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/auth/me",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "me"]
+                }
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Нужна авторизация\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Список пользователей",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Номер страницы, по умолчанию 1, минимум 1."
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Размер страницы, по умолчанию 10, от 1 до 100."
+                },
+                {
+                  "key": "gender",
+                  "value": "female",
+                  "description": "female или male; без параметра — любой пол.",
+                  "disabled": true
+                },
+                {
+                  "key": "city",
+                  "value": "Москва",
+                  "description": "Точное название из CITIES.",
+                  "disabled": true
+                },
+                {
+                  "key": "type",
+                  "value": "learn",
+                  "description": "learn → canTeach; teach → wantsToLearn; all → оба поля (по умолчанию).",
+                  "disabled": true
+                },
+                {
+                  "key": "subCategoryId[]",
+                  "value": "english",
+                  "description": "ID подкатегории. Для массива повторяйте этот ключ.",
+                  "disabled": true
+                },
+                {
+                  "key": "subCategoryId[]",
+                  "value": "german",
+                  "description": "Любая из переданных подкатегорий.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\nФильтры пользователей: `gender` — `female` или `male`; `city` — точное название из `CITIES`; `type` описывает желание посетителя: `learn` («хочу научиться») ищет в `canTeach.subCategory`, `teach` («могу научить») — в `wantsToLearn`, `all` (по умолчанию) — в обоих полях. Массив подкатегорий: `subCategoryId[]=english&subCategoryId[]=german`; ID из `SKILL_CATEGORIES`. Достаточно одного совпадения; повторяющиеся ID не дублируют пользователей. Без массива навыки не ограничиваются. Разные фильтры объединяются через И до сортировки и пагинации. Недопустимые и пустые значения, повторение одиночных `gender`, `city`, `type` → `400`, `{ message }`."
+          },
+          "response": [
+            {
+              "name": "200 — Список пользователей",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/users?page=1&limit=10",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "Номер страницы, по умолчанию 1, минимум 1."
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10",
+                      "description": "Размер страницы, по умолчанию 10, от 1 до 100."
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"items\": [\n    {\n      \"id\": \"user-50\",\n      \"name\": \"Ярослав\",\n      \"email\": \"yaroslav.danilov@example.com\",\n      \"avatarUrl\": null,\n      \"createdAt\": \"2025-07-31T15:15:00.000Z\",\n      \"birthDate\": \"1998-06-07T00:00:00.000Z\",\n      \"gender\": \"male\",\n      \"city\": \"Самара\",\n      \"bio\": \"Спокойный и позитивный человек. Люблю тёплую компанию, прогулки и хорошие беседы.\",\n      \"likes\": [],\n      \"canTeach\": {\n        \"id\": \"skill-50\",\n        \"category\": \"health\",\n        \"subCategory\": \"mindfulness\"\n      },\n      \"wantsToLearn\": [\n        \"cognitive-techniques\",\n        \"spanish\",\n        \"video-editing\"\n      ]\n    },\n    {\n      \"id\": \"user-49\",\n      \"name\": \"Наталья\",\n      \"email\": \"natalia.golubeva@example.com\",\n      \"avatarUrl\": null,\n      \"createdAt\": \"2025-07-27T14:15:00.000Z\",\n      \"birthDate\": \"1986-01-24T00:00:00.000Z\",\n      \"gender\": \"female\",\n      \"city\": \"Нижний Новгород\",\n      \"bio\": \"Ценю разнообразие взглядов, лёгкость в общении и возможность расширять круг знакомств.\",\n      \"likes\": [],\n      \"canTeach\": {\n        \"id\": \"skill-49\",\n        \"category\": \"languages\",\n        \"subCategory\": \"spanish\"\n      },\n      \"wantsToLearn\": [\n        \"yoga\"\n      ]\n    },\n    {\n      \"id\": \"user-48\",\n      \"name\": \"Олег\",\n      \"email\": \"oleg.ermolov@example.com\",\n      \"avatarUrl\": null,\n      \"createdAt\": \"2025-07-23T13:15:00.000Z\",\n      \"birthDate\": \"1994-08-18T00:00:00.000Z\",\n      \"gender\": \"male\",\n      \"city\": \"Москва\",\n      \"bio\": \"Люблю уютные места, встречи с друзьями и небольшие поводы устроить себе хороший день.\",\n      \"likes\": [],\n      \"canTeach\": {\n        \"id\": \"skill-48\",\n        \"category\": \"art\",\n        \"subCategory\": \"video-editing\"\n      },\n      \"wantsToLearn\": [\n        \"exam-preparation\",\n        \"spanish\"\n      ]\n    },\n    {\n      \"id\": \"user-47\",\n      \"name\": \"Жанна\",\n      \"email\": \"zhanna.krylova@example.com\",\n      \"avatarUrl\": null,\n      \"createdAt\": \"2025-07-19T12:15:00.000Z\",\n      \"birthDate\": \"2001-03-06T00:00:00.000Z\",\n      \"gender\": \"female\",\n      \"city\": \"Новосибирск\",\n      \"bio\": \"Доброжелательная и любознательная. Рада интересным знакомствам и приятным разговорам.\",\n      \"likes\": [],\n      \"canTeach\": {\n        \"id\": \"skill-47\",\n        \"category\": \"art\",\n        \"subCategory\": \"decor-diy\"\n      },\n      \"wantsToLearn\": [\n        \"learning-skills\"\n      ]\n    },\n    {\n      \"id\": \"user-46\",\n      \"name\": \"Эдуард\",\n      \"email\": \"eduard.baranov@example.com\",\n      \"avatarUrl\": null,\n      \"createdAt\": \"2025-07-15T11:15:00.000Z\",\n      \"birthDate\": \"1987-10-09T00:00:00.000Z\",\n      \"gender\": \"male\",\n      \"city\": \"Екатеринбург\",\n      \"bio\": \"Люблю проводить время в хорошей компании и делиться историями. В любой компании могу найти человека, который тоже пришёл за десертом.\",\n      \"likes\": [],\n      \"canTeach\": {\n        \"id\": \"skill-46\",\n        \"category\": \"education\",\n        \"subCategory\": \"cognitive-techniques\"\n      },\n      \"wantsToLearn\": [\n        \"french\",\n        \"photo\"\n      ]\n    },\n    {\n      \"id\": \"user-45\",\n      \"name\": \"Лариса\",\n      \"email\": \"larisa.zhukova@example.com\",\n      \"avatarUrl\": null,\n      \"createdAt\": \"2025-07-11T10:15:00.000Z\",\n      \"birthDate\": \"1995-05-27T00:00:00.000Z\",\n      \"gender\": \"female\",\n      \"city\": \"Казань\",\n      \"bio\": \"Предпочитаю простоту, честность и дружеское общение без лишней формальности.\",\n      \"likes\": [],\n      \"canTeach\": {\n        \"id\": \"skill-45\",\n        \"category\": \"business\",\n        \"subCategory\": \"time-management\"\n      },\n      \"wantsToLearn\": [\n        \"cognitive-techniques\",\n        \"sales-negotiations\"\n      ]\n    },\n    {\n      \"id\": \"user-44\",\n      \"name\": \"Семён\",\n      \"email\": \"semyon.antonov@example.com\",\n      \"avatarUrl\": null,\n      \"createdAt\": \"2025-07-07T18:15:00.000Z\",\n      \"birthDate\": \"1989-12-15T00:00:00.000Z\",\n      \"gender\": \"male\",\n      \"city\": \"Санкт-Петербург\",\n      \"bio\": \"Открытый и внимательный к людям. Люблю непринуждённые беседы и тёплые встречи.\",\n      \"likes\": [],\n      \"canTeach\": {\n        \"id\": \"skill-44\",\n        \"category\": \"home-coziness\",\n        \"subCategory\": \"home-finances\"\n      },\n      \"wantsToLearn\": [\n        \"acting\"\n      ]\n    },\n    {\n      \"id\": \"user-43\",\n      \"name\": \"Марина\",\n      \"email\": \"marina.karpova@example.com\",\n      \"avatarUrl\": null,\n      \"createdAt\": \"2025-07-03T17:15:00.000Z\",\n      \"birthDate\": \"1997-07-02T00:00:00.000Z\",\n      \"gender\": \"female\",\n      \"city\": \"Самара\",\n      \"bio\": \"Ценю доброжелательность, чувство юмора и встречи, после которых остаются хорошие воспоминания.\",\n      \"likes\": [],\n      \"canTeach\": {\n        \"id\": \"skill-43\",\n        \"category\": \"business\",\n        \"subCategory\": \"personal-brand\"\n      },\n      \"wantsToLearn\": [\n        \"mindfulness\",\n        \"personal-development\"\n      ]\n    },\n    {\n      \"id\": \"user-42\",\n      \"name\": \"Константин\",\n      \"email\": \"konstantin.davydov@example.com\",\n      \"avatarUrl\": \"/db/avatars/figma/konstantin.jpg\",\n      \"createdAt\": \"2025-06-29T16:15:00.000Z\",\n      \"birthDate\": \"1984-02-20T00:00:00.000Z\",\n      \"gender\": \"male\",\n      \"city\": \"Нижний Новгород\",\n      \"bio\": \"Спокойный и вдумчивый. Предпочитаю искреннее общение и людей, на которых можно положиться.\",\n      \"likes\": [],\n      \"canTeach\": {\n        \"id\": \"skill-42\",\n        \"category\": \"art\",\n        \"subCategory\": \"decor-diy\"\n      },\n      \"wantsToLearn\": [\n        \"coaching\",\n        \"learning-skills\",\n        \"time-management\"\n      ]\n    },\n    {\n      \"id\": \"user-41\",\n      \"name\": \"Светлана\",\n      \"email\": \"svetlana.filippova@example.com\",\n      \"avatarUrl\": null,\n      \"createdAt\": \"2025-06-25T15:15:00.000Z\",\n      \"birthDate\": \"1990-09-08T00:00:00.000Z\",\n      \"gender\": \"female\",\n      \"city\": \"Москва\",\n      \"bio\": \"Люблю проводить время с близкими, гулять по любимым районам и открывать уютные места.\",\n      \"likes\": [],\n      \"canTeach\": {\n        \"id\": \"skill-41\",\n        \"category\": \"education\",\n        \"subCategory\": \"learning-skills\"\n      },\n      \"wantsToLearn\": [\n        \"creative-writing\",\n        \"illustration\",\n        \"photo\"\n      ]\n    }\n  ],\n  \"page\": 1,\n  \"limit\": 10,\n  \"total\": 50,\n  \"hasMore\": true\n}"
+            },
+            {
+              "name": "400 — Сортировка — неизвестное значение (400)",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/users?sort=bogus",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users"],
+                  "query": [
+                    {
+                      "key": "sort",
+                      "value": "bogus",
+                      "description": "new (по умолчанию), popular или random."
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Неизвестная сортировка: bogus\"\n}"
+            },
+            {
+              "name": "200 — Фильтры пользователей",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/users?gender=female&city=Москва&type=learn&subCategoryId[]=photo&subCategoryId[]=illustration&limit=100",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users"],
+                  "query": [
+                    {
+                      "key": "gender",
+                      "value": "female"
+                    },
+                    {
+                      "key": "city",
+                      "value": "Москва"
+                    },
+                    {
+                      "key": "type",
+                      "value": "learn"
+                    },
+                    {
+                      "key": "subCategoryId[]",
+                      "value": "photo"
+                    },
+                    {
+                      "key": "subCategoryId[]",
+                      "value": "illustration"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "100"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"items\": [\n    {\n      \"id\": \"user-27\",\n      \"name\": \"Арина\",\n      \"email\": \"arina.romanova@example.com\",\n      \"avatarUrl\": null,\n      \"createdAt\": \"2025-04-30T10:15:00.000Z\",\n      \"birthDate\": \"2002-11-21T00:00:00.000Z\",\n      \"gender\": \"female\",\n      \"city\": \"Москва\",\n      \"bio\": \"Люблю красивые детали, уютные пространства и общение с людьми, которые смотрят на мир по-своему.\",\n      \"likes\": [],\n      \"canTeach\": {\n        \"id\": \"skill-27\",\n        \"category\": \"art\",\n        \"subCategory\": \"illustration\"\n      },\n      \"wantsToLearn\": [\n        \"home-finances\",\n        \"personal-brand\"\n      ]\n    },\n    {\n      \"id\": \"user-07\",\n      \"name\": \"Ольга\",\n      \"email\": \"olga.popova@example.com\",\n      \"avatarUrl\": null,\n      \"createdAt\": \"2025-02-09T17:15:00.000Z\",\n      \"birthDate\": \"1989-06-11T00:00:00.000Z\",\n      \"gender\": \"female\",\n      \"city\": \"Москва\",\n      \"bio\": \"Легко нахожу общий язык с людьми. Ценю уют, добрый юмор и небольшие спонтанные планы.\",\n      \"likes\": [\n        \"user-08\",\n        \"user-09\",\n        \"user-10\",\n        \"user-11\"\n      ],\n      \"canTeach\": {\n        \"id\": \"skill-07\",\n        \"category\": \"art\",\n        \"subCategory\": \"photo\"\n      },\n      \"wantsToLearn\": [\n        \"houseplants\"\n      ]\n    }\n  ],\n  \"page\": 1,\n  \"limit\": 100,\n  \"total\": 2,\n  \"hasMore\": false\n}"
+            },
+            {
+              "name": "400 — Неизвестный режим поиска",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/users?type=unknown",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users"],
+                  "query": [
+                    {
+                      "key": "type",
+                      "value": "unknown"
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Недопустимое значение type\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Пользователь по ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/user-01",
+              "host": ["{{baseUrl}}"],
+              "path": ["users", "user-01"]
+            },
+            "description": "**Авторизация:** не требуется.\n\n**Параметр пути:** `id` — строковый ID пользователя. **Успех:** `200`, объект User. **Ошибка:** `404`, `{ \"message\": \"Пользователь не найден\" }`. Поля: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются."
+          },
+          "response": [
+            {
+              "name": "200 — Пользователь по id",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/users/user-01",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users", "user-01"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"user-01\",\n  \"name\": \"Анна\",\n  \"email\": \"anna.smirnova@example.com\",\n  \"avatarUrl\": \"/db/avatars/figma/anna.jpg\",\n  \"createdAt\": \"2025-01-16T11:15:00.000Z\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Санкт-Петербург\",\n  \"bio\": \"Доброжелательная и любознательная, ценю искреннее общение и тёплые встречи с близкими.\",\n  \"likes\": [\n    \"user-02\"\n  ],\n  \"canTeach\": {\n    \"id\": \"skill-01\",\n    \"category\": \"art\",\n    \"subCategory\": \"music-sound\"\n  },\n  \"wantsToLearn\": [\n    \"acting\",\n    \"german\",\n    \"team-management\"\n  ]\n}"
+            },
+            {
+              "name": "404 — Пользователь по id — 404",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/users/user-999",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users", "user-999"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Пользователь не найден\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Список навыков",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skills?page=1&limit=10",
+              "host": ["{{baseUrl}}"],
+              "path": ["skills"],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Номер страницы, по умолчанию 1, минимум 1."
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Размер страницы, по умолчанию 10, от 1 до 100."
+                }
+              ]
+            },
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\nФильтры: `category` — ID категории, `subCategory` — ID подкатегории, `type` — `teach` или `learn`, `q` — подстрока в названии без учёта регистра. Фильтры применяются вместе; неизвестное значение фильтра обычно даёт пустой список. ID берутся из `SKILL_CATEGORIES` в `src/shared/lib/constants.ts`. Сортировка — по `createdAt` по возрастанию, затем ID. Элемент: `id`, `title`, `description`, `type`, `category`, `subCategory`, `tags: string[]`, `imageUrls: string[]`, `authorId`, `createdAt` (ISO UTC)."
+          },
+          "response": [
+            {
+              "name": "200 — Список — первая страница",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/skills?page=1&limit=10",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["skills"],
+                  "query": [
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "Номер страницы, по умолчанию 1, минимум 1."
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10",
+                      "description": "Размер страницы, по умолчанию 10, от 1 до 100."
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"items\": [\n    {\n      \"id\": \"skill-01\",\n      \"title\": \"Игра на барабанах\",\n      \"description\": \"Покажу базовые ритмы, работу с палочками и помогу разучить простую партию.\",\n      \"type\": \"teach\",\n      \"category\": \"art\",\n      \"tags\": [\n        \"барабаны\",\n        \"ритм\",\n        \"музыка\"\n      ],\n      \"authorId\": \"user-01\",\n      \"createdAt\": \"2025-01-15T10:15:00.000Z\",\n      \"subCategory\": \"music-sound\",\n      \"imageUrls\": []\n    },\n    {\n      \"id\": \"skill-02\",\n      \"title\": \"Основы игры на гитаре\",\n      \"description\": \"Помогу освоить аккорды, бой и первые песни на акустической гитаре.\",\n      \"type\": \"teach\",\n      \"category\": \"art\",\n      \"tags\": [\n        \"гитара\",\n        \"аккорды\",\n        \"музыка\"\n      ],\n      \"authorId\": \"user-02\",\n      \"createdAt\": \"2025-01-18T10:15:00.000Z\",\n      \"subCategory\": \"music-sound\",\n      \"imageUrls\": []\n    },\n    {\n      \"id\": \"skill-03\",\n      \"title\": \"Разговорный английский\",\n      \"description\": \"Практика повседневного английского в дружеском формате с разбором ошибок.\",\n      \"type\": \"teach\",\n      \"category\": \"languages\",\n      \"tags\": [\n        \"английский\",\n        \"разговорная практика\"\n      ],\n      \"authorId\": \"user-03\",\n      \"createdAt\": \"2025-01-21T10:15:00.000Z\",\n      \"subCategory\": \"english\",\n      \"imageUrls\": []\n    },\n    {\n      \"id\": \"skill-04\",\n      \"title\": \"Испанский для начинающих\",\n      \"description\": \"Научу читать, представляться и поддерживать простой разговор на испанском.\",\n      \"type\": \"teach\",\n      \"category\": \"languages\",\n      \"tags\": [\n        \"испанский\",\n        \"начинающим\"\n      ],\n      \"authorId\": \"user-04\",\n      \"createdAt\": \"2025-01-24T10:15:00.000Z\",\n      \"subCategory\": \"spanish\",\n      \"imageUrls\": []\n    },\n    {\n      \"id\": \"skill-05\",\n      \"title\": \"Акварельная живопись\",\n      \"description\": \"Расскажу о смешивании красок, базовых заливках и создании небольших пейзажей.\",\n      \"type\": \"teach\",\n      \"category\": \"art\",\n      \"tags\": [\n        \"акварель\",\n        \"рисование\",\n        \"живопись\"\n      ],\n      \"authorId\": \"user-05\",\n      \"createdAt\": \"2025-01-27T10:15:00.000Z\",\n      \"subCategory\": \"illustration\",\n      \"imageUrls\": []\n    },\n    {\n      \"id\": \"skill-06\",\n      \"title\": \"Портретный скетчинг\",\n      \"description\": \"Разберём пропорции лица и научимся быстро делать выразительные портретные наброски.\",\n      \"type\": \"teach\",\n      \"category\": \"art\",\n      \"tags\": [\n        \"скетчинг\",\n        \"портрет\",\n        \"рисование\"\n      ],\n      \"authorId\": \"user-06\",\n      \"createdAt\": \"2025-01-30T10:15:00.000Z\",\n      \"subCategory\": \"illustration\",\n      \"imageUrls\": []\n    },\n    {\n      \"id\": \"skill-07\",\n      \"title\": \"Основы фотографии\",\n      \"description\": \"Помогу разобраться с экспозицией, композицией и настройками камеры или телефона.\",\n      \"type\": \"teach\",\n      \"category\": \"art\",\n      \"tags\": [\n        \"фото\",\n        \"композиция\",\n        \"камера\"\n      ],\n      \"authorId\": \"user-07\",\n      \"createdAt\": \"2025-02-02T10:15:00.000Z\",\n      \"subCategory\": \"photo\",\n      \"imageUrls\": []\n    },\n    {\n      \"id\": \"skill-08\",\n      \"title\": \"Обработка фотографий\",\n      \"description\": \"Покажу базовую цветокоррекцию и аккуратную обработку снимков.\",\n      \"type\": \"teach\",\n      \"category\": \"art\",\n      \"tags\": [\n        \"обработка\",\n        \"цветокоррекция\"\n      ],\n      \"authorId\": \"user-08\",\n      \"createdAt\": \"2025-02-05T10:15:00.000Z\",\n      \"subCategory\": \"photo\",\n      \"imageUrls\": []\n    },\n    {\n      \"id\": \"skill-09\",\n      \"title\": \"Выпечка хлеба на закваске\",\n      \"description\": \"Поделюсь проверенным процессом ведения закваски и выпечки домашнего хлеба.\",\n      \"type\": \"teach\",\n      \"category\": \"home-coziness\",\n      \"tags\": [\n        \"хлеб\",\n        \"выпечка\",\n        \"закваска\"\n      ],\n      \"authorId\": \"user-09\",\n      \"createdAt\": \"2025-02-08T10:15:00.000Z\",\n      \"subCategory\": \"food-preparation\",\n      \"imageUrls\": []\n    },\n    {\n      \"id\": \"skill-10\",\n      \"title\": \"Домашняя итальянская паста\",\n      \"description\": \"Научу готовить тесто для пасты и несколько простых соусов.\",\n      \"type\": \"teach\",\n      \"category\": \"home-coziness\",\n      \"tags\": [\n        \"паста\",\n        \"итальянская кухня\"\n      ],\n      \"authorId\": \"user-10\",\n      \"createdAt\": \"2025-02-11T10:15:00.000Z\",\n      \"subCategory\": \"food-preparation\",\n      \"imageUrls\": []\n    }\n  ],\n  \"page\": 1,\n  \"limit\": 10,\n  \"total\": 50,\n  \"hasMore\": true\n}"
+            }
+          ]
+        },
+        {
+          "name": "Навык по ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/skills/skill-01",
+              "host": ["{{baseUrl}}"],
+              "path": ["skills", "skill-01"]
+            },
+            "description": "**Авторизация:** не требуется.\n\n**Параметр пути:** `id` — строковый ID навыка. **Успех:** `200`, объект Skill. **Ошибка:** `404`, `{ \"message\": \"Навык не найден\" }`. Поля: `id`, `title`, `description`, `type`, `category`, `subCategory`, `tags: string[]`, `imageUrls: string[]`, `authorId`, `createdAt` (ISO UTC)."
+          },
+          "response": [
+            {
+              "name": "200 — Навык по id",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/skills/skill-01",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["skills", "skill-01"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"skill-01\",\n  \"title\": \"Игра на барабанах\",\n  \"description\": \"Покажу базовые ритмы, работу с палочками и помогу разучить простую партию.\",\n  \"type\": \"teach\",\n  \"category\": \"art\",\n  \"tags\": [\n    \"барабаны\",\n    \"ритм\",\n    \"музыка\"\n  ],\n  \"authorId\": \"user-01\",\n  \"createdAt\": \"2025-01-15T10:15:00.000Z\",\n  \"subCategory\": \"music-sound\",\n  \"imageUrls\": []\n}"
+            },
+            {
+              "name": "404 — Навык по id — 404",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/skills/skill-999",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["skills", "skill-999"]
+                }
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Навык не найден\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Регистрация",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{referenceEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                },
+                {
+                  "key": "images",
+                  "type": "file",
+                  "src": "server/postman/fixtures/skill.png"
+                }
+              ]
+            },
+            "description": "**Авторизация:** не требуется.\n\n**Тело:** `multipart/form-data`. Оба поля обязательны:\n\n| Поле | Формат | Ограничения |\n| --- | --- | --- |\n| `data` | Текст с JSON объекта формы | До 32 КБ; поля ниже |\n| `images` | Файлы, отдельные части с одинаковым именем | От 1 до 5, JPEG/PNG/WebP, каждый до 2 МБ; проверяются MIME и сигнатура |\n\nВ JSON `data` обязательны все поля:\n\n| Поле | Тип | Правило |\n| --- | --- | --- |\n| `email` | string | Корректная почта; trim и нижний регистр; должна быть свободна |\n| `password` | string | Минимум 8 символов, пробелы сохраняются |\n| `name` | string | Минимум 2 символа после trim |\n| `birthDate` | string | Существующая дата ISO UTC, как `1995-02-08T00:00:00.000Z`, не в будущем |\n| `gender` | string | `female` или `male` |\n| `city` | string | Одно из значений `CITIES` в `src/shared/lib/constants.ts` |\n| `wantsToLearn` | string[] | Непустой массив уникальных ID подкатегорий из `SKILL_CATEGORIES` |\n| `canTeach.title` | string | 3–50 символов после trim |\n| `canTeach.description` | string | 1–500 символов после trim |\n| `canTeach.category` | string | ID категории из `SKILL_CATEGORIES` |\n| `canTeach.subCategory` | string | ID подкатегории, принадлежащей указанной категории |\n\n**Успех:** `201`, `{ id, name, email, token }`. Создаются пользователь, навык `teach` и изображения. **Ошибки:** `400` — тело, поля или файлы не прошли проверку; `409` — почта занята; `500` — внутренняя ошибка. Формат ошибки: `{ message: string }`.\n\nВ браузере используйте `FormData`: `form.append('data', JSON.stringify(data))`, затем `form.append('images', file)` для каждого файла. Не задавайте `Content-Type` вручную: клиент добавит boundary. В Postman Desktop задайте Working directory на корень репозитория: файлы запроса лежат в `server/postman/fixtures/`. При отправке успешного примера скрипт создаёт уникальный `referenceEmail`."
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.set('referenceEmail', `docs.${Date.now()}.${Math.random().toString(16).slice(2)}@example.com`)"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "201 — Регистрация — успех, 5 изображений (201)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/auth/register",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "register"]
+                },
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "data",
+                      "value": "{\n  \"email\": \"{{referenceEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                      "type": "text",
+                      "contentType": "application/json"
+                    },
+                    {
+                      "key": "images",
+                      "type": "file",
+                      "src": "server/postman/fixtures/skill.png"
+                    },
+                    {
+                      "key": "images",
+                      "type": "file",
+                      "src": "server/postman/fixtures/skill.png"
+                    },
+                    {
+                      "key": "images",
+                      "type": "file",
+                      "src": "server/postman/fixtures/skill.png"
+                    },
+                    {
+                      "key": "images",
+                      "type": "file",
+                      "src": "server/postman/fixtures/skill.png"
+                    },
+                    {
+                      "key": "images",
+                      "type": "file",
+                      "src": "server/postman/fixtures/skill.png"
+                    }
+                  ]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"user-fb2f5213-6c78-4f3a-ab27-663a1a951339\",\n  \"name\": \"Тестовый Юзер\",\n  \"email\": \"qa.1793953722695.d52f0b7cb898c8@example.com\",\n  \"token\": \"token-user-fb2f5213-6c78-4f3a-ab27-663a1a951339\"\n}"
+            },
+            {
+              "name": "409 — Регистрация — email занят (409)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/auth/register",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "register"]
+                },
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "data",
+                      "value": "{\n  \"email\": \" {{newEmail}} \",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                      "type": "text",
+                      "contentType": "application/json"
+                    },
+                    {
+                      "key": "images",
+                      "type": "file",
+                      "src": "server/postman/fixtures/skill.png"
+                    }
+                  ]
+                }
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Этот email уже занят\"\n}"
+            },
+            {
+              "name": "400 — Регистрация — неверный email (400)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/auth/register",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "register"]
+                },
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "data",
+                      "value": "{\n  \"email\": \"not-an-email\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                      "type": "text",
+                      "contentType": "application/json"
+                    },
+                    {
+                      "key": "images",
+                      "type": "file",
+                      "src": "server/postman/fixtures/skill.png"
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Некорректный email\"\n}"
+            },
+            {
+              "name": "400 — Регистрация — нет изображений (400)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/auth/register",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "register"]
+                },
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "data",
+                      "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                      "type": "text",
+                      "contentType": "application/json"
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Добавьте от 1 до 5 изображений\"\n}"
+            },
+            {
+              "name": "400 — Регистрация — файл не изображение (400)",
+              "originalRequest": {
+                "method": "POST",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/auth/register",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "register"]
+                },
+                "body": {
+                  "mode": "formdata",
+                  "formdata": [
+                    {
+                      "key": "data",
+                      "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
+                      "type": "text",
+                      "contentType": "application/json"
+                    },
+                    {
+                      "key": "images",
+                      "type": "file",
+                      "src": "server/postman/fixtures/not-image.txt"
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Разрешены только JPEG, PNG и WebP\"\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
       "name": "Навыки",
       "item": [
         {
@@ -58,15 +942,17 @@
               "query": [
                 {
                   "key": "page",
-                  "value": "1"
+                  "value": "1",
+                  "description": "Номер страницы, по умолчанию 1, минимум 1."
                 },
                 {
                   "key": "limit",
-                  "value": "10"
+                  "value": "10",
+                  "description": "Размер страницы, по умолчанию 10, от 1 до 100."
                 }
               ]
             },
-            "description": "Базовая пагинация под infinite scroll."
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\nФильтры: `category` — ID категории, `subCategory` — ID подкатегории, `type` — `teach` или `learn`, `q` — подстрока в названии без учёта регистра. Фильтры применяются вместе; неизвестное значение фильтра обычно даёт пустой список. ID берутся из `SKILL_CATEGORIES` в `src/shared/lib/constants.ts`. Сортировка — по `createdAt` по возрастанию, затем ID. Элемент: `id`, `title`, `description`, `type`, `category`, `subCategory`, `tags: string[]`, `imageUrls: string[]`, `authorId`, `createdAt` (ISO UTC).\n\n**Этот сценарий:** Базовая пагинация под infinite scroll."
           },
           "event": [
             {
@@ -117,15 +1003,17 @@
               "query": [
                 {
                   "key": "page",
-                  "value": "2"
+                  "value": "2",
+                  "description": "Номер страницы, по умолчанию 1, минимум 1."
                 },
                 {
                   "key": "limit",
-                  "value": "10"
+                  "value": "10",
+                  "description": "Размер страницы, по умолчанию 10, от 1 до 100."
                 }
               ]
             },
-            "description": "Проверка стабильной сортировки: без неё элемент с первой страницы может приехать ещё раз."
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\nФильтры: `category` — ID категории, `subCategory` — ID подкатегории, `type` — `teach` или `learn`, `q` — подстрока в названии без учёта регистра. Фильтры применяются вместе; неизвестное значение фильтра обычно даёт пустой список. ID берутся из `SKILL_CATEGORIES` в `src/shared/lib/constants.ts`. Сортировка — по `createdAt` по возрастанию, затем ID. Элемент: `id`, `title`, `description`, `type`, `category`, `subCategory`, `tags: string[]`, `imageUrls: string[]`, `authorId`, `createdAt` (ISO UTC).\n\n**Этот сценарий:** Проверка стабильной сортировки: без неё элемент с первой страницы может приехать ещё раз."
           },
           "event": [
             {
@@ -163,15 +1051,17 @@
               "query": [
                 {
                   "key": "page",
-                  "value": "{{lastSkillsPage}}"
+                  "value": "{{lastSkillsPage}}",
+                  "description": "Номер страницы, по умолчанию 1, минимум 1."
                 },
                 {
                   "key": "limit",
-                  "value": "10"
+                  "value": "10",
+                  "description": "Размер страницы, по умолчанию 10, от 1 до 100."
                 }
               ]
             },
-            "description": "Номер последней страницы вычисляется первым запросом списка, включая созданные при регистрации навыки."
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\nФильтры: `category` — ID категории, `subCategory` — ID подкатегории, `type` — `teach` или `learn`, `q` — подстрока в названии без учёта регистра. Фильтры применяются вместе; неизвестное значение фильтра обычно даёт пустой список. ID берутся из `SKILL_CATEGORIES` в `src/shared/lib/constants.ts`. Сортировка — по `createdAt` по возрастанию, затем ID. Элемент: `id`, `title`, `description`, `type`, `category`, `subCategory`, `tags: string[]`, `imageUrls: string[]`, `authorId`, `createdAt` (ISO UTC).\n\n**Этот сценарий:** Номер последней страницы вычисляется первым запросом списка, включая созданные при регистрации навыки."
           },
           "event": [
             {
@@ -201,15 +1091,17 @@
               "query": [
                 {
                   "key": "page",
-                  "value": "999"
+                  "value": "999",
+                  "description": "Номер страницы, по умолчанию 1, минимум 1."
                 },
                 {
                   "key": "limit",
-                  "value": "10"
+                  "value": "10",
+                  "description": "Размер страницы, по умолчанию 10, от 1 до 100."
                 }
               ]
             },
-            "description": "Пустая страница — это 200 с пустым items, а не 404."
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\nФильтры: `category` — ID категории, `subCategory` — ID подкатегории, `type` — `teach` или `learn`, `q` — подстрока в названии без учёта регистра. Фильтры применяются вместе; неизвестное значение фильтра обычно даёт пустой список. ID берутся из `SKILL_CATEGORIES` в `src/shared/lib/constants.ts`. Сортировка — по `createdAt` по возрастанию, затем ID. Элемент: `id`, `title`, `description`, `type`, `category`, `subCategory`, `tags: string[]`, `imageUrls: string[]`, `authorId`, `createdAt` (ISO UTC).\n\n**Этот сценарий:** Пустая страница — это 200 с пустым items, а не 404."
           },
           "event": [
             {
@@ -241,11 +1133,12 @@
               "query": [
                 {
                   "key": "limit",
-                  "value": "5000"
+                  "value": "5000",
+                  "description": "Размер страницы, по умолчанию 10, от 1 до 100."
                 }
               ]
             },
-            "description": "Сервер режет limit до 100, чтобы запросом нельзя было вытащить всю базу."
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\nФильтры: `category` — ID категории, `subCategory` — ID подкатегории, `type` — `teach` или `learn`, `q` — подстрока в названии без учёта регистра. Фильтры применяются вместе; неизвестное значение фильтра обычно даёт пустой список. ID берутся из `SKILL_CATEGORIES` в `src/shared/lib/constants.ts`. Сортировка — по `createdAt` по возрастанию, затем ID. Элемент: `id`, `title`, `description`, `type`, `category`, `subCategory`, `tags: string[]`, `imageUrls: string[]`, `authorId`, `createdAt` (ISO UTC).\n\n**Этот сценарий:** Сервер режет limit до 100, чтобы запросом нельзя было вытащить всю базу."
           },
           "event": [
             {
@@ -274,20 +1167,23 @@
               "query": [
                 {
                   "key": "category",
-                  "value": "art"
+                  "value": "art",
+                  "description": "ID категории из SKILL_CATEGORIES."
                 },
                 {
                   "key": "type",
-                  "value": "teach"
+                  "value": "teach",
+                  "description": "Тип навыка: teach или learn."
                 },
                 {
                   "key": "subCategory",
                   "value": "music-sound",
-                  "disabled": true
+                  "disabled": true,
+                  "description": "ID подкатегории из SKILL_CATEGORIES."
                 }
               ]
             },
-            "description": "Категории в сидах: art, languages, home-coziness, health, education, business. Тип: teach | learn. subCategory выключен — включи, чтобы сузить."
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\nФильтры: `category` — ID категории, `subCategory` — ID подкатегории, `type` — `teach` или `learn`, `q` — подстрока в названии без учёта регистра. Фильтры применяются вместе; неизвестное значение фильтра обычно даёт пустой список. ID берутся из `SKILL_CATEGORIES` в `src/shared/lib/constants.ts`. Сортировка — по `createdAt` по возрастанию, затем ID. Элемент: `id`, `title`, `description`, `type`, `category`, `subCategory`, `tags: string[]`, `imageUrls: string[]`, `authorId`, `createdAt` (ISO UTC).\n\n**Этот сценарий:** Категории в сидах: art, languages, home-coziness, health, education, business. Тип: teach | learn. subCategory выключен — включи, чтобы сузить."
           },
           "event": [
             {
@@ -327,11 +1223,12 @@
               "query": [
                 {
                   "key": "q",
-                  "value": "йог"
+                  "value": "йог",
+                  "description": "Подстрока названия без учёта регистра."
                 }
               ]
             },
-            "description": "Поиск по подстроке в title, регистронезависимый."
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\nФильтры: `category` — ID категории, `subCategory` — ID подкатегории, `type` — `teach` или `learn`, `q` — подстрока в названии без учёта регистра. Фильтры применяются вместе; неизвестное значение фильтра обычно даёт пустой список. ID берутся из `SKILL_CATEGORIES` в `src/shared/lib/constants.ts`. Сортировка — по `createdAt` по возрастанию, затем ID. Элемент: `id`, `title`, `description`, `type`, `category`, `subCategory`, `tags: string[]`, `imageUrls: string[]`, `authorId`, `createdAt` (ISO UTC).\n\n**Этот сценарий:** Поиск по подстроке в title, регистронезависимый."
           },
           "event": [
             {
@@ -360,7 +1257,8 @@
               "raw": "{{baseUrl}}/skills/skill-01",
               "host": ["{{baseUrl}}"],
               "path": ["skills", "skill-01"]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\n**Параметр пути:** `id` — строковый ID навыка. **Успех:** `200`, объект Skill. **Ошибка:** `404`, `{ \"message\": \"Навык не найден\" }`. Поля: `id`, `title`, `description`, `type`, `category`, `subCategory`, `tags: string[]`, `imageUrls: string[]`, `authorId`, `createdAt` (ISO UTC).\n\n**Этот сценарий:** Навык по id"
           },
           "event": [
             {
@@ -387,7 +1285,8 @@
               "raw": "{{baseUrl}}/skills/skill-999",
               "host": ["{{baseUrl}}"],
               "path": ["skills", "skill-999"]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\n**Параметр пути:** `id` — строковый ID навыка. **Успех:** `200`, объект Skill. **Ошибка:** `404`, `{ \"message\": \"Навык не найден\" }`. Поля: `id`, `title`, `description`, `type`, `category`, `subCategory`, `tags: string[]`, `imageUrls: string[]`, `authorId`, `createdAt` (ISO UTC).\n\n**Этот сценарий:** Навык по id — 404"
           },
           "event": [
             {
@@ -406,7 +1305,8 @@
             }
           ]
         }
-      ]
+      ],
+      "description": "Проверки списков, фильтров и получения навыка. Запускайте папку целиком по порядку: первый запрос вычисляет последнюю страницу."
     },
     {
       "name": "Пользователи",
@@ -423,15 +1323,17 @@
               "query": [
                 {
                   "key": "page",
-                  "value": "1"
+                  "value": "1",
+                  "description": "Номер страницы, по умолчанию 1, минимум 1."
                 },
                 {
                   "key": "limit",
-                  "value": "10"
+                  "value": "10",
+                  "description": "Размер страницы, по умолчанию 10, от 1 до 100."
                 }
               ]
             },
-            "description": "Главная проверка — пароли не утекают наружу."
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** Главная проверка — пароли не утекают наружу.\n\nФильтры пользователей: `gender` — `female` или `male`; `city` — точное название из `CITIES`; `type` описывает желание посетителя: `learn` («хочу научиться») ищет в `canTeach.subCategory`, `teach` («могу научить») — в `wantsToLearn`, `all` (по умолчанию) — в обоих полях. Массив подкатегорий: `subCategoryId[]=english&subCategoryId[]=german`; ID из `SKILL_CATEGORIES`. Достаточно одного совпадения; повторяющиеся ID не дублируют пользователей. Без массива навыки не ограничиваются. Разные фильтры объединяются через И до сортировки и пагинации. Недопустимые и пустые значения, повторение одиночных `gender`, `city`, `type` → `400`, `{ message }`."
           },
           "event": [
             {
@@ -488,15 +1390,17 @@
               "query": [
                 {
                   "key": "sort",
-                  "value": "popular"
+                  "value": "popular",
+                  "description": "new (по умолчанию), popular или random."
                 },
                 {
                   "key": "limit",
-                  "value": "50"
+                  "value": "50",
+                  "description": "Размер страницы, по умолчанию 10, от 1 до 100."
                 }
               ]
             },
-            "description": "likes у юзера — это кого он лайкнул сам. Популярность считается по входящим только на сервере. Счётчик likesReceived в ответ не включается."
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** likes у юзера — это кого он лайкнул сам. Популярность считается по входящим только на сервере. Счётчик likesReceived в ответ не включается.\n\nФильтры пользователей: `gender` — `female` или `male`; `city` — точное название из `CITIES`; `type` описывает желание посетителя: `learn` («хочу научиться») ищет в `canTeach.subCategory`, `teach` («могу научить») — в `wantsToLearn`, `all` (по умолчанию) — в обоих полях. Массив подкатегорий: `subCategoryId[]=english&subCategoryId[]=german`; ID из `SKILL_CATEGORIES`. Достаточно одного совпадения; повторяющиеся ID не дублируют пользователей. Без массива навыки не ограничиваются. Разные фильтры объединяются через И до сортировки и пагинации. Недопустимые и пустые значения, повторение одиночных `gender`, `city`, `type` → `400`, `{ message }`."
           },
           "event": [
             {
@@ -550,15 +1454,17 @@
               "query": [
                 {
                   "key": "sort",
-                  "value": "random"
+                  "value": "random",
+                  "description": "new (по умолчанию), popular или random."
                 },
                 {
                   "key": "limit",
-                  "value": "50"
+                  "value": "50",
+                  "description": "Размер страницы, по умолчанию 10, от 1 до 100."
                 }
               ]
             },
-            "description": "Порядок детерминированный: сид — текущая дата. Запоминаем его, следующий запрос должен вернуть такой же."
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** Порядок детерминированный: сид — текущая дата. Запоминаем его, следующий запрос должен вернуть такой же.\n\nФильтры пользователей: `gender` — `female` или `male`; `city` — точное название из `CITIES`; `type` описывает желание посетителя: `learn` («хочу научиться») ищет в `canTeach.subCategory`, `teach` («могу научить») — в `wantsToLearn`, `all` (по умолчанию) — в обоих полях. Массив подкатегорий: `subCategoryId[]=english&subCategoryId[]=german`; ID из `SKILL_CATEGORIES`. Достаточно одного совпадения; повторяющиеся ID не дублируют пользователей. Без массива навыки не ограничиваются. Разные фильтры объединяются через И до сортировки и пагинации. Недопустимые и пустые значения, повторение одиночных `gender`, `city`, `type` → `400`, `{ message }`."
           },
           "event": [
             {
@@ -593,15 +1499,17 @@
               "query": [
                 {
                   "key": "sort",
-                  "value": "random"
+                  "value": "random",
+                  "description": "new (по умолчанию), popular или random."
                 },
                 {
                   "key": "limit",
-                  "value": "50"
+                  "value": "50",
+                  "description": "Размер страницы, по умолчанию 10, от 1 до 100."
                 }
               ]
             },
-            "description": "Самый важный тест блока: если порядок пересобирается на каждый запрос, infinite scroll будет сыпать дубликатами и терять юзеров."
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** Самый важный тест блока: если порядок пересобирается на каждый запрос, infinite scroll будет сыпать дубликатами и терять юзеров.\n\nФильтры пользователей: `gender` — `female` или `male`; `city` — точное название из `CITIES`; `type` описывает желание посетителя: `learn` («хочу научиться») ищет в `canTeach.subCategory`, `teach` («могу научить») — в `wantsToLearn`, `all` (по умолчанию) — в обоих полях. Массив подкатегорий: `subCategoryId[]=english&subCategoryId[]=german`; ID из `SKILL_CATEGORIES`. Достаточно одного совпадения; повторяющиеся ID не дублируют пользователей. Без массива навыки не ограничиваются. Разные фильтры объединяются через И до сортировки и пагинации. Недопустимые и пустые значения, повторение одиночных `gender`, `city`, `type` → `400`, `{ message }`."
           },
           "event": [
             {
@@ -635,11 +1543,12 @@
               "query": [
                 {
                   "key": "sort",
-                  "value": "bogus"
+                  "value": "bogus",
+                  "description": "new (по умолчанию), popular или random."
                 }
               ]
             },
-            "description": "Молчаливый откат к дефолту прятал бы опечатку: блок бы «работал», но сортировал не тем."
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** Молчаливый откат к дефолту прятал бы опечатку: блок бы «работал», но сортировал не тем.\n\nФильтры пользователей: `gender` — `female` или `male`; `city` — точное название из `CITIES`; `type` описывает желание посетителя: `learn` («хочу научиться») ищет в `canTeach.subCategory`, `teach` («могу научить») — в `wantsToLearn`, `all` (по умолчанию) — в обоих полях. Массив подкатегорий: `subCategoryId[]=english&subCategoryId[]=german`; ID из `SKILL_CATEGORIES`. Достаточно одного совпадения; повторяющиеся ID не дублируют пользователей. Без массива навыки не ограничиваются. Разные фильтры объединяются через И до сортировки и пагинации. Недопустимые и пустые значения, повторение одиночных `gender`, `city`, `type` → `400`, `{ message }`."
           },
           "event": [
             {
@@ -665,7 +1574,8 @@
               "raw": "{{baseUrl}}/users/user-01",
               "host": ["{{baseUrl}}"],
               "path": ["users", "user-01"]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\n**Параметр пути:** `id` — строковый ID пользователя. **Успех:** `200`, объект User. **Ошибка:** `404`, `{ \"message\": \"Пользователь не найден\" }`. Поля: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** Пользователь по id"
           },
           "event": [
             {
@@ -693,7 +1603,8 @@
               "raw": "{{baseUrl}}/users/user-999",
               "host": ["{{baseUrl}}"],
               "path": ["users", "user-999"]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\n**Параметр пути:** `id` — строковый ID пользователя. **Успех:** `200`, объект User. **Ошибка:** `404`, `{ \"message\": \"Пользователь не найден\" }`. Поля: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** Пользователь по id — 404"
           },
           "event": [
             {
@@ -709,12 +1620,128 @@
               }
             }
           ]
+        },
+        {
+          "name": "Фильтры — преподаватели в Москве",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users?gender=female&city=Москва&type=learn&subCategoryId[]=photo&subCategoryId[]=illustration&limit=100",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"],
+              "query": [
+                {
+                  "key": "gender",
+                  "value": "female"
+                },
+                {
+                  "key": "city",
+                  "value": "Москва"
+                },
+                {
+                  "key": "type",
+                  "value": "learn"
+                },
+                {
+                  "key": "subCategoryId[]",
+                  "value": "photo"
+                },
+                {
+                  "key": "subCategoryId[]",
+                  "value": "illustration"
+                },
+                {
+                  "key": "limit",
+                  "value": "100"
+                }
+              ]
+            },
+            "description": "**Авторизация:** не требуется.\n\nФильтры пользователей: `gender` — `female` или `male`; `city` — точное название из `CITIES`; `type` описывает желание посетителя: `learn` («хочу научиться») ищет в `canTeach.subCategory`, `teach` («могу научить») — в `wantsToLearn`, `all` (по умолчанию) — в обоих полях. Массив подкатегорий: `subCategoryId[]=english&subCategoryId[]=german`; ID из `SKILL_CATEGORIES`. Достаточно одного совпадения; повторяющиеся ID не дублируют пользователей. Без массива навыки не ограничиваются. Разные фильтры объединяются через И до сортировки и пагинации. Недопустимые и пустые значения, повторение одиночных `gender`, `city`, `type` → `400`, `{ message }`.\n\nЭтот сценарий: женщины из Москвы, преподающие фотографию или рисование. На исходных моках — user-07 и user-27."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "const body = pm.response.json()",
+                  "pm.test('пол, город и преподаваемая подкатегория совпадают с фильтрами', () => {",
+                  "  pm.expect(body.items.length).to.be.above(0)",
+                  "  body.items.forEach((user) => {",
+                  "    pm.expect(user.gender).to.eql('female')",
+                  "    pm.expect(user.city).to.eql('Москва')",
+                  "    pm.expect(['photo', 'illustration']).to.include(user.canTeach.subCategory)",
+                  "    pm.expect(user).to.not.have.property('password')",
+                  "  })",
+                  "})",
+                  "pm.test('total и hasMore относятся к отфильтрованному списку', () => {",
+                  "  pm.expect(body.total).to.eql(body.items.length)",
+                  "  pm.expect(body.hasMore).to.eql(false)",
+                  "})"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 — Фильтры пользователей",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/users?gender=female&city=Москва&type=learn&subCategoryId[]=photo&subCategoryId[]=illustration&limit=100",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users"],
+                  "query": [
+                    {
+                      "key": "gender",
+                      "value": "female"
+                    },
+                    {
+                      "key": "city",
+                      "value": "Москва"
+                    },
+                    {
+                      "key": "type",
+                      "value": "learn"
+                    },
+                    {
+                      "key": "subCategoryId[]",
+                      "value": "photo"
+                    },
+                    {
+                      "key": "subCategoryId[]",
+                      "value": "illustration"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "100"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"items\": [\n    {\n      \"id\": \"user-27\",\n      \"name\": \"Арина\",\n      \"email\": \"arina.romanova@example.com\",\n      \"avatarUrl\": null,\n      \"createdAt\": \"2025-04-30T10:15:00.000Z\",\n      \"birthDate\": \"2002-11-21T00:00:00.000Z\",\n      \"gender\": \"female\",\n      \"city\": \"Москва\",\n      \"bio\": \"Люблю красивые детали, уютные пространства и общение с людьми, которые смотрят на мир по-своему.\",\n      \"likes\": [],\n      \"canTeach\": {\n        \"id\": \"skill-27\",\n        \"category\": \"art\",\n        \"subCategory\": \"illustration\"\n      },\n      \"wantsToLearn\": [\n        \"home-finances\",\n        \"personal-brand\"\n      ]\n    },\n    {\n      \"id\": \"user-07\",\n      \"name\": \"Ольга\",\n      \"email\": \"olga.popova@example.com\",\n      \"avatarUrl\": null,\n      \"createdAt\": \"2025-02-09T17:15:00.000Z\",\n      \"birthDate\": \"1989-06-11T00:00:00.000Z\",\n      \"gender\": \"female\",\n      \"city\": \"Москва\",\n      \"bio\": \"Легко нахожу общий язык с людьми. Ценю уют, добрый юмор и небольшие спонтанные планы.\",\n      \"likes\": [\n        \"user-08\",\n        \"user-09\",\n        \"user-10\",\n        \"user-11\"\n      ],\n      \"canTeach\": {\n        \"id\": \"skill-07\",\n        \"category\": \"art\",\n        \"subCategory\": \"photo\"\n      },\n      \"wantsToLearn\": [\n        \"houseplants\"\n      ]\n    }\n  ],\n  \"page\": 1,\n  \"limit\": 100,\n  \"total\": 2,\n  \"hasMore\": false\n}"
+            }
+          ]
         }
-      ]
+      ],
+      "description": "Проверки списка, сортировки и профиля. Запускайте по порядку: повтор random сравнивается с предыдущим ответом."
     },
     {
       "name": "Авторизация",
-      "description": "Запускать по порядку: регистрация сохраняет email, ID и токен. Создаёт пользователя, навык и файлы. Рабочая папка — корень репозитория.",
+      "description": "Последовательные проверки регистрации и входа. Успешные сценарии находятся перед ошибками соответствующей операции. Порядок сохраняет зависимости newEmail/newToken/newSkillId и сравнение ошибок входа. Регистрация создаёт записи и файлы.",
       "item": [
         {
           "name": "Регистрация — успех, 5 изображений (201)",
@@ -761,7 +1788,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\n**Тело:** `multipart/form-data`. Оба поля обязательны:\n\n| Поле | Формат | Ограничения |\n| --- | --- | --- |\n| `data` | Текст с JSON объекта формы | До 32 КБ; поля ниже |\n| `images` | Файлы, отдельные части с одинаковым именем | От 1 до 5, JPEG/PNG/WebP, каждый до 2 МБ; проверяются MIME и сигнатура |\n\nВ JSON `data` обязательны все поля:\n\n| Поле | Тип | Правило |\n| --- | --- | --- |\n| `email` | string | Корректная почта; trim и нижний регистр; должна быть свободна |\n| `password` | string | Минимум 8 символов, пробелы сохраняются |\n| `name` | string | Минимум 2 символа после trim |\n| `birthDate` | string | Существующая дата ISO UTC, как `1995-02-08T00:00:00.000Z`, не в будущем |\n| `gender` | string | `female` или `male` |\n| `city` | string | Одно из значений `CITIES` в `src/shared/lib/constants.ts` |\n| `wantsToLearn` | string[] | Непустой массив уникальных ID подкатегорий из `SKILL_CATEGORIES` |\n| `canTeach.title` | string | 3–50 символов после trim |\n| `canTeach.description` | string | 1–500 символов после trim |\n| `canTeach.category` | string | ID категории из `SKILL_CATEGORIES` |\n| `canTeach.subCategory` | string | ID подкатегории, принадлежащей указанной категории |\n\n**Успех:** `201`, `{ id, name, email, token }`. Создаются пользователь, навык `teach` и изображения. **Ошибки:** `400` — тело, поля или файлы не прошли проверку; `409` — почта занята; `500` — внутренняя ошибка. Формат ошибки: `{ message: string }`.\n\nВ браузере используйте `FormData`: `form.append('data', JSON.stringify(data))`, затем `form.append('images', file)` для каждого файла. Не задавайте `Content-Type` вручную: клиент добавит boundary. В Postman Desktop задайте Working directory на корень репозитория: файлы запроса лежат в `server/postman/fixtures/`. При отправке успешного примера скрипт создаёт уникальный `newEmail`.\n\n**Этот сценарий:** Регистрация — успех, 5 изображений (201)"
           },
           "event": [
             {
@@ -803,7 +1831,8 @@
               "raw": "{{baseUrl}}/auth/me",
               "host": ["{{baseUrl}}"],
               "path": ["auth", "me"]
-            }
+            },
+            "description": "**Авторизация:** Bearer-токен.\n\n**Заголовок:** `Authorization: Bearer <token>`, где токен получен из входа или регистрации. Для основного запроса сначала выполните «Вход — успех по почте (200)»: скрипт заполнит `authToken`. Для сценария регистрации используется `newToken`. **Успех:** `200`, полный профиль пользователя. **Ошибка:** `401`, `{ \"message\": \"Нужна авторизация\" }`. Поля профиля: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** Регистрация — полный профиль и ссылка на навык"
           },
           "event": [
             {
@@ -833,7 +1862,8 @@
               "raw": "{{baseUrl}}/skills/{{newSkillId}}",
               "host": ["{{baseUrl}}"],
               "path": ["skills", "{{newSkillId}}"]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\n**Параметр пути:** `id` — строковый ID навыка. **Успех:** `200`, объект Skill. **Ошибка:** `404`, `{ \"message\": \"Навык не найден\" }`. Поля: `id`, `title`, `description`, `type`, `category`, `subCategory`, `tags: string[]`, `imageUrls: string[]`, `authorId`, `createdAt` (ISO UTC).\n\n**Этот сценарий:** Регистрация — созданный навык доступен"
           },
           "event": [
             {
@@ -859,7 +1889,8 @@
             "url": {
               "raw": "{{baseUrl}}{{skillImagePath}}",
               "host": ["{{baseUrl}}{{skillImagePath}}"]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nЗагруженное изображение доступно по пути из `Skill.imageUrls`, например `/api/uploads/skills/<skillId>/<file>.png`. Для `baseUrl`, уже содержащего `/api`, используйте путь без повторного `/api`. **Успех:** `200`, двоичное изображение с Content-Type `image/png`, `image/jpeg` или `image/webp`. Искусственной задержки нет.\n\n**Этот сценарий:** после регистрации с пятью изображениями предыдущий запрос сохраняет путь первого файла в `skillImagePath`. Проверяется доступность PNG-фикстуры. Изображения хранятся локально и удаляются при сбросе базы."
           },
           "event": [
             {
@@ -899,7 +1930,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — email занят (409)\n\n**Ожидаемый ответ:** `409`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -939,7 +1971,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — нет имени (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -979,7 +2012,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — короткое имя (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1019,7 +2053,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — неверный email (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1059,7 +2094,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — короткий пароль (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1099,7 +2135,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — город вне CITIES (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1139,7 +2176,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — неверный пол (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1179,7 +2217,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — дата без времени (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1219,7 +2258,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — невозможная дата (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1259,7 +2299,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — будущая дата (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1299,7 +2340,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — объект вместо массива интересов (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1339,7 +2381,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — пустые интересы (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1379,7 +2422,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — строка вместо массива интересов (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1419,7 +2463,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — категория вместо подкатегории (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1459,7 +2504,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — неизвестная подкатегория (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1499,7 +2545,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — повторяющиеся ID (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1539,7 +2586,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — подкатегория навыка из другой категории (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1579,7 +2627,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — короткое название (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1619,7 +2668,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — пустое описание (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1659,7 +2709,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — слишком длинное описание (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1694,7 +2745,8 @@
                   "contentType": "application/json"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — нет изображений (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1759,7 +2811,8 @@
                   "src": "server/postman/fixtures/skill.png"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — больше пяти изображений (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1799,7 +2852,8 @@
                   "src": "server/postman/fixtures/not-image.txt"
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — файл не изображение (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1837,7 +2891,8 @@
                   "language": "json"
                 }
               }
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — пустое тело (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
           },
           "event": [
             {
@@ -1875,7 +2930,8 @@
                   "language": "json"
                 }
               }
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\n**Тело:** JSON, заголовок `Content-Type: application/json`. Обязательны `email: string` (корректная почта) и `password: string` (непустой). Почта обрезается по краям и приводится к нижнему регистру; пароль не преобразуется.\n\nДемонстрационные данные: `{{demoEmail}}`, `{{demoPassword}}` — из локальных сидов проекта.\n\n**Успех:** `200`, `{ id, name, email, token }`. Скрипт успешного запроса сохраняет токен в `authToken` для запроса профиля. **Ошибки:** `400` — некорректное тело; `401` — неправильная почта или пароль. Ответы для неизвестной почты и неверного пароля одинаковые: `{ \"message\": \"Неправильные почта или пароль\" }`.\n\n**Этот сценарий:** Вход — успех по почте (200)"
           },
           "event": [
             {
@@ -1915,7 +2971,8 @@
                   "language": "json"
                 }
               }
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\n**Тело:** JSON, заголовок `Content-Type: application/json`. Обязательны `email: string` (корректная почта) и `password: string` (непустой). Почта обрезается по краям и приводится к нижнему регистру; пароль не преобразуется.\n\nДемонстрационные данные: `{{demoEmail}}`, `{{demoPassword}}` — из локальных сидов проекта.\n\n**Успех:** `200`, `{ id, name, email, token }`. Скрипт успешного запроса сохраняет токен в `authToken` для запроса профиля. **Ошибки:** `400` — некорректное тело; `401` — неправильная почта или пароль. Ответы для неизвестной почты и неверного пароля одинаковые: `{ \"message\": \"Неправильные почта или пароль\" }`.\n\n**Этот сценарий:** Вход — зарегистрированный пользователь (200)"
           },
           "event": [
             {
@@ -1953,7 +3010,8 @@
                   "language": "json"
                 }
               }
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\n**Тело:** JSON, заголовок `Content-Type: application/json`. Обязательны `email: string` (корректная почта) и `password: string` (непустой). Почта обрезается по краям и приводится к нижнему регистру; пароль не преобразуется.\n\nДемонстрационные данные: `{{demoEmail}}`, `{{demoPassword}}` — из локальных сидов проекта.\n\n**Успех:** `200`, `{ id, name, email, token }`. Скрипт успешного запроса сохраняет токен в `authToken` для запроса профиля. **Ошибки:** `400` — некорректное тело; `401` — неправильная почта или пароль. Ответы для неизвестной почты и неверного пароля одинаковые: `{ \"message\": \"Неправильные почта или пароль\" }`.\n\n**Этот сценарий:** Вход — неверный пароль (401)"
           },
           "event": [
             {
@@ -1992,7 +3050,8 @@
                   "language": "json"
                 }
               }
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\n**Тело:** JSON, заголовок `Content-Type: application/json`. Обязательны `email: string` (корректная почта) и `password: string` (непустой). Почта обрезается по краям и приводится к нижнему регистру; пароль не преобразуется.\n\nДемонстрационные данные: `{{demoEmail}}`, `{{demoPassword}}` — из локальных сидов проекта.\n\n**Успех:** `200`, `{ id, name, email, token }`. Скрипт успешного запроса сохраняет токен в `authToken` для запроса профиля. **Ошибки:** `400` — некорректное тело; `401` — неправильная почта или пароль. Ответы для неизвестной почты и неверного пароля одинаковые: `{ \"message\": \"Неправильные почта или пароль\" }`.\n\n**Этот сценарий:** Вход — неизвестная почта (401)"
           },
           "event": [
             {
@@ -2031,7 +3090,8 @@
                   "language": "json"
                 }
               }
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\n**Тело:** JSON, заголовок `Content-Type: application/json`. Обязательны `email: string` (корректная почта) и `password: string` (непустой). Почта обрезается по краям и приводится к нижнему регистру; пароль не преобразуется.\n\nДемонстрационные данные: `{{demoEmail}}`, `{{demoPassword}}` — из локальных сидов проекта.\n\n**Успех:** `200`, `{ id, name, email, token }`. Скрипт успешного запроса сохраняет токен в `authToken` для запроса профиля. **Ошибки:** `400` — некорректное тело; `401` — неправильная почта или пароль. Ответы для неизвестной почты и неверного пароля одинаковые: `{ \"message\": \"Неправильные почта или пароль\" }`.\n\n**Этот сценарий:** Вход — нет обязательных полей (400)"
           },
           "event": [
             {
@@ -2060,7 +3120,8 @@
               "raw": "{{baseUrl}}/auth/me",
               "host": ["{{baseUrl}}"],
               "path": ["auth", "me"]
-            }
+            },
+            "description": "**Авторизация:** Bearer-токен.\n\n**Заголовок:** `Authorization: Bearer <token>`, где токен получен из входа или регистрации. Для основного запроса сначала выполните «Вход — успех по почте (200)»: скрипт заполнит `authToken`. Для сценария регистрации используется `newToken`. **Успех:** `200`, полный профиль пользователя. **Ошибка:** `401`, `{ \"message\": \"Нужна авторизация\" }`. Поля профиля: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** Me — с токеном (200)"
           },
           "event": [
             {
@@ -2093,7 +3154,8 @@
               "raw": "{{baseUrl}}/auth/me",
               "host": ["{{baseUrl}}"],
               "path": ["auth", "me"]
-            }
+            },
+            "description": "**Авторизация:** Bearer-токен.\n\n**Заголовок:** `Authorization: Bearer <token>`, где токен получен из входа или регистрации. Для основного запроса сначала выполните «Вход — успех по почте (200)»: скрипт заполнит `authToken`. Для сценария регистрации используется `newToken`. **Успех:** `200`, полный профиль пользователя. **Ошибка:** `401`, `{ \"message\": \"Нужна авторизация\" }`. Поля профиля: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** Me — без токена (401)"
           },
           "event": [
             {
@@ -2122,7 +3184,8 @@
               "raw": "{{baseUrl}}/auth/me",
               "host": ["{{baseUrl}}"],
               "path": ["auth", "me"]
-            }
+            },
+            "description": "**Авторизация:** Bearer-токен.\n\n**Заголовок:** `Authorization: Bearer <token>`, где токен получен из входа или регистрации. Для основного запроса сначала выполните «Вход — успех по почте (200)»: скрипт заполнит `authToken`. Для сценария регистрации используется `newToken`. **Успех:** `200`, полный профиль пользователя. **Ошибка:** `401`, `{ \"message\": \"Нужна авторизация\" }`. Поля профиля: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** Me — мусорный токен (401)"
           },
           "event": [
             {
@@ -2138,7 +3201,7 @@
     },
     {
       "name": "Имитация и хвост",
-      "description": "Имитация задержки: по умолчанию 1000 мс, delay ограничен диапазоном 1000–5000 мс. Принудительные ошибки удалены.",
+      "description": "Служебные сценарии: задержка 1000–5000 мс, неизвестный маршрут и CORS preflight. Параметр fail больше не поддерживается.",
       "item": [
         {
           "name": "delay — посмотреть скелетоны",
@@ -2152,11 +3215,12 @@
               "query": [
                 {
                   "key": "delay",
-                  "value": "1500"
+                  "value": "1500",
+                  "description": "Искусственная задержка, 1000–5000 мс."
                 }
               ]
             },
-            "description": "Задержка 1500 мс; диапазон значений delay — 1000–5000 мс."
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\nФильтры: `category` — ID категории, `subCategory` — ID подкатегории, `type` — `teach` или `learn`, `q` — подстрока в названии без учёта регистра. Фильтры применяются вместе; неизвестное значение фильтра обычно даёт пустой список. ID берутся из `SKILL_CATEGORIES` в `src/shared/lib/constants.ts`. Сортировка — по `createdAt` по возрастанию, затем ID. Элемент: `id`, `title`, `description`, `type`, `category`, `subCategory`, `tags: string[]`, `imageUrls: string[]`, `authorId`, `createdAt` (ISO UTC).\n\n**Этот сценарий:** Задержка 1500 мс; диапазон значений delay — 1000–5000 мс."
           },
           "event": [
             {
@@ -2188,10 +3252,12 @@
               "query": [
                 {
                   "key": "delay",
-                  "value": "99999"
+                  "value": "99999",
+                  "description": "Искусственная задержка, 1000–5000 мс."
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\nФильтры: `category` — ID категории, `subCategory` — ID подкатегории, `type` — `teach` или `learn`, `q` — подстрока в названии без учёта регистра. Фильтры применяются вместе; неизвестное значение фильтра обычно даёт пустой список. ID берутся из `SKILL_CATEGORIES` в `src/shared/lib/constants.ts`. Сортировка — по `createdAt` по возрастанию, затем ID. Элемент: `id`, `title`, `description`, `type`, `category`, `subCategory`, `tags: string[]`, `imageUrls: string[]`, `authorId`, `createdAt` (ISO UTC).\n\n**Этот сценарий:** delay=99999 — ограничение 5 секунд"
           },
           "event": [
             {
@@ -2219,10 +3285,12 @@
               "query": [
                 {
                   "key": "delay",
-                  "value": "0"
+                  "value": "0",
+                  "description": "Искусственная задержка, 1000–5000 мс."
                 }
               ]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\nФильтры: `category` — ID категории, `subCategory` — ID подкатегории, `type` — `teach` или `learn`, `q` — подстрока в названии без учёта регистра. Фильтры применяются вместе; неизвестное значение фильтра обычно даёт пустой список. ID берутся из `SKILL_CATEGORIES` в `src/shared/lib/constants.ts`. Сортировка — по `createdAt` по возрастанию, затем ID. Элемент: `id`, `title`, `description`, `type`, `category`, `subCategory`, `tags: string[]`, `imageUrls: string[]`, `authorId`, `createdAt` (ISO UTC).\n\n**Этот сценарий:** delay=0 — минимум 1 секунда"
           },
           "event": [
             {
@@ -2246,7 +3314,8 @@
               "raw": "{{baseUrl}}/skills",
               "host": ["{{baseUrl}}"],
               "path": ["skills"]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\nФильтры: `category` — ID категории, `subCategory` — ID подкатегории, `type` — `teach` или `learn`, `q` — подстрока в названии без учёта регистра. Фильтры применяются вместе; неизвестное значение фильтра обычно даёт пустой список. ID берутся из `SKILL_CATEGORIES` в `src/shared/lib/constants.ts`. Сортировка — по `createdAt` по возрастанию, затем ID. Элемент: `id`, `title`, `description`, `type`, `category`, `subCategory`, `tags: string[]`, `imageUrls: string[]`, `authorId`, `createdAt` (ISO UTC).\n\n**Этот сценарий:** Задержка по умолчанию"
           },
           "event": [
             {
@@ -2270,7 +3339,8 @@
               "raw": "{{baseUrl}}/nope",
               "host": ["{{baseUrl}}"],
               "path": ["nope"]
-            }
+            },
+            "description": "**Авторизация:** не требуется.\n\nНеизвестный путь возвращает `404`: `{ message: string }`, сообщение содержит HTTP-метод и путь.\n\n**Этот сценарий:** Несуществующая ручка (404)"
           },
           "event": [
             {
@@ -2308,7 +3378,7 @@
               "host": ["{{baseUrl}}"],
               "path": ["auth", "login"]
             },
-            "description": "Нужно, только если фронт ходит на :4000 мимо Vite-прокси."
+            "description": "**Авторизация:** не требуется.\n\nПроверка CORS перед запросом из браузера. **Успех:** `204`, пустое тело; Access-Control-Allow-Origin: *, разрешены Content-Type и Authorization. При работе через Vite-прокси браузеру preflight к :4000 не нужен.\n\n**Этот сценарий:** Нужно, только если фронт ходит на :4000 мимо Vite-прокси."
           },
           "event": [
             {

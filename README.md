@@ -146,5 +146,6 @@ GitHub Actions запускается на каждый push и PR:
 ## Документация
 
 - [Архитектура проекта (FSD)](docs/ARCHITECTURE.md) — описание слоёв, стора, правил импортов и нейминга.
-
+- [Мок-сервер и работа с API](server/README.md) — запуск, авторизация, регистрация и импорт документации в Postman.
+- [Коллекция Postman](server/postman/skillswap.postman_collection.json) — справочник запросов, примеры ответов и проверки API.
 
