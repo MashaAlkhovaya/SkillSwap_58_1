@@ -98,7 +98,7 @@ describe('useAuthForm', () => {
     await userEvents.type(screen.getByLabelText('Пароль'), 'wrong')
     await userEvents.click(screen.getByRole('button', { name: 'Войти' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Неверный логин или пароль')
+    expect(await screen.findByRole('alert')).toHaveTextContent('Неверный email или пароль')
     expect(screen.queryByText('Введите email')).not.toBeInTheDocument()
     expect(screen.queryByText('Введите пароль')).not.toBeInTheDocument()
     expect(store.getState().auth).toEqual({ user: null })
