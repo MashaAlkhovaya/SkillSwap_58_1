@@ -9,7 +9,15 @@ import tseslint from 'typescript-eslint'
 import eslintConfigPrettier from 'eslint-config-prettier'
 
 export default tseslint.config(
-  { ignores: ['dist', 'node_modules', 'coverage', 'public/mockServiceWorker.js'] },
+  {
+    ignores: [
+      'dist',
+      'node_modules',
+      'coverage',
+      'storybook-static',
+      'public/mockServiceWorker.js',
+    ],
+  },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ['**/*.{ts,tsx}'],
@@ -38,4 +46,8 @@ export default tseslint.config(
   },
   eslintConfigPrettier,
   storybook.configs['flat/recommended'],
+  {
+    files: ['server/**/*.ts'],
+    languageOptions: { globals: globals.node },
+  },
 )

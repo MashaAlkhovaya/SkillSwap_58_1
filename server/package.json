@@ -1,0 +1,28 @@
+{
+  "name": "skillswap-mock-server",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Мок-сервер SkillSwap",
+  "main": "index.ts",
+  "scripts": {
+    "dev": "tsx watch index.ts",
+    "start": "tsx index.ts",
+    "reset": "node -e \"require('node:fs').rmSync('data', { recursive: true, force: true }); console.log('data/ удалена — сиды вернутся при следующем старте')\"",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "tsx --test tests/*.test.ts"
+  },
+  "engines": {
+    "node": ">=18.11"
+  },
+  "dependencies": {
+    "express": "^5.1.0",
+    "multer": "^2.5.0"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/multer": "^2.3.0",
+    "@types/node": "^20.19.43",
+    "tsx": "^4.23.15",
+    "typescript": "~5.6.2"
+  }
+}

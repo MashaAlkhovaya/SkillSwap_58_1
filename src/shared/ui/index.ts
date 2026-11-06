@@ -26,3 +26,5 @@ export {
 } from './icons'
 export type { BellIconProps, HeartIconProps, IconProps } from './icons'
 export { Stepper } from './Stepper'
+export { Modal } from './Modal'
+export { Dropdown } from './Dropdown'
