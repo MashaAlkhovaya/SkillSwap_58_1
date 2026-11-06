@@ -14,7 +14,7 @@ export interface LoginCredentials {
 
 type StoredUser = User & { password: string }
 
-const INVALID_CREDENTIALS = 'Неверный логин или пароль'
+const INVALID_CREDENTIALS = 'Неверный email или пароль'
 
 const initialState: AuthState = {
   user: getAuthUser(),

@@ -66,7 +66,7 @@ describe('login', () => {
 
     expect(login.rejected.match(result)).toBe(true)
     if (login.rejected.match(result)) {
-      expect(result.payload).toBe('Неверный логин или пароль')
+      expect(result.payload).toBe('Неверный email или пароль')
     }
     expect(selectAuthUser(store.getState())).toBeNull()
   })
