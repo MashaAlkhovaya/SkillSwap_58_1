@@ -13,9 +13,8 @@ const user = {
   id: 'user-01',
   name: 'Анна',
   email: 'anna.smirnova@example.com',
-  login: 'anna.smirnova',
   password: 'SkillSwapMock2025!',
-} as User
+} as User & { password: string }
 
 const savedUser = {
   id: 'user-01',
@@ -36,11 +35,11 @@ describe('login', () => {
     vi.mocked(fetchUsers).mockReset()
   })
 
-  it('находит пользователя по логину и паролю и сохраняет сессию', async () => {
+  it('находит пользователя по email и паролю и сохраняет сессию', async () => {
     vi.mocked(fetchUsers).mockResolvedValue([user])
     const store = createStore()
 
-    await store.dispatch(login({ login: 'anna.smirnova', password: 'SkillSwapMock2025!' }))
+    await store.dispatch(login({ email: user.email, password: user.password }))
 
     expect(selectAuthUser(store.getState())).toEqual(savedUser)
     expect(selectIsAuthenticated(store.getState())).toBe(true)
@@ -50,20 +49,33 @@ describe('login', () => {
     )
   })
 
-  it('принимает email вместо логина', async () => {
+  it('сравнивает email без пробелов и без учёта регистра', async () => {
     vi.mocked(fetchUsers).mockResolvedValue([user])
     const store = createStore()
 
-    await store.dispatch(login({ login: '  anna.smirnova@example.com  ', password: user.password }))
+    await store.dispatch(login({ email: '  ANNA.SMIRNOVA@EXAMPLE.COM  ', password: user.password }))
 
     expect(selectAuthUser(store.getState())).toEqual(savedUser)
   })
 
-  it('возвращает ошибку, если логин или пароль не совпадают', async () => {
+  it('не принимает старый логин вместо email', async () => {
     vi.mocked(fetchUsers).mockResolvedValue([user])
     const store = createStore()
 
-    const result = await store.dispatch(login({ login: 'anna.smirnova', password: 'wrong' }))
+    const result = await store.dispatch(login({ email: 'anna.smirnova', password: user.password }))
+
+    expect(login.rejected.match(result)).toBe(true)
+    if (login.rejected.match(result)) {
+      expect(result.payload).toBe('Неверный логин или пароль')
+    }
+    expect(selectAuthUser(store.getState())).toBeNull()
+  })
+
+  it('возвращает ошибку, если email или пароль не совпадают', async () => {
+    vi.mocked(fetchUsers).mockResolvedValue([user])
+    const store = createStore()
+
+    const result = await store.dispatch(login({ email: user.email, password: 'wrong' }))
 
     expect(login.rejected.match(result)).toBe(true)
     if (login.rejected.match(result)) {
@@ -78,7 +90,7 @@ describe('login', () => {
     vi.mocked(fetchUsers).mockRejectedValue(new Error('Failed to fetch users'))
     const store = createStore()
 
-    const result = await store.dispatch(login({ login: 'anna.smirnova', password: user.password }))
+    const result = await store.dispatch(login({ email: user.email, password: user.password }))
 
     expect(login.rejected.match(result)).toBe(true)
     if (login.rejected.match(result)) {
@@ -91,7 +103,7 @@ describe('login', () => {
     vi.mocked(fetchUsers).mockResolvedValue([user])
     const store = createStore()
 
-    await store.dispatch(login({ login: user.login, password: user.password }))
+    await store.dispatch(login({ email: user.email, password: user.password }))
     await store.dispatch(logout())
 
     expect(selectAuthUser(store.getState())).toBeNull()
@@ -104,7 +116,7 @@ describe('login', () => {
     const store = createStore()
 
     store.dispatch(
-      login.fulfilled(savedUser, 'request', { login: user.login, password: user.password }),
+      login.fulfilled(savedUser, 'request', { email: user.email, password: user.password }),
     )
 
     expect(selectAuthUser(store.getState())).toEqual(savedUser)

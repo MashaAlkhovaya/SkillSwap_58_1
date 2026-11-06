@@ -7,7 +7,7 @@ import { useAppDispatch } from '@/store/hooks'
 import { login } from './authSlice'
 
 const authFormSchema = yup.object({
-  login: yup.string().trim().required('Введите email'),
+  email: yup.string().trim().required('Введите email'),
   password: yup.string().required('Введите пароль'),
 })
 
@@ -22,7 +22,7 @@ export function useAuthForm() {
     clearErrors,
     formState: { errors, isSubmitting },
   } = useForm({
-    defaultValues: { login: '', password: '' },
+    defaultValues: { email: '', password: '' },
     resolver: yupResolver(authFormSchema),
   })
 

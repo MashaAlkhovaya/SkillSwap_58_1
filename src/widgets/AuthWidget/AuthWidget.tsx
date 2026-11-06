@@ -35,11 +35,11 @@ export function AuthWidget() {
               autoComplete="username"
               placeholder="Введите email"
               className={styles.input}
-              aria-invalid={Boolean(errors.login)}
-              {...register('login')}
+              aria-invalid={Boolean(errors.email)}
+              {...register('email')}
             />
-            {errors.login?.message ? (
-              <p className={styles.fieldError}>{errors.login.message}</p>
+            {errors.email?.message ? (
+              <p className={styles.fieldError}>{errors.email.message}</p>
             ) : null}
           </div>
 

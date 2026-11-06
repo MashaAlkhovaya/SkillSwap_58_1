@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 import { fetchUsers } from '@/api/users'
-import type { AuthUser } from '@/shared/types'
+import type { AuthUser, User } from '@/shared/types'
 import { clearAuthUser, getAuthUser, saveAuthUser } from './authUtils'
 
 export interface AuthState {
@@ -8,9 +8,11 @@ export interface AuthState {
 }
 
 export interface LoginCredentials {
-  login: string
+  email: string
   password: string
 }
+
+type StoredUser = User & { password: string }
 
 const INVALID_CREDENTIALS = 'Неверный логин или пароль'
 
@@ -20,14 +22,12 @@ const initialState: AuthState = {
 
 export const login = createAsyncThunk<AuthUser, LoginCredentials, { rejectValue: string }>(
   'auth/login',
-  async ({ login: userLogin, password }, { rejectWithValue }) => {
+  async ({ email, password }, { rejectWithValue }) => {
     try {
-      const users = await fetchUsers()
-      const normalizedLogin = userLogin.trim()
+      const users = (await fetchUsers()) as StoredUser[]
+      const normalizedEmail = email.trim().toLowerCase()
       const found = users.find(
-        (item) =>
-          item.password === password &&
-          (item.login === normalizedLogin || item.email === normalizedLogin),
+        (item) => item.password === password && item.email.trim().toLowerCase() === normalizedEmail,
       )
 
       if (!found) {
