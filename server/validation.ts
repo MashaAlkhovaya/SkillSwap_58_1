@@ -4,7 +4,7 @@ import {
   type CategoryId,
   type SubCategoryId,
 } from '@/shared/lib/constants'
-import type { LoginRequest, RegisterRequest } from './types'
+import type { LoginRequest, RegisterRequest, UserListQuery } from './types'
 
 export class HttpError extends Error {
   constructor(
@@ -45,6 +45,23 @@ function choices<T extends string>(value: unknown, values: readonly T[], field: 
     throw new HttpError(400, `Повторяющиеся значения ${field}`)
   }
   return result
+}
+
+export function parseUserFilters(query: UserListQuery) {
+  const rawIds = query['subCategoryId[]']
+  const ids = rawIds === undefined ? [] : Array.isArray(rawIds) ? rawIds : [rawIds]
+  const allowedIds = SKILL_CATEGORIES.flatMap((category) =>
+    category.subcategories.map((subCategory) => subCategory.id),
+  )
+  return {
+    gender:
+      query.gender === undefined
+        ? undefined
+        : choice(query.gender, ['female', 'male'] as const, 'gender'),
+    city: query.city === undefined ? undefined : choice(query.city, CITIES, 'city'),
+    type: choice(query.type ?? 'all', ['learn', 'teach', 'all'] as const, 'type'),
+    subCategoryIds: ids.map((id) => choice(id, allowedIds, 'subCategoryId[]')),
+  }
 }
 
 export function parseLogin(value: unknown): LoginRequest {

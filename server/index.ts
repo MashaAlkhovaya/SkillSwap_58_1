@@ -5,8 +5,15 @@ import express, { type ErrorRequestHandler, type Request } from 'express'
 import multer from 'multer'
 import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from '@/shared/lib/constants'
 import type { AuthUser, Skill, User } from '@/shared/types'
-import type { ApiError, AuthResponse, ListQuery, Paginated, StoredUser } from './types'
-import { HttpError, parseLogin, parseRegistration } from './validation'
+import type {
+  ApiError,
+  AuthResponse,
+  ListQuery,
+  Paginated,
+  StoredUser,
+  UserListQuery,
+} from './types'
+import { HttpError, parseLogin, parseRegistration, parseUserFilters } from './validation'
 
 const PORT = 4000
 const DEFAULT_DATA = path.join(__dirname, 'data')
@@ -148,7 +155,7 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
     }
     res.json(skill)
   })
-  app.get<Record<string, never>, Paginated<User> | ApiError, never, ListQuery>(
+  app.get<Record<string, never>, Paginated<User> | ApiError, never, UserListQuery>(
     '/api/users',
     (req, res) => {
       const makeComparator = userSorts[String(req.query.sort || 'new')]
@@ -156,9 +163,20 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
         res.status(400).json({ message: `Неизвестная сортировка: ${req.query.sort}` })
         return
       }
+      const { gender, city, type, subCategoryIds } = parseUserFilters(req.query)
+      const list = users.filter((user) => {
+        if (gender !== undefined && user.gender !== gender) return false
+        if (city !== undefined && user.city !== city) return false
+        if (subCategoryIds.length === 0) return true
+        // Режим описывает желание посетителя: учиться у преподавателя или обучать ученика.
+        return (
+          (type !== 'teach' && subCategoryIds.includes(user.canTeach.subCategory)) ||
+          (type !== 'learn' && user.wantsToLearn.some((id) => subCategoryIds.includes(id)))
+        )
+      })
       const { items, ...meta } = paginate(
         req.query,
-        [...users].sort(makeComparator(new Date().toISOString().slice(0, 10))),
+        list.sort(makeComparator(new Date().toISOString().slice(0, 10))),
       )
       res.json({ items: items.map(publicUser), ...meta })
     },

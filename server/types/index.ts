@@ -1,4 +1,4 @@
-import type { AuthUser, Skill, User } from '../../src/shared/types'
+import type { AuthUser, Skill, User } from '@/shared/types'
 
 export type StoredUser = User & { password: string }
 
@@ -34,4 +34,10 @@ export interface ListQuery {
   subCategory?: string
   type?: string
   q?: string
+}
+
+export interface UserListQuery extends ListQuery {
+  gender?: string
+  city?: string
+  'subCategoryId[]'?: string | string[]
 }

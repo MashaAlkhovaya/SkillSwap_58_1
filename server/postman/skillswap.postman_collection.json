@@ -288,10 +288,40 @@
                   "key": "limit",
                   "value": "10",
                   "description": "Размер страницы, по умолчанию 10, от 1 до 100."
+                },
+                {
+                  "key": "gender",
+                  "value": "female",
+                  "description": "female или male; без параметра — любой пол.",
+                  "disabled": true
+                },
+                {
+                  "key": "city",
+                  "value": "Москва",
+                  "description": "Точное название из CITIES.",
+                  "disabled": true
+                },
+                {
+                  "key": "type",
+                  "value": "learn",
+                  "description": "learn → canTeach; teach → wantsToLearn; all → оба поля (по умолчанию).",
+                  "disabled": true
+                },
+                {
+                  "key": "subCategoryId[]",
+                  "value": "english",
+                  "description": "ID подкатегории. Для массива повторяйте этот ключ.",
+                  "disabled": true
+                },
+                {
+                  "key": "subCategoryId[]",
+                  "value": "german",
+                  "description": "Любая из переданных подкатегорий.",
+                  "disabled": true
                 }
               ]
             },
-            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются."
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\nФильтры пользователей: `gender` — `female` или `male`; `city` — точное название из `CITIES`; `type` описывает желание посетителя: `learn` («хочу научиться») ищет в `canTeach.subCategory`, `teach` («могу научить») — в `wantsToLearn`, `all` (по умолчанию) — в обоих полях. Массив подкатегорий: `subCategoryId[]=english&subCategoryId[]=german`; ID из `SKILL_CATEGORIES`. Достаточно одного совпадения; повторяющиеся ID не дублируют пользователей. Без массива навыки не ограничиваются. Разные фильтры объединяются через И до сортировки и пагинации. Недопустимые и пустые значения, повторение одиночных `gender`, `city`, `type` → `400`, `{ message }`."
           },
           "response": [
             {
@@ -358,6 +388,84 @@
               ],
               "cookie": [],
               "body": "{\n  \"message\": \"Неизвестная сортировка: bogus\"\n}"
+            },
+            {
+              "name": "200 — Фильтры пользователей",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/users?gender=female&city=Москва&type=learn&subCategoryId[]=photo&subCategoryId[]=illustration&limit=100",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users"],
+                  "query": [
+                    {
+                      "key": "gender",
+                      "value": "female"
+                    },
+                    {
+                      "key": "city",
+                      "value": "Москва"
+                    },
+                    {
+                      "key": "type",
+                      "value": "learn"
+                    },
+                    {
+                      "key": "subCategoryId[]",
+                      "value": "photo"
+                    },
+                    {
+                      "key": "subCategoryId[]",
+                      "value": "illustration"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "100"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"items\": [\n    {\n      \"id\": \"user-27\",\n      \"name\": \"Арина\",\n      \"email\": \"arina.romanova@example.com\",\n      \"avatarUrl\": null,\n      \"createdAt\": \"2025-04-30T10:15:00.000Z\",\n      \"birthDate\": \"2002-11-21T00:00:00.000Z\",\n      \"gender\": \"female\",\n      \"city\": \"Москва\",\n      \"bio\": \"Люблю красивые детали, уютные пространства и общение с людьми, которые смотрят на мир по-своему.\",\n      \"likes\": [],\n      \"canTeach\": {\n        \"id\": \"skill-27\",\n        \"category\": \"art\",\n        \"subCategory\": \"illustration\"\n      },\n      \"wantsToLearn\": [\n        \"home-finances\",\n        \"personal-brand\"\n      ]\n    },\n    {\n      \"id\": \"user-07\",\n      \"name\": \"Ольга\",\n      \"email\": \"olga.popova@example.com\",\n      \"avatarUrl\": null,\n      \"createdAt\": \"2025-02-09T17:15:00.000Z\",\n      \"birthDate\": \"1989-06-11T00:00:00.000Z\",\n      \"gender\": \"female\",\n      \"city\": \"Москва\",\n      \"bio\": \"Легко нахожу общий язык с людьми. Ценю уют, добрый юмор и небольшие спонтанные планы.\",\n      \"likes\": [\n        \"user-08\",\n        \"user-09\",\n        \"user-10\",\n        \"user-11\"\n      ],\n      \"canTeach\": {\n        \"id\": \"skill-07\",\n        \"category\": \"art\",\n        \"subCategory\": \"photo\"\n      },\n      \"wantsToLearn\": [\n        \"houseplants\"\n      ]\n    }\n  ],\n  \"page\": 1,\n  \"limit\": 100,\n  \"total\": 2,\n  \"hasMore\": false\n}"
+            },
+            {
+              "name": "400 — Неизвестный режим поиска",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/users?type=unknown",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users"],
+                  "query": [
+                    {
+                      "key": "type",
+                      "value": "unknown"
+                    }
+                  ]
+                }
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Недопустимое значение type\"\n}"
             }
           ]
         },
@@ -1225,7 +1333,7 @@
                 }
               ]
             },
-            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** Главная проверка — пароли не утекают наружу."
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** Главная проверка — пароли не утекают наружу.\n\nФильтры пользователей: `gender` — `female` или `male`; `city` — точное название из `CITIES`; `type` описывает желание посетителя: `learn` («хочу научиться») ищет в `canTeach.subCategory`, `teach` («могу научить») — в `wantsToLearn`, `all` (по умолчанию) — в обоих полях. Массив подкатегорий: `subCategoryId[]=english&subCategoryId[]=german`; ID из `SKILL_CATEGORIES`. Достаточно одного совпадения; повторяющиеся ID не дублируют пользователей. Без массива навыки не ограничиваются. Разные фильтры объединяются через И до сортировки и пагинации. Недопустимые и пустые значения, повторение одиночных `gender`, `city`, `type` → `400`, `{ message }`."
           },
           "event": [
             {
@@ -1292,7 +1400,7 @@
                 }
               ]
             },
-            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** likes у юзера — это кого он лайкнул сам. Популярность считается по входящим только на сервере. Счётчик likesReceived в ответ не включается."
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** likes у юзера — это кого он лайкнул сам. Популярность считается по входящим только на сервере. Счётчик likesReceived в ответ не включается.\n\nФильтры пользователей: `gender` — `female` или `male`; `city` — точное название из `CITIES`; `type` описывает желание посетителя: `learn` («хочу научиться») ищет в `canTeach.subCategory`, `teach` («могу научить») — в `wantsToLearn`, `all` (по умолчанию) — в обоих полях. Массив подкатегорий: `subCategoryId[]=english&subCategoryId[]=german`; ID из `SKILL_CATEGORIES`. Достаточно одного совпадения; повторяющиеся ID не дублируют пользователей. Без массива навыки не ограничиваются. Разные фильтры объединяются через И до сортировки и пагинации. Недопустимые и пустые значения, повторение одиночных `gender`, `city`, `type` → `400`, `{ message }`."
           },
           "event": [
             {
@@ -1356,7 +1464,7 @@
                 }
               ]
             },
-            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** Порядок детерминированный: сид — текущая дата. Запоминаем его, следующий запрос должен вернуть такой же."
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** Порядок детерминированный: сид — текущая дата. Запоминаем его, следующий запрос должен вернуть такой же.\n\nФильтры пользователей: `gender` — `female` или `male`; `city` — точное название из `CITIES`; `type` описывает желание посетителя: `learn` («хочу научиться») ищет в `canTeach.subCategory`, `teach` («могу научить») — в `wantsToLearn`, `all` (по умолчанию) — в обоих полях. Массив подкатегорий: `subCategoryId[]=english&subCategoryId[]=german`; ID из `SKILL_CATEGORIES`. Достаточно одного совпадения; повторяющиеся ID не дублируют пользователей. Без массива навыки не ограничиваются. Разные фильтры объединяются через И до сортировки и пагинации. Недопустимые и пустые значения, повторение одиночных `gender`, `city`, `type` → `400`, `{ message }`."
           },
           "event": [
             {
@@ -1401,7 +1509,7 @@
                 }
               ]
             },
-            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** Самый важный тест блока: если порядок пересобирается на каждый запрос, infinite scroll будет сыпать дубликатами и терять юзеров."
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** Самый важный тест блока: если порядок пересобирается на каждый запрос, infinite scroll будет сыпать дубликатами и терять юзеров.\n\nФильтры пользователей: `gender` — `female` или `male`; `city` — точное название из `CITIES`; `type` описывает желание посетителя: `learn` («хочу научиться») ищет в `canTeach.subCategory`, `teach` («могу научить») — в `wantsToLearn`, `all` (по умолчанию) — в обоих полях. Массив подкатегорий: `subCategoryId[]=english&subCategoryId[]=german`; ID из `SKILL_CATEGORIES`. Достаточно одного совпадения; повторяющиеся ID не дублируют пользователей. Без массива навыки не ограничиваются. Разные фильтры объединяются через И до сортировки и пагинации. Недопустимые и пустые значения, повторение одиночных `gender`, `city`, `type` → `400`, `{ message }`."
           },
           "event": [
             {
@@ -1440,7 +1548,7 @@
                 }
               ]
             },
-            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** Молчаливый откат к дефолту прятал бы опечатку: блок бы «работал», но сортировал не тем."
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** Молчаливый откат к дефолту прятал бы опечатку: блок бы «работал», но сортировал не тем.\n\nФильтры пользователей: `gender` — `female` или `male`; `city` — точное название из `CITIES`; `type` описывает желание посетителя: `learn` («хочу научиться») ищет в `canTeach.subCategory`, `teach` («могу научить») — в `wantsToLearn`, `all` (по умолчанию) — в обоих полях. Массив подкатегорий: `subCategoryId[]=english&subCategoryId[]=german`; ID из `SKILL_CATEGORIES`. Достаточно одного совпадения; повторяющиеся ID не дублируют пользователей. Без массива навыки не ограничиваются. Разные фильтры объединяются через И до сортировки и пагинации. Недопустимые и пустые значения, повторение одиночных `gender`, `city`, `type` → `400`, `{ message }`."
           },
           "event": [
             {
@@ -1510,6 +1618,121 @@
                   "})"
                 ]
               }
+            }
+          ]
+        },
+        {
+          "name": "Фильтры — преподаватели в Москве",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users?gender=female&city=Москва&type=learn&subCategoryId[]=photo&subCategoryId[]=illustration&limit=100",
+              "host": ["{{baseUrl}}"],
+              "path": ["users"],
+              "query": [
+                {
+                  "key": "gender",
+                  "value": "female"
+                },
+                {
+                  "key": "city",
+                  "value": "Москва"
+                },
+                {
+                  "key": "type",
+                  "value": "learn"
+                },
+                {
+                  "key": "subCategoryId[]",
+                  "value": "photo"
+                },
+                {
+                  "key": "subCategoryId[]",
+                  "value": "illustration"
+                },
+                {
+                  "key": "limit",
+                  "value": "100"
+                }
+              ]
+            },
+            "description": "**Авторизация:** не требуется.\n\nФильтры пользователей: `gender` — `female` или `male`; `city` — точное название из `CITIES`; `type` описывает желание посетителя: `learn` («хочу научиться») ищет в `canTeach.subCategory`, `teach` («могу научить») — в `wantsToLearn`, `all` (по умолчанию) — в обоих полях. Массив подкатегорий: `subCategoryId[]=english&subCategoryId[]=german`; ID из `SKILL_CATEGORIES`. Достаточно одного совпадения; повторяющиеся ID не дублируют пользователей. Без массива навыки не ограничиваются. Разные фильтры объединяются через И до сортировки и пагинации. Недопустимые и пустые значения, повторение одиночных `gender`, `city`, `type` → `400`, `{ message }`.\n\nЭтот сценарий: женщины из Москвы, преподающие фотографию или рисование. На исходных моках — user-07 и user-27."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "const body = pm.response.json()",
+                  "pm.test('пол, город и преподаваемая подкатегория совпадают с фильтрами', () => {",
+                  "  pm.expect(body.items.length).to.be.above(0)",
+                  "  body.items.forEach((user) => {",
+                  "    pm.expect(user.gender).to.eql('female')",
+                  "    pm.expect(user.city).to.eql('Москва')",
+                  "    pm.expect(['photo', 'illustration']).to.include(user.canTeach.subCategory)",
+                  "    pm.expect(user).to.not.have.property('password')",
+                  "  })",
+                  "})",
+                  "pm.test('total и hasMore относятся к отфильтрованному списку', () => {",
+                  "  pm.expect(body.total).to.eql(body.items.length)",
+                  "  pm.expect(body.hasMore).to.eql(false)",
+                  "})"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "200 — Фильтры пользователей",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/users?gender=female&city=Москва&type=learn&subCategoryId[]=photo&subCategoryId[]=illustration&limit=100",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["users"],
+                  "query": [
+                    {
+                      "key": "gender",
+                      "value": "female"
+                    },
+                    {
+                      "key": "city",
+                      "value": "Москва"
+                    },
+                    {
+                      "key": "type",
+                      "value": "learn"
+                    },
+                    {
+                      "key": "subCategoryId[]",
+                      "value": "photo"
+                    },
+                    {
+                      "key": "subCategoryId[]",
+                      "value": "illustration"
+                    },
+                    {
+                      "key": "limit",
+                      "value": "100"
+                    }
+                  ]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"items\": [\n    {\n      \"id\": \"user-27\",\n      \"name\": \"Арина\",\n      \"email\": \"arina.romanova@example.com\",\n      \"avatarUrl\": null,\n      \"createdAt\": \"2025-04-30T10:15:00.000Z\",\n      \"birthDate\": \"2002-11-21T00:00:00.000Z\",\n      \"gender\": \"female\",\n      \"city\": \"Москва\",\n      \"bio\": \"Люблю красивые детали, уютные пространства и общение с людьми, которые смотрят на мир по-своему.\",\n      \"likes\": [],\n      \"canTeach\": {\n        \"id\": \"skill-27\",\n        \"category\": \"art\",\n        \"subCategory\": \"illustration\"\n      },\n      \"wantsToLearn\": [\n        \"home-finances\",\n        \"personal-brand\"\n      ]\n    },\n    {\n      \"id\": \"user-07\",\n      \"name\": \"Ольга\",\n      \"email\": \"olga.popova@example.com\",\n      \"avatarUrl\": null,\n      \"createdAt\": \"2025-02-09T17:15:00.000Z\",\n      \"birthDate\": \"1989-06-11T00:00:00.000Z\",\n      \"gender\": \"female\",\n      \"city\": \"Москва\",\n      \"bio\": \"Легко нахожу общий язык с людьми. Ценю уют, добрый юмор и небольшие спонтанные планы.\",\n      \"likes\": [\n        \"user-08\",\n        \"user-09\",\n        \"user-10\",\n        \"user-11\"\n      ],\n      \"canTeach\": {\n        \"id\": \"skill-07\",\n        \"category\": \"art\",\n        \"subCategory\": \"photo\"\n      },\n      \"wantsToLearn\": [\n        \"houseplants\"\n      ]\n    }\n  ],\n  \"page\": 1,\n  \"limit\": 100,\n  \"total\": 2,\n  \"hasMore\": false\n}"
             }
           ]
         }
