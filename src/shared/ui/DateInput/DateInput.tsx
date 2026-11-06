@@ -198,12 +198,7 @@ export const DateInput = ({
       </div>
 
       {isOpen && !disabled && (
-        <div
-          id="date-picker-popup"
-          // ref={popupRef}
-          className={styles.popup}
-          data-testid="date-picker-popup"
-        >
+        <div id="date-picker-popup" className={styles.popup} data-testid="date-picker-popup">
           <DayPicker
             mode="single"
             selected={selectedDate}
