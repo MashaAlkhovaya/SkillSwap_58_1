@@ -78,6 +78,7 @@
 [data-theme='dark'] .popup {
   border-color: var(--color-border);
   background: var(--color-bg-secondary);
+  color: var(--color-text);
 }
 
 [data-theme='dark'] .input {

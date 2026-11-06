@@ -53,6 +53,32 @@ export const Select = ({
           control: () => styles.control,
           option: () => styles.option,
         }}
+        styles={{
+          control: (base) => ({
+            ...base,
+            backgroundColor: 'var(--color-bg)',
+            borderColor: 'var(--color-border)',
+            color: 'var(--color-text)',
+            minHeight: 48,
+          }),
+          singleValue: (base) => ({
+            ...base,
+            color: 'var(--color-text)',
+          }),
+          placeholder: (base) => ({
+            ...base,
+            color: 'var(--color-text-secondary)',
+          }),
+          menu: (base) => ({
+            ...base,
+            backgroundColor: 'var(--color-bg-secondary)',
+          }),
+          option: (base, state) => ({
+            ...base,
+            backgroundColor: state.isFocused ? 'var(--color-bg)' : 'transparent',
+            color: 'var(--color-text)',
+          }),
+        }}
       />
     </div>
   )
