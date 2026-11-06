@@ -46,4 +46,8 @@ export default tseslint.config(
   },
   eslintConfigPrettier,
   storybook.configs['flat/recommended'],
+  {
+    files: ['server/**/*.ts'],
+    languageOptions: { globals: globals.node },
+  },
 )

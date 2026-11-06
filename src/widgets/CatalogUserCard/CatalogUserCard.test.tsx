@@ -18,8 +18,6 @@ const createUser = (overrides: Partial<User> = {}): User => ({
   gender: 'female',
   city: 'Санкт-Петербург',
   bio: 'Доброжелательная и любознательная, ценю искреннее общение и тёплые встречи с близкими.',
-  login: 'anna.smirnova',
-  password: 'SkillSwapMock2025!',
   likes: ['user-02'],
 
   canTeach: {

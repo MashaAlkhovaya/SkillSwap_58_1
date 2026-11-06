@@ -5,15 +5,11 @@
     "description": "Покажу базовые ритмы, работу с палочками и помогу разучить простую партию.",
     "type": "teach",
     "category": "art",
-    "tags": [
-      "барабаны",
-      "ритм",
-      "музыка"
-    ],
-    "imageUrl": null,
+    "tags": ["барабаны", "ритм", "музыка"],
     "authorId": "user-01",
     "createdAt": "2025-01-15T10:15:00.000Z",
-    "subCategory": "music-sound"
+    "subCategory": "music-sound",
+    "imageUrls": []
   },
   {
     "id": "skill-02",
@@ -21,15 +17,11 @@
     "description": "Помогу освоить аккорды, бой и первые песни на акустической гитаре.",
     "type": "teach",
     "category": "art",
-    "tags": [
-      "гитара",
-      "аккорды",
-      "музыка"
-    ],
-    "imageUrl": null,
+    "tags": ["гитара", "аккорды", "музыка"],
     "authorId": "user-02",
     "createdAt": "2025-01-18T10:15:00.000Z",
-    "subCategory": "music-sound"
+    "subCategory": "music-sound",
+    "imageUrls": []
   },
   {
     "id": "skill-03",
@@ -37,14 +29,11 @@
     "description": "Практика повседневного английского в дружеском формате с разбором ошибок.",
     "type": "teach",
     "category": "languages",
-    "tags": [
-      "английский",
-      "разговорная практика"
-    ],
-    "imageUrl": null,
+    "tags": ["английский", "разговорная практика"],
     "authorId": "user-03",
     "createdAt": "2025-01-21T10:15:00.000Z",
-    "subCategory": "english"
+    "subCategory": "english",
+    "imageUrls": []
   },
   {
     "id": "skill-04",
@@ -52,14 +41,11 @@
     "description": "Научу читать, представляться и поддерживать простой разговор на испанском.",
     "type": "teach",
     "category": "languages",
-    "tags": [
-      "испанский",
-      "начинающим"
-    ],
-    "imageUrl": null,
+    "tags": ["испанский", "начинающим"],
     "authorId": "user-04",
     "createdAt": "2025-01-24T10:15:00.000Z",
-    "subCategory": "spanish"
+    "subCategory": "spanish",
+    "imageUrls": []
   },
   {
     "id": "skill-05",
@@ -67,15 +53,11 @@
     "description": "Расскажу о смешивании красок, базовых заливках и создании небольших пейзажей.",
     "type": "teach",
     "category": "art",
-    "tags": [
-      "акварель",
-      "рисование",
-      "живопись"
-    ],
-    "imageUrl": null,
+    "tags": ["акварель", "рисование", "живопись"],
     "authorId": "user-05",
     "createdAt": "2025-01-27T10:15:00.000Z",
-    "subCategory": "illustration"
+    "subCategory": "illustration",
+    "imageUrls": []
   },
   {
     "id": "skill-06",
@@ -83,15 +65,11 @@
     "description": "Разберём пропорции лица и научимся быстро делать выразительные портретные наброски.",
     "type": "teach",
     "category": "art",
-    "tags": [
-      "скетчинг",
-      "портрет",
-      "рисование"
-    ],
-    "imageUrl": null,
+    "tags": ["скетчинг", "портрет", "рисование"],
     "authorId": "user-06",
     "createdAt": "2025-01-30T10:15:00.000Z",
-    "subCategory": "illustration"
+    "subCategory": "illustration",
+    "imageUrls": []
   },
   {
     "id": "skill-07",
@@ -99,15 +77,11 @@
     "description": "Помогу разобраться с экспозицией, композицией и настройками камеры или телефона.",
     "type": "teach",
     "category": "art",
-    "tags": [
-      "фото",
-      "композиция",
-      "камера"
-    ],
-    "imageUrl": null,
+    "tags": ["фото", "композиция", "камера"],
     "authorId": "user-07",
     "createdAt": "2025-02-02T10:15:00.000Z",
-    "subCategory": "photo"
+    "subCategory": "photo",
+    "imageUrls": []
   },
   {
     "id": "skill-08",
@@ -115,14 +89,11 @@
     "description": "Покажу базовую цветокоррекцию и аккуратную обработку снимков.",
     "type": "teach",
     "category": "art",
-    "tags": [
-      "обработка",
-      "цветокоррекция"
-    ],
-    "imageUrl": null,
+    "tags": ["обработка", "цветокоррекция"],
     "authorId": "user-08",
     "createdAt": "2025-02-05T10:15:00.000Z",
-    "subCategory": "photo"
+    "subCategory": "photo",
+    "imageUrls": []
   },
   {
     "id": "skill-09",
@@ -130,15 +101,11 @@
     "description": "Поделюсь проверенным процессом ведения закваски и выпечки домашнего хлеба.",
     "type": "teach",
     "category": "home-coziness",
-    "tags": [
-      "хлеб",
-      "выпечка",
-      "закваска"
-    ],
-    "imageUrl": null,
+    "tags": ["хлеб", "выпечка", "закваска"],
     "authorId": "user-09",
     "createdAt": "2025-02-08T10:15:00.000Z",
-    "subCategory": "food-preparation"
+    "subCategory": "food-preparation",
+    "imageUrls": []
   },
   {
     "id": "skill-10",
@@ -146,14 +113,11 @@
     "description": "Научу готовить тесто для пасты и несколько простых соусов.",
     "type": "teach",
     "category": "home-coziness",
-    "tags": [
-      "паста",
-      "итальянская кухня"
-    ],
-    "imageUrl": null,
+    "tags": ["паста", "итальянская кухня"],
     "authorId": "user-10",
     "createdAt": "2025-02-11T10:15:00.000Z",
-    "subCategory": "food-preparation"
+    "subCategory": "food-preparation",
+    "imageUrls": []
   },
   {
     "id": "skill-11",
@@ -161,15 +125,11 @@
     "description": "Проведу вводную практику с простыми асанами и безопасной разминкой.",
     "type": "teach",
     "category": "health",
-    "tags": [
-      "йога",
-      "растяжка",
-      "здоровье"
-    ],
-    "imageUrl": null,
+    "tags": ["йога", "растяжка", "здоровье"],
     "authorId": "user-11",
     "createdAt": "2025-02-14T10:15:00.000Z",
-    "subCategory": "yoga"
+    "subCategory": "yoga",
+    "imageUrls": []
   },
   {
     "id": "skill-12",
@@ -177,15 +137,11 @@
     "description": "Помогу составить спокойный план тренировок для подготовки к первым пяти километрам.",
     "type": "teach",
     "category": "health",
-    "tags": [
-      "бег",
-      "тренировки",
-      "выносливость"
-    ],
-    "imageUrl": null,
+    "tags": ["бег", "тренировки", "выносливость"],
     "authorId": "user-12",
     "createdAt": "2025-02-17T10:15:00.000Z",
-    "subCategory": "physical-training"
+    "subCategory": "physical-training",
+    "imageUrls": []
   },
   {
     "id": "skill-13",
@@ -193,15 +149,11 @@
     "description": "Покажу набор петель, лицевую и изнаночную вязку и чтение простой схемы.",
     "type": "teach",
     "category": "art",
-    "tags": [
-      "вязание",
-      "спицы",
-      "рукоделие"
-    ],
-    "imageUrl": null,
+    "tags": ["вязание", "спицы", "рукоделие"],
     "authorId": "user-13",
     "createdAt": "2025-02-20T10:15:00.000Z",
-    "subCategory": "decor-diy"
+    "subCategory": "decor-diy",
+    "imageUrls": []
   },
   {
     "id": "skill-14",
@@ -209,15 +161,11 @@
     "description": "Познакомлю с базовыми приёмами лепки небольших изделий из глины.",
     "type": "teach",
     "category": "art",
-    "tags": [
-      "керамика",
-      "лепка",
-      "глина"
-    ],
-    "imageUrl": null,
+    "tags": ["керамика", "лепка", "глина"],
     "authorId": "user-14",
     "createdAt": "2025-02-23T10:15:00.000Z",
-    "subCategory": "decor-diy"
+    "subCategory": "decor-diy",
+    "imageUrls": []
   },
   {
     "id": "skill-15",
@@ -225,15 +173,11 @@
     "description": "Помогу подобрать растения и настроить базовый уход с учётом света и полива.",
     "type": "teach",
     "category": "home-coziness",
-    "tags": [
-      "растения",
-      "уход",
-      "садоводство"
-    ],
-    "imageUrl": null,
+    "tags": ["растения", "уход", "садоводство"],
     "authorId": "user-15",
     "createdAt": "2025-02-26T10:15:00.000Z",
-    "subCategory": "houseplants"
+    "subCategory": "houseplants",
+    "imageUrls": []
   },
   {
     "id": "skill-16",
@@ -241,15 +185,11 @@
     "description": "Объясню формулы, сортировку и фильтры на практических примерах таблиц.",
     "type": "teach",
     "category": "education",
-    "tags": [
-      "Excel",
-      "таблицы",
-      "офис"
-    ],
-    "imageUrl": null,
+    "tags": ["Excel", "таблицы", "офис"],
     "authorId": "user-16",
     "createdAt": "2025-03-01T10:15:00.000Z",
-    "subCategory": "learning-skills"
+    "subCategory": "learning-skills",
+    "imageUrls": []
   },
   {
     "id": "skill-17",
@@ -257,15 +197,11 @@
     "description": "Научу собирать простую адаптивную страницу и объясню основы разметки и стилей.",
     "type": "teach",
     "category": "education",
-    "tags": [
-      "HTML",
-      "CSS",
-      "веб"
-    ],
-    "imageUrl": null,
+    "tags": ["HTML", "CSS", "веб"],
     "authorId": "user-17",
     "createdAt": "2025-03-04T10:15:00.000Z",
-    "subCategory": "learning-skills"
+    "subCategory": "learning-skills",
+    "imageUrls": []
   },
   {
     "id": "skill-18",
@@ -273,14 +209,11 @@
     "description": "Разберём переменные, функции и базовую логику на небольших задачах.",
     "type": "teach",
     "category": "education",
-    "tags": [
-      "JavaScript",
-      "программирование"
-    ],
-    "imageUrl": null,
+    "tags": ["JavaScript", "программирование"],
     "authorId": "user-18",
     "createdAt": "2025-03-07T10:15:00.000Z",
-    "subCategory": "learning-skills"
+    "subCategory": "learning-skills",
+    "imageUrls": []
   },
   {
     "id": "skill-19",
@@ -288,15 +221,11 @@
     "description": "Покажу работу с фреймами, компонентами и простым интерактивным прототипом.",
     "type": "teach",
     "category": "art",
-    "tags": [
-      "Figma",
-      "UI",
-      "прототип"
-    ],
-    "imageUrl": null,
+    "tags": ["Figma", "UI", "прототип"],
     "authorId": "user-19",
     "createdAt": "2025-03-10T10:15:00.000Z",
-    "subCategory": "decor-diy"
+    "subCategory": "decor-diy",
+    "imageUrls": []
   },
   {
     "id": "skill-20",
@@ -304,15 +233,11 @@
     "description": "Расскажу, как подготовить интервью, собрать инсайты и оформить выводы.",
     "type": "teach",
     "category": "art",
-    "tags": [
-      "UX",
-      "исследования",
-      "интервью"
-    ],
-    "imageUrl": null,
+    "tags": ["UX", "исследования", "интервью"],
     "authorId": "user-20",
     "createdAt": "2025-03-13T10:15:00.000Z",
-    "subCategory": "decor-diy"
+    "subCategory": "decor-diy",
+    "imageUrls": []
   },
   {
     "id": "skill-21",
@@ -320,14 +245,11 @@
     "description": "Помогу структурировать короткое выступление и увереннее говорить перед аудиторией.",
     "type": "teach",
     "category": "business",
-    "tags": [
-      "выступления",
-      "ораторское искусство"
-    ],
-    "imageUrl": null,
+    "tags": ["выступления", "ораторское искусство"],
     "authorId": "user-21",
     "createdAt": "2025-03-16T10:15:00.000Z",
-    "subCategory": "personal-brand"
+    "subCategory": "personal-brand",
+    "imageUrls": []
   },
   {
     "id": "skill-22",
@@ -335,15 +257,11 @@
     "description": "Обсудим личный бюджет, накопления и простые способы планировать расходы.",
     "type": "teach",
     "category": "home-coziness",
-    "tags": [
-      "бюджет",
-      "финансы",
-      "планирование"
-    ],
-    "imageUrl": null,
+    "tags": ["бюджет", "финансы", "планирование"],
     "authorId": "user-22",
     "createdAt": "2025-03-19T10:15:00.000Z",
-    "subCategory": "home-finances"
+    "subCategory": "home-finances",
+    "imageUrls": []
   },
   {
     "id": "skill-23",
@@ -351,14 +269,11 @@
     "description": "Поделюсь практиками планирования недели и расстановки приоритетов.",
     "type": "teach",
     "category": "business",
-    "tags": [
-      "планирование",
-      "продуктивность"
-    ],
-    "imageUrl": null,
+    "tags": ["планирование", "продуктивность"],
     "authorId": "user-23",
     "createdAt": "2025-03-22T10:15:00.000Z",
-    "subCategory": "time-management"
+    "subCategory": "time-management",
+    "imageUrls": []
   },
   {
     "id": "skill-24",
@@ -366,14 +281,11 @@
     "description": "Объясню правила, ценность фигур и несколько полезных принципов для первых партий.",
     "type": "teach",
     "category": "education",
-    "tags": [
-      "шахматы",
-      "логика"
-    ],
-    "imageUrl": null,
+    "tags": ["шахматы", "логика"],
     "authorId": "user-24",
     "createdAt": "2025-03-25T10:15:00.000Z",
-    "subCategory": "cognitive-techniques"
+    "subCategory": "cognitive-techniques",
+    "imageUrls": []
   },
   {
     "id": "skill-25",
@@ -381,14 +293,11 @@
     "description": "Помогу создать персонажа и проведу короткое знакомство с ролевой игрой.",
     "type": "teach",
     "category": "education",
-    "tags": [
-      "настольные игры",
-      "ролевая игра"
-    ],
-    "imageUrl": null,
+    "tags": ["настольные игры", "ролевая игра"],
     "authorId": "user-25",
     "createdAt": "2025-03-28T10:15:00.000Z",
-    "subCategory": "cognitive-techniques"
+    "subCategory": "cognitive-techniques",
+    "imageUrls": []
   },
   {
     "id": "skill-26",
@@ -396,15 +305,11 @@
     "description": "Научу пользоваться швейной машиной и выполнять простые швы.",
     "type": "teach",
     "category": "art",
-    "tags": [
-      "шитьё",
-      "машинка",
-      "одежда"
-    ],
-    "imageUrl": null,
+    "tags": ["шитьё", "машинка", "одежда"],
     "authorId": "user-26",
     "createdAt": "2025-03-31T10:15:00.000Z",
-    "subCategory": "decor-diy"
+    "subCategory": "decor-diy",
+    "imageUrls": []
   },
   {
     "id": "skill-27",
@@ -412,14 +317,11 @@
     "description": "Покажу базовые штрихи и упражнения для красивого письма кистью.",
     "type": "teach",
     "category": "art",
-    "tags": [
-      "каллиграфия",
-      "леттеринг"
-    ],
-    "imageUrl": null,
+    "tags": ["каллиграфия", "леттеринг"],
     "authorId": "user-27",
     "createdAt": "2025-04-03T10:15:00.000Z",
-    "subCategory": "illustration"
+    "subCategory": "illustration",
+    "imageUrls": []
   },
   {
     "id": "skill-28",
@@ -427,14 +329,11 @@
     "description": "Проведу короткую практику внимания к дыханию и расскажу, как заниматься регулярно.",
     "type": "teach",
     "category": "health",
-    "tags": [
-      "медитация",
-      "внимательность"
-    ],
-    "imageUrl": null,
+    "tags": ["медитация", "внимательность"],
     "authorId": "user-28",
     "createdAt": "2025-04-06T10:15:00.000Z",
-    "subCategory": "mindfulness"
+    "subCategory": "mindfulness",
+    "imageUrls": []
   },
   {
     "id": "skill-29",
@@ -442,15 +341,11 @@
     "description": "Помогу собрать короткий ролик, нарезать видео и добавить титры и музыку.",
     "type": "teach",
     "category": "art",
-    "tags": [
-      "монтаж",
-      "видео",
-      "контент"
-    ],
-    "imageUrl": null,
+    "tags": ["монтаж", "видео", "контент"],
     "authorId": "user-29",
     "createdAt": "2025-04-09T10:15:00.000Z",
-    "subCategory": "video-editing"
+    "subCategory": "video-editing",
+    "imageUrls": []
   },
   {
     "id": "skill-30",
@@ -458,15 +353,11 @@
     "description": "Поделюсь способом спланировать маршрут, бюджет и список вещей для поездки.",
     "type": "teach",
     "category": "education",
-    "tags": [
-      "путешествия",
-      "маршрут",
-      "планирование"
-    ],
-    "imageUrl": null,
+    "tags": ["путешествия", "маршрут", "планирование"],
     "authorId": "user-30",
     "createdAt": "2025-04-12T10:15:00.000Z",
-    "subCategory": "personal-development"
+    "subCategory": "personal-development",
+    "imageUrls": []
   },
   {
     "id": "skill-31",
@@ -474,15 +365,11 @@
     "description": "Ищу наставника, который поможет освоить первые аккорды и подобрать удобный режим практики.",
     "type": "learn",
     "category": "art",
-    "tags": [
-      "гитара",
-      "аккорды",
-      "начинающий"
-    ],
-    "imageUrl": null,
+    "tags": ["гитара", "аккорды", "начинающий"],
     "authorId": "user-31",
     "createdAt": "2025-04-15T10:15:00.000Z",
-    "subCategory": "music-sound"
+    "subCategory": "music-sound",
+    "imageUrls": []
   },
   {
     "id": "skill-32",
@@ -490,14 +377,11 @@
     "description": "Хочу регулярно общаться на английском и постепенно расширять словарный запас.",
     "type": "learn",
     "category": "languages",
-    "tags": [
-      "английский",
-      "разговорная практика"
-    ],
-    "imageUrl": null,
+    "tags": ["английский", "разговорная практика"],
     "authorId": "user-32",
     "createdAt": "2025-04-18T10:15:00.000Z",
-    "subCategory": "english"
+    "subCategory": "english",
+    "imageUrls": []
   },
   {
     "id": "skill-33",
@@ -505,14 +389,11 @@
     "description": "Ищу человека, который поможет начать рисовать акварелью и объяснит основы работы с цветом.",
     "type": "learn",
     "category": "art",
-    "tags": [
-      "акварель",
-      "рисование"
-    ],
-    "imageUrl": null,
+    "tags": ["акварель", "рисование"],
     "authorId": "user-33",
     "createdAt": "2025-04-21T10:15:00.000Z",
-    "subCategory": "illustration"
+    "subCategory": "illustration",
+    "imageUrls": []
   },
   {
     "id": "skill-34",
@@ -520,15 +401,11 @@
     "description": "Хочу научиться лучше снимать на камеру и понимать настройки экспозиции.",
     "type": "learn",
     "category": "art",
-    "tags": [
-      "фото",
-      "камера",
-      "композиция"
-    ],
-    "imageUrl": null,
+    "tags": ["фото", "камера", "композиция"],
     "authorId": "user-34",
     "createdAt": "2025-04-24T10:15:00.000Z",
-    "subCategory": "photo"
+    "subCategory": "photo",
+    "imageUrls": []
   },
   {
     "id": "skill-35",
@@ -536,14 +413,11 @@
     "description": "Ищу советы по закваске и выпечке первого домашнего хлеба.",
     "type": "learn",
     "category": "home-coziness",
-    "tags": [
-      "хлеб",
-      "выпечка"
-    ],
-    "imageUrl": null,
+    "tags": ["хлеб", "выпечка"],
     "authorId": "user-35",
     "createdAt": "2025-04-27T10:15:00.000Z",
-    "subCategory": "food-preparation"
+    "subCategory": "food-preparation",
+    "imageUrls": []
   },
   {
     "id": "skill-36",
@@ -551,14 +425,11 @@
     "description": "Хочу начать бегать регулярно и научиться безопасно готовиться к дистанции 5 км.",
     "type": "learn",
     "category": "health",
-    "tags": [
-      "бег",
-      "тренировки"
-    ],
-    "imageUrl": null,
+    "tags": ["бег", "тренировки"],
     "authorId": "user-36",
     "createdAt": "2025-04-30T10:15:00.000Z",
-    "subCategory": "physical-training"
+    "subCategory": "physical-training",
+    "imageUrls": []
   },
   {
     "id": "skill-37",
@@ -566,14 +437,11 @@
     "description": "Ищу наставника для первых проектов спицами и знакомства с простыми узорами.",
     "type": "learn",
     "category": "art",
-    "tags": [
-      "вязание",
-      "спицы"
-    ],
-    "imageUrl": null,
+    "tags": ["вязание", "спицы"],
     "authorId": "user-37",
     "createdAt": "2025-05-03T10:15:00.000Z",
-    "subCategory": "decor-diy"
+    "subCategory": "decor-diy",
+    "imageUrls": []
   },
   {
     "id": "skill-38",
@@ -581,14 +449,11 @@
     "description": "Хочу разобраться, как выбрать растения для квартиры и правильно за ними ухаживать.",
     "type": "learn",
     "category": "home-coziness",
-    "tags": [
-      "растения",
-      "уход"
-    ],
-    "imageUrl": null,
+    "tags": ["растения", "уход"],
     "authorId": "user-38",
     "createdAt": "2025-05-06T10:15:00.000Z",
-    "subCategory": "houseplants"
+    "subCategory": "houseplants",
+    "imageUrls": []
   },
   {
     "id": "skill-39",
@@ -596,14 +461,11 @@
     "description": "Нужно научиться уверенно пользоваться формулами и фильтрами в таблицах.",
     "type": "learn",
     "category": "education",
-    "tags": [
-      "Excel",
-      "таблицы"
-    ],
-    "imageUrl": null,
+    "tags": ["Excel", "таблицы"],
     "authorId": "user-39",
     "createdAt": "2025-05-09T10:15:00.000Z",
-    "subCategory": "learning-skills"
+    "subCategory": "learning-skills",
+    "imageUrls": []
   },
   {
     "id": "skill-40",
@@ -611,15 +473,11 @@
     "description": "Хочу сверстать свою первую адаптивную веб-страницу с нуля.",
     "type": "learn",
     "category": "education",
-    "tags": [
-      "HTML",
-      "CSS",
-      "веб"
-    ],
-    "imageUrl": null,
+    "tags": ["HTML", "CSS", "веб"],
     "authorId": "user-40",
     "createdAt": "2025-05-12T10:15:00.000Z",
-    "subCategory": "learning-skills"
+    "subCategory": "learning-skills",
+    "imageUrls": []
   },
   {
     "id": "skill-41",
@@ -627,14 +485,11 @@
     "description": "Ищу объяснения основ языка и практические задачи для начинающего.",
     "type": "learn",
     "category": "education",
-    "tags": [
-      "JavaScript",
-      "программирование"
-    ],
-    "imageUrl": null,
+    "tags": ["JavaScript", "программирование"],
     "authorId": "user-41",
     "createdAt": "2025-05-15T10:15:00.000Z",
-    "subCategory": "learning-skills"
+    "subCategory": "learning-skills",
+    "imageUrls": []
   },
   {
     "id": "skill-42",
@@ -642,15 +497,11 @@
     "description": "Хочу научиться создавать макеты интерфейсов и собирать прототипы.",
     "type": "learn",
     "category": "art",
-    "tags": [
-      "Figma",
-      "UI",
-      "прототип"
-    ],
-    "imageUrl": null,
+    "tags": ["Figma", "UI", "прототип"],
     "authorId": "user-42",
     "createdAt": "2025-05-18T10:15:00.000Z",
-    "subCategory": "decor-diy"
+    "subCategory": "decor-diy",
+    "imageUrls": []
   },
   {
     "id": "skill-43",
@@ -658,14 +509,11 @@
     "description": "Ищу практику и советы по подготовке коротких презентаций.",
     "type": "learn",
     "category": "business",
-    "tags": [
-      "выступления",
-      "презентации"
-    ],
-    "imageUrl": null,
+    "tags": ["выступления", "презентации"],
     "authorId": "user-43",
     "createdAt": "2025-05-21T10:15:00.000Z",
-    "subCategory": "personal-brand"
+    "subCategory": "personal-brand",
+    "imageUrls": []
   },
   {
     "id": "skill-44",
@@ -673,14 +521,11 @@
     "description": "Ищу простые рекомендации по ведению бюджета и планированию накоплений.",
     "type": "learn",
     "category": "home-coziness",
-    "tags": [
-      "бюджет",
-      "финансы"
-    ],
-    "imageUrl": null,
+    "tags": ["бюджет", "финансы"],
     "authorId": "user-44",
     "createdAt": "2025-05-24T10:15:00.000Z",
-    "subCategory": "home-finances"
+    "subCategory": "home-finances",
+    "imageUrls": []
   },
   {
     "id": "skill-45",
@@ -688,14 +533,11 @@
     "description": "Хочу научиться планировать задачи и не перегружать свой график.",
     "type": "learn",
     "category": "business",
-    "tags": [
-      "планирование",
-      "продуктивность"
-    ],
-    "imageUrl": null,
+    "tags": ["планирование", "продуктивность"],
     "authorId": "user-45",
     "createdAt": "2025-05-27T10:15:00.000Z",
-    "subCategory": "time-management"
+    "subCategory": "time-management",
+    "imageUrls": []
   },
   {
     "id": "skill-46",
@@ -703,14 +545,11 @@
     "description": "Ищу человека для знакомства с правилами и первых тренировочных партий.",
     "type": "learn",
     "category": "education",
-    "tags": [
-      "шахматы",
-      "логика"
-    ],
-    "imageUrl": null,
+    "tags": ["шахматы", "логика"],
     "authorId": "user-46",
     "createdAt": "2025-05-30T10:15:00.000Z",
-    "subCategory": "cognitive-techniques"
+    "subCategory": "cognitive-techniques",
+    "imageUrls": []
   },
   {
     "id": "skill-47",
@@ -718,14 +557,11 @@
     "description": "Ищу мастер-класс по лепке простых изделий из глины.",
     "type": "learn",
     "category": "art",
-    "tags": [
-      "керамика",
-      "лепка"
-    ],
-    "imageUrl": null,
+    "tags": ["керамика", "лепка"],
     "authorId": "user-47",
     "createdAt": "2025-06-02T10:15:00.000Z",
-    "subCategory": "decor-diy"
+    "subCategory": "decor-diy",
+    "imageUrls": []
   },
   {
     "id": "skill-48",
@@ -733,14 +569,11 @@
     "description": "Хочу научиться монтировать короткие ролики для личного проекта.",
     "type": "learn",
     "category": "art",
-    "tags": [
-      "монтаж",
-      "видео"
-    ],
-    "imageUrl": null,
+    "tags": ["монтаж", "видео"],
     "authorId": "user-48",
     "createdAt": "2025-06-05T10:15:00.000Z",
-    "subCategory": "video-editing"
+    "subCategory": "video-editing",
+    "imageUrls": []
   },
   {
     "id": "skill-49",
@@ -748,14 +581,11 @@
     "description": "Ищу собеседника или наставника для первых шагов в испанском языке.",
     "type": "learn",
     "category": "languages",
-    "tags": [
-      "испанский",
-      "начинающий"
-    ],
-    "imageUrl": null,
+    "tags": ["испанский", "начинающий"],
     "authorId": "user-49",
     "createdAt": "2025-06-08T10:15:00.000Z",
-    "subCategory": "spanish"
+    "subCategory": "spanish",
+    "imageUrls": []
   },
   {
     "id": "skill-50",
@@ -763,14 +593,10 @@
     "description": "Ищу наставника для первых практик медитации и развития внимательности.",
     "type": "learn",
     "category": "health",
-    "tags": [
-      "медитация",
-      "внимательность",
-      "начинающий"
-    ],
-    "imageUrl": null,
+    "tags": ["медитация", "внимательность", "начинающий"],
     "authorId": "user-50",
     "createdAt": "2025-06-11T10:15:00.000Z",
-    "subCategory": "mindfulness"
+    "subCategory": "mindfulness",
+    "imageUrls": []
   }
 ]
