@@ -3,7 +3,7 @@ import styles from './RegisterPage.module.css'
 import { Stepper } from '@/shared/ui'
 import { RegistrationWidget } from '@/widgets/RegistrationWidget'
 import { REGISTRATION_STEPS, RegistrationStep } from '@/shared/lib/constants'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 interface RegisterPageProps {
   currentStep: RegistrationStep
@@ -20,14 +20,34 @@ const previousStep = (step: RegistrationStep): RegistrationStep => {
   return REGISTRATION_STEPS[Math.max(0, index - 1)]
 }
 
-const normalizeStep = (value: number): RegistrationStep =>
-  REGISTRATION_STEPS.find((step) => step === value) ?? REGISTRATION_STEPS[0]
+const normalizeTotalSteps = (value: number): number =>
+  Number.isInteger(value) && value > 0 ? value : 1
+
+const normalizeStep = (value: number, totalSteps: number): RegistrationStep => {
+  if (!Number.isFinite(value)) return REGISTRATION_STEPS[0]
+
+  const boundedStep = Math.min(
+    Math.max(Math.floor(value), REGISTRATION_STEPS[0]),
+    totalSteps,
+    REGISTRATION_STEPS.length,
+  )
+
+  return REGISTRATION_STEPS.find((step) => step === boundedStep) ?? REGISTRATION_STEPS[0]
+}
 
 export default function RegisterPage({ currentStep, totalSteps }: RegisterPageProps) {
-  const [step, setStep] = useState<RegistrationStep>(() => normalizeStep(currentStep))
+  const normalizedTotalSteps = normalizeTotalSteps(totalSteps)
+  const [step, setStep] = useState<RegistrationStep>(() =>
+    normalizeStep(currentStep, normalizedTotalSteps),
+  )
+
+  useEffect(() => {
+    setStep(normalizeStep(currentStep, normalizedTotalSteps))
+  }, [currentStep, normalizedTotalSteps])
+
   return (
     <div className={styles.page}>
-      <Stepper currentStep={step} totalSteps={totalSteps} className={styles.stepper} />
+      <Stepper currentStep={step} totalSteps={normalizedTotalSteps} className={styles.stepper} />
       <RegistrationWidget
         step={step}
         onNext={() => setStep(nextStep)}
