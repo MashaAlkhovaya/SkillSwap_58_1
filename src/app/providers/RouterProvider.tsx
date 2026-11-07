@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
-import { ROUTES } from '@/shared/lib/constants'
+import { ROUTES, TOTAL_STEPS } from '@/shared/lib/constants'
 import { MainLayout } from '../Layouts/MainLayout'
 
 // Lazy-загрузка страниц — каждая страница грузится только при переходе на неё
@@ -27,7 +27,7 @@ export function AppRouter() {
             <Route path={ROUTES.LOGIN} element={<LoginPage />} />
             <Route
               path={ROUTES.REGISTER}
-              element={<RegisterPage currentStep={1} totalSteps={3} />}
+              element={<RegisterPage currentStep={1} totalSteps={TOTAL_STEPS} />}
             />
 
             {/* Защищённые маршруты — добавь PrivateRoute обёртку */}

@@ -3,8 +3,7 @@ import lightBulb from './light-bulb.svg'
 import userInfo from './user-info.svg'
 import schoolBoard from './school-board.svg'
 import styles from './RegistrationDecoration.module.css'
-
-export type RegistrationStep = 1 | 2 | 3
+import type { RegistrationStep } from '@/shared/lib/constants'
 
 interface RegistrationDecorationProps {
   step: RegistrationStep
