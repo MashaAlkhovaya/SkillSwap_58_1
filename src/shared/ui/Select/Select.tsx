@@ -51,7 +51,6 @@ export const Select = ({
         className={className}
         menuPosition="fixed"
         menuPortalTarget={typeof document === 'undefined' ? undefined : document.body}
-        styles={{ menuPortal: (base) => ({ ...base, zIndex: 1000 }) }}
         classNames={{
           control: () => styles.control,
           option: () => styles.option,
@@ -61,6 +60,7 @@ export const Select = ({
           menu: () => styles.menu,
         }}
         styles={{
+          menuPortal: (base) => ({ ...base, zIndex: 1000 }),
           menu: (base) => ({
             ...base,
             backgroundColor: 'var(--color-bg-secondary)',
