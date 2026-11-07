@@ -1,3 +1,5 @@
+import { FiltersState } from '../types'
+
 export const ROUTES = {
   HOME: '/',
   SKILL: '/skill/:id',
@@ -120,6 +122,24 @@ export type City = (typeof CITIES)[number]
 
 export const YEARS_WORDS = ['год', 'года', 'лет'] as const
 
+export const INITIAL_FILTERS_STATE: FiltersState = {
+  mode: 'all',
+  gender: null,
+  cities: [],
+  skillIds: [],
+}
+
+export const MODE_OPTIONS = [
+  { value: 'all', label: 'Всё' },
+  { value: 'wantToLearn', label: 'Хочу научиться' },
+  { value: 'canTeach', label: 'Могу научить' },
+]
+
+export const GENDER_OPTIONS = [
+  { value: 'Не имеет значения', label: 'Не имеет значения' },
+  { value: 'Мужской', label: 'Мужской' },
+  { value: 'Женский', label: 'Женский' },
+]
 // 2 MB
 export const MAX_FILE_SIZE = 2 * 1024 * 1024
 export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const

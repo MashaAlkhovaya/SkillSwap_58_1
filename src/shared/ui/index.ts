@@ -6,6 +6,10 @@ export { Radio } from './Radio'
 export { RadioGroup } from './Radio'
 export { Checkbox } from './Checkbox'
 export { CheckboxGroup } from './Checkbox'
+export { ChevronDown } from './Icons/ChevronDown'
+export { CloseIcon } from './Icons/CloseIcon'
+export { SkillCategoryGroup } from './SkillCategoryGroup'
+export { FilterSection } from './FilterSection'
 export {
   AddIcon,
   BellIcon,

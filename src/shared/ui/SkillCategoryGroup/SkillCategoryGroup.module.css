@@ -1,0 +1,84 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: var(--space-xs);
+}
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-sm);
+}
+
+.header > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.expandBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #253017;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0;
+  transition:
+    opacity 0.2s ease,
+    color 0.2s ease;
+}
+
+.container:hover .expandBtn {
+  opacity: 1;
+}
+
+.container.isExpanded .expandBtn {
+  opacity: 1;
+}
+
+.expandBtn:hover {
+  color: #333;
+}
+
+.container.isExpanded .expandBtn:hover {
+  color: #3d6b1c;
+}
+
+.icon {
+  margin-top: 5px;
+  width: 16px;
+  height: 16px;
+  transition: transform 0.3s ease;
+}
+
+.rotated {
+  transform: rotate(180deg);
+}
+
+.collapsible {
+  display: grid;
+  grid-template-rows: 0fr;
+  transition: grid-template-rows 0.3s ease-out;
+}
+
+.collapsible.expanded {
+  grid-template-rows: 1fr;
+}
+
+.subcategoriesInner {
+  overflow: hidden;
+}
+
+.subcategories {
+  padding-left: var(--space-xl);
+  padding-top: var(--space-sm);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  min-width: 0;
+  width: 100%;
+}
