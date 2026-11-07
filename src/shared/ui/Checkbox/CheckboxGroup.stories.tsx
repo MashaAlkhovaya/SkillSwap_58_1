@@ -26,7 +26,7 @@ export default meta
 
 type Story = StoryObj<typeof CheckboxGroup>
 
-const renderCheckboxGroup = (args: any) => {
+const renderCheckboxGroup = (args: React.ComponentProps<typeof CheckboxGroup>) => {
   const [values, setValues] = useState<string[]>(['2'])
 
   return (

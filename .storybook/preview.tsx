@@ -5,14 +5,35 @@ import '@/app/styles/global.css'
 
 const preview: Preview = {
   decorators: [
-    (Story) => (
-      <StoreProvider>
-        <BrowserRouter>
-          <Story />
-        </BrowserRouter>
-      </StoreProvider>
-    ),
+    (Story, context) => {
+      const theme = context.globals.theme || 'light'
+
+      return (
+        <div data-theme={theme}>
+          <StoreProvider>
+            <BrowserRouter>
+              <Story />
+            </BrowserRouter>
+          </StoreProvider>
+        </div>
+      )
+    },
   ],
+  globalTypes: {
+    theme: {
+      description: 'Theme for components',
+      defaultValue: 'light',
+      toolbar: {
+        title: 'Theme',
+        icon: 'circlehollow',
+        items: [
+          { value: 'light', title: 'Light' },
+          { value: 'dark', title: 'Dark' },
+        ],
+        dynamicTitle: true,
+      },
+    },
+  },
   parameters: {
     controls: {
       matchers: {
