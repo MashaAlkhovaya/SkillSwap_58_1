@@ -60,3 +60,14 @@ export interface AuthUser {
   email: string
   token: string
 }
+
+// ─── Filters ─────────────────────────────────────────────
+export type FilterMode = 'all' | 'wantToLearn' | 'canTeach'
+export type Gender = 'Мужской' | 'Женский'
+
+export interface FiltersState {
+  mode: FilterMode
+  gender: Gender | null
+  cities: string[]
+  skillIds: SubCategoryId[]
+}
