@@ -27,8 +27,6 @@
   border-radius: var(--radius-md);
   width: 100%;
   box-sizing: border-box;
-  background-color: var(--color-bg);
-  color: var(--color-text);
 }
 
 .input:focus {
@@ -56,11 +54,11 @@
 .calendarBtn svg {
   width: 20px;
   height: 20px;
-  fill: var(--color-text-secondary);
+  color: var(--color-text-secondary);
 }
 
-.calendarBtn:hover svg {
-  fill: var(--color-primary);
+.calendarBtn:hover:not(:disabled) svg {
+  color: var(--color-primary);
 }
 
 .popup {

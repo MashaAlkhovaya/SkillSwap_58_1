@@ -21,7 +21,7 @@
   min-height: 96px;
   padding: var(--space-md) 20px;
   background-color: var(--color-bg-secondary);
-  border: 1px dashed var(--color-text-secondary);
+  border: 1px dashed var(--color-border);
   border-radius: var(--radius-lg);
   cursor: pointer;
   transition:
@@ -58,7 +58,7 @@
 }
 
 .dropzone:hover {
-  border-color: #508826;
+  border-color: var(--color-primary-hover);
   background-color: var(--color-bg);
 }
 
@@ -70,7 +70,7 @@
 }
 
 .active {
-  border-color: #508826;
+  border-color: var(--color-primary);
   background-color: #f0f9eb;
 }
 
