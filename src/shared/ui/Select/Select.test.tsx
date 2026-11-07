@@ -1,0 +1,101 @@
+import { fireEvent, render, screen } from '@testing-library/react'
+import { Select } from './index'
+
+const options = [
+  { value: 'one', label: 'Первый вариант', key: 'one' },
+  { value: 'two', label: 'Второй вариант', key: 'two' },
+]
+
+describe('Select', () => {
+  it('связывает label с полем выбора', () => {
+    render(<Select label="Выберите вариант" options={options} onChange={vi.fn()} />)
+
+    expect(screen.getByLabelText('Выберите вариант')).toBe(screen.getByRole('combobox'))
+  })
+
+  it('передаёт выбранное значение в onChange как массив', () => {
+    const onChange = vi.fn()
+    render(<Select options={options} onChange={onChange} />)
+
+    fireEvent.keyDown(screen.getByRole('combobox'), { key: 'ArrowDown' })
+    fireEvent.click(screen.getByRole('option', { name: 'Первый вариант' }))
+
+    expect(onChange).toHaveBeenCalledWith(['one'])
+    expect(onChange).toHaveBeenCalledTimes(1)
+  })
+
+  it('открывает список и выбирает пункт мышью', () => {
+    const onChange = vi.fn()
+    render(<Select options={options} onChange={onChange} />)
+
+    const input = screen.getByRole('combobox')
+    fireEvent.keyDown(input, { key: 'ArrowDown' })
+
+    expect(input).toHaveAttribute('aria-expanded', 'true')
+    fireEvent.click(screen.getByRole('option', { name: 'Первый вариант' }))
+
+    expect(onChange).toHaveBeenCalledWith(['one'])
+    expect(onChange).toHaveBeenCalledTimes(1)
+    expect(input).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('фильтрует варианты по введённому label', () => {
+    render(<Select options={options} onChange={vi.fn()} />)
+
+    const input = screen.getByRole('combobox')
+    fireEvent.change(input, {
+      target: { value: 'ВТОРОЙ' },
+    })
+
+    expect(input).toHaveAttribute('aria-expanded', 'true')
+    expect(screen.getByRole('option', { name: 'Второй вариант' })).toBeInTheDocument()
+    expect(screen.queryByRole('option', { name: 'Первый вариант' })).not.toBeInTheDocument()
+  })
+
+  it('показывает стандартное сообщение, если вариантов нет', () => {
+    render(<Select options={options} onChange={vi.fn()} />)
+
+    const input = screen.getByRole('combobox')
+    fireEvent.change(input, {
+      target: { value: 'неизвестный вариант' },
+    })
+
+    expect(screen.getByText('No options')).toBeInTheDocument()
+    expect(screen.queryAllByRole('option')).toHaveLength(0)
+  })
+
+  it('выбирает найденный вариант и очищает поиск', () => {
+    const onChange = vi.fn()
+    render(<Select options={options} onChange={onChange} />)
+
+    const input = screen.getByRole('combobox')
+    fireEvent.change(input, {
+      target: { value: 'Второй' },
+    })
+    fireEvent.click(screen.getByRole('option', { name: 'Второй вариант' }))
+
+    expect(onChange).toHaveBeenCalledWith(['two'])
+    expect(input).toHaveValue('')
+    expect(input).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('показывает кнопку очистки и передаёт пустой массив после очистки', () => {
+    const onChange = vi.fn()
+    render(<Select options={options} onChange={onChange} />)
+
+    const input = screen.getByRole('combobox')
+    fireEvent.keyDown(input, { key: 'ArrowDown' })
+    fireEvent.click(screen.getByRole('option', { name: 'Первый вариант' }))
+
+    fireEvent.click(screen.getByRole('button', { name: 'Очистить выбор' }))
+
+    expect(onChange).toHaveBeenNthCalledWith(1, ['one'])
+    expect(onChange).toHaveBeenNthCalledWith(2, [])
+  })
+
+  it('отключает поле выбора, когда disabled равен true', () => {
+    const { container } = render(<Select options={options} onChange={vi.fn()} disabled />)
+
+    expect(container.querySelector('input')).toBeDisabled()
+  })
+})

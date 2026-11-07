@@ -1,0 +1,1 @@
+export { RegistrationDecoration } from './RegistrationDecoration'
