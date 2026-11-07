@@ -54,6 +54,7 @@ export const Select = ({
           option: () => styles.option,
           singleValue: () => styles.singleValue,
           placeholder: () => styles.placeholder,
+          input: () => styles.input,
           menu: () => styles.menu,
         }}
         styles={{
