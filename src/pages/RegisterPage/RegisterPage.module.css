@@ -1,16 +1,17 @@
 .page {
-  display: flex;
-  align-items: center;
+  display: grid;
+  place-items: center center;
   justify-content: center;
-  padding: 150px;
-  background-color: #f5f6f1;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
 }
 
-.layout {
-  display: grid;
-  grid-template-columns: 50% 50%;
-  gap: var(--space-lg);
-  height: 692px;
+.left {
+  justify-self: end;
+}
+
+.right {
+  justify-self: start;
 }
 
 .stepper {

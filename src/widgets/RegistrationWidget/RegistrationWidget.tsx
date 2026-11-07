@@ -14,6 +14,7 @@ interface RegistrationWidgetProps {
   step: RegistrationStep
   onNext?: () => void
   onBack?: () => void
+  className?: string
 }
 
 const GoogleIcon = () => (
@@ -72,7 +73,12 @@ const CATEGORY_OPTIONS = SKILL_CATEGORIES.map((category) => ({
 const isCategoryId = (value: string): value is CategoryId =>
   SKILL_CATEGORIES.some((category) => category.id === value)
 
-export function RegistrationWidget({ step, onNext, onBack }: RegistrationWidgetProps) {
+export function RegistrationWidget({
+  step,
+  onNext,
+  onBack,
+  className: outerClassName,
+}: RegistrationWidgetProps) {
   const className = clsx(styles.widget, {
     [styles['step-1']]: step === 1,
     [styles['step-2']]: step === 2,
@@ -92,7 +98,7 @@ export function RegistrationWidget({ step, onNext, onBack }: RegistrationWidgetP
     : []
 
   return (
-    <div className={className}>
+    <div className={clsx(className, outerClassName)}>
       {/* --- ШАГ 1 --- */}
       {step === 1 && (
         <>

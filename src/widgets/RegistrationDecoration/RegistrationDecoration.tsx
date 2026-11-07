@@ -4,9 +4,11 @@ import userInfo from './user-info.svg'
 import schoolBoard from './school-board.svg'
 import styles from './RegistrationDecoration.module.css'
 import type { RegistrationStep } from '@/shared/lib/constants'
+import clsx from 'clsx'
 
 interface RegistrationDecorationProps {
   step: RegistrationStep
+  className?: string
 }
 
 const stepContent = {
@@ -27,11 +29,11 @@ const stepContent = {
   },
 } as const
 
-export function RegistrationDecoration({ step }: RegistrationDecorationProps) {
+export function RegistrationDecoration({ step, className }: RegistrationDecorationProps) {
   const { image, title, description } = stepContent[step]
 
   return (
-    <section className={styles.card} aria-label="Информация о регистрации">
+    <section className={clsx(styles.card, className)} aria-label="Информация о регистрации">
       <div className={styles.content}>
         <img className={styles.image} src={image} alt="" />
 

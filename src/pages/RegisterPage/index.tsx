@@ -27,17 +27,14 @@ export default function RegisterPage({ currentStep, totalSteps }: RegisterPagePr
   const [step, setStep] = useState<RegistrationStep>(() => normalizeStep(currentStep))
   return (
     <div className={styles.page}>
-      <div className={styles.layout}>
-        <div className={styles.stepper}>
-          <Stepper currentStep={step} totalSteps={totalSteps} />
-        </div>
-        <RegistrationWidget
-          step={step}
-          onNext={() => setStep(nextStep)}
-          onBack={() => setStep(previousStep)}
-        />
-        <RegistrationDecoration step={step} />
-      </div>
+      <Stepper currentStep={step} totalSteps={totalSteps} className={styles.stepper} />
+      <RegistrationWidget
+        step={step}
+        onNext={() => setStep(nextStep)}
+        onBack={() => setStep(previousStep)}
+        className={styles.left}
+      />
+      <RegistrationDecoration step={step} className={styles.right} />
     </div>
   )
 }
