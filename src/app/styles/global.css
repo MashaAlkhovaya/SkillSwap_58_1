@@ -12,6 +12,12 @@
   --color-border: #e5e7eb;
   --color-error: #ef4444;
   --color-success: #22c55e;
+  --color-bg-surface: #fff;
+  --color-text-main: #253017;
+  --color-border-strong: #69735d;
+  --color-text-placeholder: #69735d;
+  --color-link: #508826;
+  --color-text-caption: #69735d;
 
   /* Spacing */
   --space-xs: 4px;

@@ -25,6 +25,27 @@
   pointer-events: none;
 }
 
+.singleValue {
+  color: var(--color-text);
+}
+
+.placeholder {
+  color: var(--color-text-secondary);
+}
+
+.menu {
+  background-color: var(--color-bg-secondary);
+}
+
+.option {
+  background-color: transparent;
+  color: var(--color-text);
+}
+
+.optionFocused {
+  background-color: var(--color-bg);
+}
+
 .clearIndicator {
   display: flex;
   align-items: center;

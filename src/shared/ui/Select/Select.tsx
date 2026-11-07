@@ -52,23 +52,11 @@ export const Select = ({
         classNames={{
           control: () => styles.control,
           option: () => styles.option,
+          singleValue: () => styles.singleValue,
+          placeholder: () => styles.placeholder,
+          menu: () => styles.menu,
         }}
         styles={{
-          control: (base) => ({
-            ...base,
-            backgroundColor: 'var(--color-bg)',
-            borderColor: 'var(--color-border)',
-            color: 'var(--color-text)',
-            minHeight: 48,
-          }),
-          singleValue: (base) => ({
-            ...base,
-            color: 'var(--color-text)',
-          }),
-          placeholder: (base) => ({
-            ...base,
-            color: 'var(--color-text-secondary)',
-          }),
           menu: (base) => ({
             ...base,
             backgroundColor: 'var(--color-bg-secondary)',
@@ -76,6 +64,10 @@ export const Select = ({
           option: (base, state) => ({
             ...base,
             backgroundColor: state.isFocused ? 'var(--color-bg)' : 'transparent',
+            color: 'var(--color-text)',
+          }),
+          singleValue: (base) => ({
+            ...base,
             color: 'var(--color-text)',
           }),
         }}
