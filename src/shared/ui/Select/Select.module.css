@@ -5,10 +5,12 @@
 } */
 
 .control.control {
-  border: 1px solid #69735d;
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   box-shadow: none;
   height: 48px;
+  background-color: var(--color-bg);
+  color: var(--color-text);
 }
 
 .control.control:hover {
@@ -21,6 +23,27 @@
 
 .optionCheckbox {
   pointer-events: none;
+}
+
+.singleValue {
+  color: var(--color-text);
+}
+
+.placeholder {
+  color: var(--color-text-secondary);
+}
+
+.menu {
+  background-color: var(--color-bg-secondary);
+}
+
+.option {
+  background-color: transparent;
+  color: var(--color-text);
+}
+
+.optionFocused {
+  background-color: var(--color-bg);
 }
 
 .clearIndicator {

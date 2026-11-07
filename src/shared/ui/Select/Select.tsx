@@ -52,6 +52,24 @@ export const Select = ({
         classNames={{
           control: () => styles.control,
           option: () => styles.option,
+          singleValue: () => styles.singleValue,
+          placeholder: () => styles.placeholder,
+          menu: () => styles.menu,
+        }}
+        styles={{
+          menu: (base) => ({
+            ...base,
+            backgroundColor: 'var(--color-bg-secondary)',
+          }),
+          option: (base, state) => ({
+            ...base,
+            backgroundColor: state.isFocused ? 'var(--color-bg)' : 'transparent',
+            color: 'var(--color-text)',
+          }),
+          singleValue: (base) => ({
+            ...base,
+            color: 'var(--color-text)',
+          }),
         }}
       />
     </div>

@@ -226,7 +226,6 @@
   border-color: var(--color-primary, #508826);
 }
 
-[data-theme='dark'] .widget {
-  border-color: var(--color-border);
-  background: var(--color-bg-secondary);
+[data-theme='dark'] label {
+  color: var(--color-text);
 }
