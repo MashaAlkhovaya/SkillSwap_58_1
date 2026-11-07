@@ -39,6 +39,16 @@ describe('Select', () => {
     expect(input).toHaveAttribute('aria-expanded', 'false')
   })
 
+  it('рендерит раскрытый список вне контейнера селекта', () => {
+    const { container } = render(<Select options={options} onChange={vi.fn()} />)
+
+    fireEvent.keyDown(screen.getByRole('combobox'), { key: 'ArrowDown' })
+
+    const menu = screen.getByRole('listbox')
+    expect(container).not.toContainElement(menu)
+    expect(document.body).toContainElement(menu)
+  })
+
   it('фильтрует варианты по введённому label', () => {
     render(<Select options={options} onChange={vi.fn()} />)
 

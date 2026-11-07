@@ -49,6 +49,9 @@ export const Select = ({
         onChange={(selected) => onChange(selected ? [selected.value] : [])}
         components={{ ClearIndicator }}
         className={className}
+        menuPosition="fixed"
+        menuPortalTarget={typeof document === 'undefined' ? undefined : document.body}
+        styles={{ menuPortal: (base) => ({ ...base, zIndex: 1000 }) }}
         classNames={{
           control: () => styles.control,
           option: () => styles.option,
