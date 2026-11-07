@@ -1,3 +1,5 @@
+export * from './ChevronDown'
+export * from './CloseIcon'
 export type { IconProps } from './Icon'
 export type { HeartIconProps } from './HeartIcon'
 export type { BellIconProps } from './BellIcon'
