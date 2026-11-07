@@ -1,10 +1,9 @@
-import { RegistrationStep } from '@/shared/lib/constants'
 import styles from './Stepper.module.css'
 import clsx from 'clsx'
 
 interface StepperProps {
   totalSteps: number
-  currentStep: RegistrationStep
+  currentStep: number
   className?: string
 }
 
