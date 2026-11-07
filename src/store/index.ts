@@ -1,14 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit'
 import skillsReducer from '@/entities/skill/model/skillsSlice'
 import usersReducer from '@/entities/user/model/usersSlice'
-// import authReducer from '@/features/auth/model/authSlice'
+import authReducer from '@/features/auth/model/authSlice'
 import notificationsReducer from '@/features/notifications/model/notificationsSlice'
 
 export const store = configureStore({
   reducer: {
     skills: skillsReducer,
     users: usersReducer,
-    // auth: authReducer,
+    auth: authReducer,
     notifications: notificationsReducer,
   },
 })
