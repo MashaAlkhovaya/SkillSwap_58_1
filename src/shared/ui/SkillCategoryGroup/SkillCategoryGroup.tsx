@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import clsx from 'clsx'
 import { Checkbox, CheckboxGroup } from '../Checkbox'
 import { Category, SubCategoryId } from '../../lib/constants'
-import { ChevronDown } from '../Icons'
+import { ChevronDown } from '@/shared/ui/icons'
 import styles from './SkillCategoryGroup.module.css'
 
 interface SkillCategoryGroupProps {
