@@ -58,6 +58,8 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(function Select(
         onChange={(selected) => onChange(selected ? [selected.value] : [])}
         components={{ ClearIndicator }}
         className={className}
+        menuPosition="fixed"
+        menuPortalTarget={typeof document === 'undefined' ? undefined : document.body}
         classNames={{
           control: () => styles.control,
           option: () => styles.option,
@@ -67,6 +69,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(function Select(
           menu: () => styles.menu,
         }}
         styles={{
+          menuPortal: (base) => ({ ...base, zIndex: 1000 }),
           menu: (base) => ({
             ...base,
             backgroundColor: 'var(--color-bg-secondary)',

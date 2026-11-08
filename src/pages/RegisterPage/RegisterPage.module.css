@@ -1,0 +1,20 @@
+.page {
+  display: grid;
+  place-items: center center;
+  justify-content: center;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-lg);
+}
+
+.left {
+  justify-self: end;
+}
+
+.right {
+  justify-self: start;
+}
+
+.stepper {
+  grid-column: 1 / -1;
+  justify-self: center;
+}
