@@ -34,6 +34,14 @@
   --footer-padding-inline: 36px;
   --footer-link-gap: 12px;
 
+  /* Chip */
+  --chip-business-bg: #eee7f7;
+  --chip-art-bg: #f7e7f2;
+  --chip-languages-bg: #ebe5c5;
+  --chip-education-bg: #e7f2f6;
+  --chip-home-coziness-bg: #f7ebe5;
+  --chip-health-bg: #e9f7e7;
+
   /* Typography */
   --font-family-base: 'Roboto', 'Open Sans', system-ui, -apple-system, sans-serif;
   --font-family-heading: 'Jost', 'Open Sans', system-ui, -apple-system, sans-serif;
@@ -72,6 +80,12 @@
   --color-text-placeholder: #94a3b8;
   --color-link: #86efac;
   --color-text-caption: #94a3b8;
+  --chip-business-bg: #4d3960;
+  --chip-art-bg: #603954;
+  --chip-languages-bg: #605a39;
+  --chip-education-bg: #395560;
+  --chip-home-coziness-bg: #604639;
+  --chip-health-bg: #3e6039;
 }
 
 /* ─── Reset ──────────────────────────────────────────────── */
