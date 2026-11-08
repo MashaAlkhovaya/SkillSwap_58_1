@@ -1,7 +1,6 @@
 import { fireEvent, render, screen, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
-import type { RegistrationStep } from '@/shared/lib/constants'
-import RegisterPage from './index'
+import RegisterPage, { RegistrationStep } from './index'
 
 const stepTitles = {
   1: 'Добро пожаловать в SkillSwap!',

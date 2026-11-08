@@ -8,10 +8,10 @@ import { Select } from '@/shared/ui/Select'
 import { AvatarPlaceholderIcon } from '@/shared/ui/FileInput/AvatarPlaceholderIcon'
 import styles from './RegistrationWidget.module.css'
 import { CITIES, SKILL_CATEGORIES, ALLOWED_IMAGE_TYPES } from '@/shared/lib/constants'
-import type { CategoryId, RegistrationStep } from '@/shared/lib/constants'
+import type { CategoryId } from '@/shared/lib/constants'
 
 interface RegistrationWidgetProps {
-  step: RegistrationStep
+  step: number
   onNext?: () => void
   onBack?: () => void
   className?: string

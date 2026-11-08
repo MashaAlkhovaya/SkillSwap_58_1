@@ -3,8 +3,8 @@ import lightBulb from './light-bulb.svg'
 import userInfo from './user-info.svg'
 import schoolBoard from './school-board.svg'
 import styles from './RegistrationDecoration.module.css'
-import type { RegistrationStep } from '@/shared/lib/constants'
 import clsx from 'clsx'
+import { RegistrationStep } from '@/pages/RegisterPage'
 
 interface RegistrationDecorationProps {
   step: RegistrationStep
