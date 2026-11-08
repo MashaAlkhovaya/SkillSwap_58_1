@@ -8,28 +8,29 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  color: var(--color-text);
 }
 
 .business {
-  background-color: #eee7f7;
+  background-color: var(--chip-business-bg);
 }
 
 .art {
-  background-color: #f7e7f2;
+  background-color: var(--chip-art-bg);
 }
 
 .languages {
-  background-color: #ebe5c5;
+  background-color: var(--chip-languages-bg);
 }
 
 .education {
-  background-color: #e7f2f6;
+  background-color: var(--chip-education-bg);
 }
 
 .home-coziness {
-  background-color: #f7ebe5;
+  background-color: var(--chip-home-coziness-bg);
 }
 
 .health {
-  background-color: #e9f7e7;
+  background-color: var(--chip-health-bg);
 }
