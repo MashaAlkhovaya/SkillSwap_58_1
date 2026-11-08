@@ -2,9 +2,8 @@
   display: flex;
   align-items: center;
   cursor: pointer;
-  width: fit-content;
-  padding: 4px 8px;
-  border-radius: 4px;
+  width: 95%;
+  border-radius: var(--radius-sm);
   transition: opacity 0.2s ease;
 }
 
@@ -17,7 +16,7 @@
 
 .label:has(.hiddenInput:focus-visible) {
   outline: 2px solid #abd27a;
-  outline-offset: 0;
+  outline-offset: var(--space-xs);
 }
 
 .iconWrapper {
@@ -26,7 +25,7 @@
   justify-content: center;
   margin-right: var(--space-sm);
   flex-shrink: 0;
-  color: #253017;
+  color: var(--color-text-main);
   transition: color 0.2s ease;
 }
 
@@ -40,7 +39,7 @@
 }
 
 .iconWrapper.active {
-  color: #508826;
+  color: var(--color-link);
 }
 
 .iconWrapper.active circle {
@@ -61,11 +60,11 @@
 }
 
 .label:not(.disabled):hover .iconWrapper {
-  color: #508826;
+  color: var(--color-link);
 }
 
 .text {
   font-size: var(--font-size-base);
-  color: #253017;
+  color: var(--color-text-main);
   line-height: 1.5;
 }
