@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from 'react'
+import { useState, useRef, useEffect, forwardRef } from 'react'
 import clsx from 'clsx'
 import { TextInput } from '../TextInput'
 import { Button } from '../Button'
@@ -83,14 +83,10 @@ const formatDigits = (digits: string) => {
   return parts.join('.')
 }
 
-export const DateInput = ({
-  name,
-  label,
-  value,
-  onChange,
-  disabled = false,
-  className,
-}: DateInputProps) => {
+export const DateInput = forwardRef<HTMLInputElement, DateInputProps>(function DateInput(
+  { name, label, value, onChange, disabled = false, className },
+  ref,
+) {
   const [isOpen, setIsOpen] = useState(false)
   const wrapperRef = useRef<HTMLDivElement | null>(null)
   const [selectedDate, setSelectedDate] = useState<Date | undefined>(
@@ -166,6 +162,7 @@ export const DateInput = ({
       )}
       <div className={styles.inputWrapper}>
         <TextInput
+          ref={ref}
           id={name}
           type="text"
           inputMode="numeric"
@@ -250,4 +247,4 @@ export const DateInput = ({
       )}
     </div>
   )
-}
+})

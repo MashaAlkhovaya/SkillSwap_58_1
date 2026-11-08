@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react'
+import { forwardRef, useCallback, useRef, useState } from 'react'
 import clsx from 'clsx'
 import styles from './FileInput.module.css'
 import { FileInputIcon } from './FileInputIcon'
@@ -9,10 +9,24 @@ export interface FileInputProps {
   variant?: 'skill' | 'avatar'
 }
 
-export function FileInput({ onChange, variant = 'skill' }: FileInputProps) {
+export const FileInput = forwardRef<HTMLInputElement, FileInputProps>(function FileInput(
+  { onChange, variant = 'skill' },
+  ref,
+) {
   const [preview, setPreview] = useState<string | null>(null)
   const [isDragOver, setIsDragOver] = useState(false)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<HTMLInputElement | null>(null)
+  const setInputRef = useCallback(
+    (node: HTMLInputElement | null) => {
+      inputRef.current = node
+      if (typeof ref === 'function') {
+        ref(node)
+      } else if (ref) {
+        ref.current = node
+      }
+    },
+    [ref],
+  )
 
   const handleFile = (file: File) => {
     const previewUrl = URL.createObjectURL(file)
@@ -54,7 +68,7 @@ export function FileInput({ onChange, variant = 'skill' }: FileInputProps) {
       >
         <input
           type="file"
-          ref={inputRef}
+          ref={setInputRef}
           onChange={handleInputChange}
           accept="image/jpeg, image/png, image/webp"
           hidden
@@ -80,4 +94,4 @@ export function FileInput({ onChange, variant = 'skill' }: FileInputProps) {
       </div>
     </div>
   )
-}
+})
