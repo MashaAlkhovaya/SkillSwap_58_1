@@ -1,6 +1,6 @@
 import styles from './Select.module.css'
-import { useId } from 'react'
-import ReactSelect, { type ClearIndicatorProps } from 'react-select'
+import { forwardRef, useCallback, useId, useRef } from 'react'
+import ReactSelect, { type ClearIndicatorProps, type SelectInstance } from 'react-select'
 
 interface SelectItem {
   value: string
@@ -28,19 +28,28 @@ const ClearIndicator = ({ clearValue }: ClearIndicatorProps<SelectItem>) => (
   </button>
 )
 
-export const Select = ({
-  label,
-  placeholder,
-  options,
-  onChange,
-  disabled = false,
-  className,
-}: SelectProps) => {
+export const Select = forwardRef<HTMLInputElement, SelectProps>(function Select(
+  { label, placeholder, options, onChange, disabled = false, className },
+  ref,
+) {
   const id = useId()
+  const forwardedRef = useRef(ref)
+  forwardedRef.current = ref
+  const setSelectRef = useCallback((instance: SelectInstance<SelectItem> | null) => {
+    const node = instance?.inputRef ?? null
+    const currentRef = forwardedRef.current
+    if (typeof currentRef === 'function') {
+      currentRef(node)
+    } else if (currentRef) {
+      currentRef.current = node
+    }
+  }, [])
+
   return (
     <div>
       {label && <label htmlFor={id}>{label}</label>}
       <ReactSelect<SelectItem>
+        ref={setSelectRef}
         inputId={id}
         options={options}
         placeholder={placeholder ?? ''}
@@ -75,4 +84,4 @@ export const Select = ({
       />
     </div>
   )
-}
+})

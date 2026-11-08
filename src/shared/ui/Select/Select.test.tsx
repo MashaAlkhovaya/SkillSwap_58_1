@@ -1,3 +1,4 @@
+import { createRef } from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { Select } from './index'
 
@@ -97,5 +98,12 @@ describe('Select', () => {
     const { container } = render(<Select options={options} onChange={vi.fn()} disabled />)
 
     expect(container.querySelector('input')).toBeDisabled()
+  })
+
+  it('прокидывает ref на поле выбора', () => {
+    const ref = createRef<HTMLInputElement>()
+    render(<Select ref={ref} options={options} onChange={vi.fn()} />)
+
+    expect(ref.current).toBe(screen.getByRole('combobox'))
   })
 })

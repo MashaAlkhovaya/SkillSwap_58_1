@@ -1,3 +1,4 @@
+import { createRef } from 'react'
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent } from '@testing-library/react'
 import { FileInput } from './FileInput'
@@ -42,5 +43,18 @@ describe('FileInput', () => {
     })
 
     expect(handleChange).toHaveBeenCalledWith(file)
+  })
+
+  it('прокидывает ref на input файла и оставляет клик по зоне выбора', () => {
+    const ref = createRef<HTMLInputElement>()
+    render(<FileInput ref={ref} onChange={vi.fn()} />)
+
+    const input = document.querySelector('input[type="file"]')
+    expect(ref.current).toBe(input)
+
+    const click = vi.spyOn(ref.current as HTMLInputElement, 'click')
+    fireEvent.click(input?.parentElement as HTMLDivElement)
+
+    expect(click).toHaveBeenCalled()
   })
 })
