@@ -2,8 +2,11 @@ import { RegistrationDecoration } from '@/widgets'
 import styles from './RegisterPage.module.css'
 import { Stepper } from '@/shared/ui'
 import { RegistrationWidget } from '@/widgets/RegistrationWidget'
-import { REGISTRATION_STEPS, RegistrationStep } from '@/shared/lib/constants'
+
 import { useEffect, useState } from 'react'
+export const REGISTRATION_STEPS = [1, 2, 3] as const
+export type RegistrationStep = (typeof REGISTRATION_STEPS)[number]
+export const TOTAL_STEPS = REGISTRATION_STEPS.length
 
 interface RegisterPageProps {
   currentStep: RegistrationStep

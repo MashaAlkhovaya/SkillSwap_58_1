@@ -143,7 +143,3 @@ export const GENDER_OPTIONS = [
 // 2 MB
 export const MAX_FILE_SIZE = 2 * 1024 * 1024
 export const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'] as const
-
-export const REGISTRATION_STEPS = [1, 2, 3] as const
-export type RegistrationStep = (typeof REGISTRATION_STEPS)[number]
-export const TOTAL_STEPS = REGISTRATION_STEPS.length
