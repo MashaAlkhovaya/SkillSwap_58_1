@@ -1,0 +1,110 @@
+import { render, screen, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { describe, expect, it, vi } from 'vitest'
+import type { User } from '@/shared/types'
+import { CatalogSection } from './CatalogSection'
+
+function createUsers(count: number): User[] {
+  return Array.from({ length: count }, (_, index) => ({
+    id: `user-${index + 1}`,
+    name: `Пользователь ${index + 1}`,
+    email: `user${index + 1}@example.com`,
+    avatarUrl: null,
+    birthDate: '1995-02-08',
+    gender: 'female',
+    city: 'Санкт-Петербург',
+    bio: '',
+    createdAt: '2025-01-16T11:15:00.000Z',
+    likes: [],
+    canTeach: {
+      id: `skill-${index + 1}`,
+      category: 'art',
+      subCategory: 'music-sound',
+    },
+    wantsToLearn: ['acting'],
+  }))
+}
+
+describe('CatalogSection', () => {
+  it('показывает 3 карточки, раскрывает до 9 и сворачивает обратно', async () => {
+    const user = userEvent.setup()
+
+    render(
+      <CatalogSection
+        title="Популярное"
+        users={createUsers(12)}
+        favoriteIds={[]}
+        onDetails={() => {}}
+        onFavoriteToggle={() => {}}
+      />,
+    )
+
+    expect(screen.getAllByRole('button', { name: 'Подробнее' })).toHaveLength(3)
+
+    const toggle = screen.getByRole('button', { name: 'Смотреть все' })
+    expect(toggle).toHaveAttribute('aria-expanded', 'false')
+
+    await user.click(toggle)
+
+    expect(screen.getAllByRole('button', { name: 'Подробнее' })).toHaveLength(9)
+    expect(screen.getByRole('button', { name: 'Скрыть' })).toHaveAttribute('aria-expanded', 'true')
+
+    await user.click(screen.getByRole('button', { name: 'Скрыть' }))
+
+    expect(screen.getAllByRole('button', { name: 'Подробнее' })).toHaveLength(3)
+  })
+
+  it('не показывает кнопку раскрытия, если карточек не больше трёх', () => {
+    render(
+      <CatalogSection
+        title="Новое"
+        users={createUsers(3)}
+        favoriteIds={[]}
+        onDetails={() => {}}
+        onFavoriteToggle={() => {}}
+      />,
+    )
+
+    expect(screen.getAllByRole('button', { name: 'Подробнее' })).toHaveLength(3)
+    expect(screen.queryByRole('button', { name: 'Смотреть все' })).not.toBeInTheDocument()
+  })
+
+  it('передаёт выбранного пользователя в обработчик', async () => {
+    const user = userEvent.setup()
+    const users = createUsers(2)
+    const onDetails = vi.fn()
+
+    render(
+      <CatalogSection
+        title="Каталог"
+        users={users}
+        favoriteIds={[]}
+        onDetails={onDetails}
+        onFavoriteToggle={() => {}}
+      />,
+    )
+
+    const section = screen.getByRole('region', { name: 'Каталог' })
+    const detailsButtons = within(section).getAllByRole('button', { name: 'Подробнее' })
+
+    await user.click(detailsButtons[1])
+
+    expect(onDetails).toHaveBeenCalledWith(users[1])
+  })
+
+  it('позволяет скрыть кнопку раскрытия', () => {
+    render(
+      <CatalogSection
+        title="Рекомендуем"
+        users={createUsers(5)}
+        favoriteIds={[]}
+        onDetails={() => {}}
+        onFavoriteToggle={() => {}}
+        showExpandButton={false}
+      />,
+    )
+
+    expect(screen.getAllByRole('button', { name: 'Подробнее' })).toHaveLength(3)
+    expect(screen.queryByRole('button', { name: 'Смотреть все' })).not.toBeInTheDocument()
+  })
+})
