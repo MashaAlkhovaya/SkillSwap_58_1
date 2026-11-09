@@ -7,7 +7,7 @@ import { SearchIcon } from '@/shared/ui/icons'
 import styles from './Header.module.css'
 import { logout, selectAuthUser } from '@/features/auth/model/authSlice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { Dropdown } from '@/shared/ui/Dropdown'
+import { Dropdown } from '@/shared/ui'
 
 export function Header() {
   const user = useAppSelector(selectAuthUser)
