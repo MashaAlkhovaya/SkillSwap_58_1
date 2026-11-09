@@ -1,40 +1,14 @@
-import { yupResolver } from '@hookform/resolvers/yup'
-import { FormProvider, useForm, useFormContext, useWatch } from 'react-hook-form'
-import type { ReactNode } from 'react'
+import { useFormContext, useWatch } from 'react-hook-form'
 import { SKILL_CATEGORIES } from '@/shared/lib/constants'
-import {
-  registrationDefaultValues,
-  registrationSchema,
-  registrationStepFields,
-  type RegistrationFormValues,
-} from './registrationSchema'
-
-interface RegistrationFormProviderProps {
-  children: ReactNode
-  onSubmit: (values: RegistrationFormValues) => void
-}
-
-export const RegistrationFormProvider = ({ children, onSubmit }: RegistrationFormProviderProps) => {
-  const form = useForm<RegistrationFormValues>({
-    defaultValues: registrationDefaultValues,
-    resolver: yupResolver(registrationSchema),
-    shouldUnregister: false,
-    mode: 'onTouched',
-  })
-  return (
-    <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
-        {children}
-      </form>
-    </FormProvider>
-  )
-}
+import { registrationStepFields, type RegistrationFormValues } from './registrationSchema'
 
 export const useRegistrationForm = () => {
   const form = useFormContext<RegistrationFormValues>()
   const { control, setValue } = form
+
   const wantedCategory = useWatch({ control, name: 'wantedCategory' })
   const teachCategory = useWatch({ control, name: 'teachCategory' })
+
   const wantedSubcategoryOptions =
     SKILL_CATEGORIES.find((category) => category.id === wantedCategory)?.subcategories.map(
       (subcategory) => ({ value: subcategory.id, label: subcategory.title }),
@@ -43,10 +17,12 @@ export const useRegistrationForm = () => {
     SKILL_CATEGORIES.find((category) => category.id === teachCategory)?.subcategories.map(
       (subcategory) => ({ value: subcategory.id, label: subcategory.title }),
     ) ?? []
+
   const validateStep = (step: 1 | 2) => form.trigger(registrationStepFields[step])
   const continueStep = async (step: 1 | 2, onNext?: () => void) => {
     if (await validateStep(step)) onNext?.()
   }
+
   const setCategory = (field: 'wantedCategory' | 'teachCategory', value: string | undefined) => {
     const categoryId = SKILL_CATEGORIES.find((category) => category.id === value)?.id ?? ''
     const subcategoryField = field === 'wantedCategory' ? 'wantedSubCategory' : 'teachSubCategory'

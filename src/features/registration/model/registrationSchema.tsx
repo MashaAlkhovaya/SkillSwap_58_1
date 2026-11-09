@@ -7,7 +7,7 @@ export const registrationSchema = object({
     .min(8, 'Длина пароля должна быть не менее 8 символов')
     .required('Введите пароль'),
   avatar: mixed<File>().nullable().defined(),
-  name: string().trim().min(2, 'Минимальная длина - 2 символа').required('Введите имя'),
+  name: string().trim().required('Введите имя').min(2, 'Минимальная длина - 2 символа'),
   birthDate: string()
     .required('Введите дату рождения')
     .test('valid-date', 'Введите корректную дату рождения', (value) => {
