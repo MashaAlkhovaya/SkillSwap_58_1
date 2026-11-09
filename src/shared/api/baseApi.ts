@@ -4,10 +4,12 @@ const getToken = (): string | null => {
   return localStorage.getItem('token')
 }
 
+const isTest = typeof process !== 'undefined' && process.env.NODE_ENV === 'test'
+
 export const baseApi = createApi({
   reducerPath: 'baseApi',
   baseQuery: fetchBaseQuery({
-    baseUrl: '/api',
+    baseUrl: isTest ? 'http://localhost/api' : '/api',
     prepareHeaders: (headers) => {
       const token = getToken()
       if (token) {
@@ -16,5 +18,6 @@ export const baseApi = createApi({
       return headers
     },
   }),
+  tagTypes: ['Skill'],
   endpoints: () => ({}),
 })
