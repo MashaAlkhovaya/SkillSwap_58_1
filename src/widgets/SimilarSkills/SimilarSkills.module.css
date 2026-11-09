@@ -1,0 +1,95 @@
+.section {
+  width: 100%;
+  max-width: 1368px;
+  color: var(--color-text-main);
+}
+
+.heading {
+  margin-bottom: var(--space-xl);
+}
+
+.carousel {
+  position: relative;
+}
+
+.navButton.navButton {
+  position: absolute;
+  top: 50%;
+  z-index: 1;
+  width: 32px;
+  height: 32px;
+  min-width: 32px;
+  min-height: 32px;
+  padding: 0;
+  color: #253017;
+  background: #e4e8df;
+  border: none;
+  border-radius: 50%;
+  box-shadow: none;
+}
+
+.navButton.navButton:hover:not(:disabled) {
+  color: #253017;
+  background: #e4e8df;
+  border: none;
+  box-shadow: none;
+  filter: brightness(0.97);
+}
+
+.navButton.navButton:focus-visible:not(:disabled) {
+  color: #253017;
+  background: #e4e8df;
+  border: none;
+  box-shadow: none;
+  outline: 2px solid #253017;
+  outline-offset: 2px;
+}
+
+.navButton > span:nth-child(2) {
+  display: none;
+}
+
+.navButton span svg {
+  width: 16px;
+  height: 16px;
+}
+
+.navPrev {
+  left: 0;
+  transform: translate(-50%, -50%);
+}
+
+.navNext {
+  right: 0;
+  transform: translate(50%, -50%);
+}
+
+.prevIcon {
+  transform: rotate(180deg);
+}
+
+.viewport {
+  overflow: hidden;
+}
+
+.track {
+  display: flex;
+  gap: var(--space-lg);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  touch-action: pan-y pinch-zoom;
+}
+
+.slide {
+  flex: 0 0 324px;
+  width: 324px;
+  min-width: 0;
+}
+
+@media (width <= 700px) {
+  .slide {
+    flex-basis: min(324px, 100%);
+    width: min(324px, 100%);
+  }
+}
