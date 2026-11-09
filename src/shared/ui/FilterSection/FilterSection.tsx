@@ -1,7 +1,7 @@
 import React from 'react'
 import clsx from 'clsx'
-import { ChevronDown } from '@/shared/ui/icons'
-import { Text } from '../Text/Text'
+import { ChevronDown } from '@/shared/ui'
+import { Text } from '../Text'
 import styles from './FilterSection.module.css'
 
 interface FilterSectionProps {

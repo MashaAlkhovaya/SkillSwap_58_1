@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { TextInput } from './index'
-import { SearchIcon } from '@/shared/ui/icons'
+import { SearchIcon } from '@/shared/ui'
 
 const meta: Meta<typeof TextInput> = {
   title: 'shared/ui/TextInput',

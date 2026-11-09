@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ROUTES } from '@/shared/lib/constants'
-import { Logo } from '@/shared/ui/Logo'
+import { Logo } from '@/shared/ui'
 import styles from './Footer.module.css'
 
 const linkGroups = [
