@@ -1,9 +1,9 @@
 import { Link } from 'react-router-dom'
 import { ROUTES } from '@/shared/lib/constants'
-import { Logo } from '@/shared/ui/Logo'
-import { TextInput } from '@/shared/ui/TextInput'
-import { Button } from '@/shared/ui/Button'
-import { SearchIcon } from '@/shared/ui/icons'
+import { Logo } from '@/shared/ui'
+import { TextInput } from '@/shared/ui'
+import { Button } from '@/shared/ui'
+import { SearchIcon } from '@/shared/ui'
 import styles from './Header.module.css'
 
 export function Header() {

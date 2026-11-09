@@ -37,6 +37,17 @@ export default tseslint.config(
       '@typescript-eslint/no-unused-vars': ['warn', { argsIgnorePattern: '^_' }],
       '@typescript-eslint/explicit-function-return-type': 'off',
       '@typescript-eslint/no-explicit-any': 'warn',
+      'no-restricted-imports': [
+        'error',
+        {
+          patterns: [
+            {
+              group: ['@/shared/ui/*', '@/shared/ui/*/*'],
+              message: 'Импортируйте компоненты из публичного входа: @/shared/ui',
+            },
+          ],
+        },
+      ],
     },
     settings: {
       react: {
