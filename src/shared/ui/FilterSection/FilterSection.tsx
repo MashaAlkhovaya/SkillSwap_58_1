@@ -1,6 +1,6 @@
 import React from 'react'
 import clsx from 'clsx'
-import { ChevronDown } from '../Icons/ChevronDown'
+import { ChevronDown } from '../icons/ChevronDown'
 import { Text } from '../Text/Text'
 import styles from './FilterSection.module.css'
 
