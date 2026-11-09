@@ -12,7 +12,7 @@ export const MainLayout = () => {
 
   return (
     <div className={styles.layout}>
-      {!isLayoutless && <Header />}
+      <Header />
 
       <main className={styles.content}>
         {/* Outlet — это место, куда будут подставляться страницы */}

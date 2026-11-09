@@ -14,24 +14,26 @@ const renderLayout = (path: string) =>
   )
 
 describe('MainLayout', () => {
+  it('всегда показывает Header', () => {
+    renderLayout('/')
+    expect(screen.getByRole('banner')).toBeInTheDocument()
+  })
+
   it('показывает Header и Footer на обычной странице', () => {
     renderLayout('/')
-
     expect(screen.getByRole('banner')).toBeInTheDocument()
     expect(screen.getByRole('contentinfo')).toBeInTheDocument()
   })
 
-  it('скрывает Header и Footer на /login', () => {
+  it('на /login скрывает Footer, Header остаётся', () => {
     renderLayout('/login')
-
-    expect(screen.queryByRole('banner')).not.toBeInTheDocument()
+    expect(screen.getByRole('banner')).toBeInTheDocument()
     expect(screen.queryByRole('contentinfo')).not.toBeInTheDocument()
   })
 
-  it('скрывает Header и Footer на /register', () => {
+  it('на /register скрывает Footer, Header остаётся', () => {
     renderLayout('/register')
-
-    expect(screen.queryByRole('banner')).not.toBeInTheDocument()
+    expect(screen.getByRole('banner')).toBeInTheDocument()
     expect(screen.queryByRole('contentinfo')).not.toBeInTheDocument()
   })
 })
