@@ -12,6 +12,7 @@ interface SelectProps {
   placeholder?: string
   options: SelectItem[]
   onChange: (values: string[]) => void
+  value?: string
   disabled?: boolean
   className?: string
 }
@@ -29,7 +30,7 @@ const ClearIndicator = ({ clearValue }: ClearIndicatorProps<SelectItem>) => (
 )
 
 export const Select = forwardRef<HTMLInputElement, SelectProps>(function Select(
-  { label, placeholder, options, onChange, disabled = false, className },
+  { label, placeholder, options, onChange, value, disabled = false, className },
   ref,
 ) {
   const id = useId()
@@ -52,6 +53,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(function Select(
         ref={setSelectRef}
         inputId={id}
         options={options}
+        value={options.find((option) => option.value === value) ?? null}
         placeholder={placeholder ?? ''}
         isDisabled={disabled}
         isClearable
