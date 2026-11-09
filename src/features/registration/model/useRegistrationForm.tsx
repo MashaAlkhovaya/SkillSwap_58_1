@@ -9,14 +9,17 @@ export const useRegistrationForm = () => {
   const wantedCategory = useWatch({ control, name: 'wantedCategory' })
   const teachCategory = useWatch({ control, name: 'teachCategory' })
 
-  const wantedSubcategoryOptions =
-    SKILL_CATEGORIES.find((category) => category.id === wantedCategory)?.subcategories.map(
-      (subcategory) => ({ value: subcategory.id, label: subcategory.title }),
-    ) ?? []
-  const teachSubcategoryOptions =
-    SKILL_CATEGORIES.find((category) => category.id === teachCategory)?.subcategories.map(
-      (subcategory) => ({ value: subcategory.id, label: subcategory.title }),
-    ) ?? []
+  const getSubcategoryOptions = (categoryId: string) =>
+    SKILL_CATEGORIES.filter((category) => !categoryId || category.id === categoryId).flatMap(
+      (category) =>
+        category.subcategories.map((subcategory) => ({
+          value: subcategory.id,
+          label: subcategory.title,
+        })),
+    )
+
+  const wantedSubcategoryOptions = getSubcategoryOptions(wantedCategory)
+  const teachSubcategoryOptions = getSubcategoryOptions(teachCategory)
 
   const validateStep = (step: 1 | 2) => form.trigger(registrationStepFields[step])
   const continueStep = async (step: 1 | 2, onNext?: () => void) => {
@@ -33,8 +36,18 @@ export const useRegistrationForm = () => {
     setValue('gender', value, { shouldDirty: true, shouldValidate: true })
   const setCity = (value: string) =>
     setValue('city', value, { shouldDirty: true, shouldValidate: true })
-  const setSubcategory = (field: 'wantedSubCategory' | 'teachSubCategory', value: string) =>
+  const setSubcategory = (field: 'wantedSubCategory' | 'teachSubCategory', value: string) => {
+    const categoryField = field === 'wantedSubCategory' ? 'wantedCategory' : 'teachCategory'
+    const parentCategory = SKILL_CATEGORIES.find((category) =>
+      category.subcategories.some((subcategory) => subcategory.id === value),
+    )
+
+    if (parentCategory) {
+      setValue(categoryField, parentCategory.id, { shouldDirty: true, shouldValidate: true })
+    }
+
     setValue(field, value, { shouldDirty: true, shouldValidate: true })
+  }
   const setAvatar = (file: File | null) =>
     setValue('avatar', file, { shouldDirty: true, shouldValidate: true })
   const setTeachImage = (file: File) =>
