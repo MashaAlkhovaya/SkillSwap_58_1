@@ -2,7 +2,11 @@ import { render } from '@testing-library/react'
 import { describe, expect, test } from 'vitest'
 import { BellIcon } from './BellIcon'
 import { HeartIcon } from './HeartIcon'
+import { IdeaIcon } from './IdeaIcon'
+import { MessageTextIcon } from './MessageTextIcon'
+import { RequestIcon } from './RequestIcon'
 import { SearchIcon } from './SearchIcon'
+import { UserIcon } from './UserIcon'
 
 describe('icons', () => {
   test('ставит размер и цвет', () => {
@@ -40,6 +44,22 @@ describe('icons', () => {
     expect(circle).toHaveAttribute('cx', '18')
     expect(circle).toHaveAttribute('cy', '6')
     expect(circle).toHaveAttribute('r', '6')
+  })
+
+  test.each([
+    ['заявки', RequestIcon],
+    ['сообщение', MessageTextIcon],
+    ['лампочка', IdeaIcon],
+    ['пользователь', UserIcon],
+  ])('%s рисует иконку 24px текущего цвета', (_, Icon) => {
+    const { container } = render(<Icon size={24} color="#253017" />)
+    const svg = container.querySelector('svg')
+
+    expect(svg).toHaveAttribute('width', '24')
+    expect(svg).toHaveAttribute('height', '24')
+    expect(svg).toHaveAttribute('viewBox', '0 0 24 24')
+    expect(svg).toHaveStyle({ color: '#253017' })
+    expect(svg?.querySelector('[fill="currentColor"], [stroke="currentColor"]')).toBeTruthy()
   })
 
   test('без подписи иконка скрыта от скринридера', () => {
