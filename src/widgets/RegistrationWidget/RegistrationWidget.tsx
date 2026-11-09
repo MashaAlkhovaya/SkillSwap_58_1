@@ -340,39 +340,40 @@ function RegistrationWidgetForm({
               <p className={styles.error}>{errors.teachSkillName.message}</p>
             )}
           </div>
-
-          <Controller
-            control={control}
-            name="teachCategory"
-            render={({ field }) => (
-              <Select
-                label="Категория навыка"
-                placeholder="Выберите категорию навыка"
-                options={CATEGORY_OPTIONS}
-                value={field.value}
-                onChange={(values) => setCategory('teachCategory', values[0])}
-              />
+          <div>
+            <Controller
+              control={control}
+              name="teachCategory"
+              render={({ field }) => (
+                <Select
+                  label="Категория навыка"
+                  placeholder="Выберите категорию навыка"
+                  options={CATEGORY_OPTIONS}
+                  value={field.value}
+                  onChange={(values) => setCategory('teachCategory', values[0])}
+                />
+              )}
+            />
+            {errors.teachCategory && <p className={styles.error}>{errors.teachCategory.message}</p>}
+          </div>
+          <div>
+            <Controller
+              control={control}
+              name="teachSubCategory"
+              render={({ field }) => (
+                <Select
+                  label="Подкатегория навыка"
+                  placeholder="Выберите подкатегорию навыка"
+                  options={teachSubcategoryOptions}
+                  value={field.value}
+                  onChange={(values) => setSubcategory('teachSubCategory', values[0] ?? '')}
+                />
+              )}
+            />
+            {errors.teachSubCategory && (
+              <p className={styles.error}>{errors.teachSubCategory.message}</p>
             )}
-          />
-          {errors.teachCategory && <p className={styles.error}>{errors.teachCategory.message}</p>}
-
-          <Controller
-            control={control}
-            name="teachSubCategory"
-            render={({ field }) => (
-              <Select
-                label="Подкатегория навыка"
-                placeholder="Выберите подкатегорию навыка"
-                options={teachSubcategoryOptions}
-                value={field.value}
-                onChange={(values) => setSubcategory('teachSubCategory', values[0] ?? '')}
-              />
-            )}
-          />
-          {errors.teachSubCategory && (
-            <p className={styles.error}>{errors.teachSubCategory.message}</p>
-          )}
-
+          </div>
           <div className={styles.field}>
             <label htmlFor="reg-skill-desc" className={styles.label}>
               Описание
@@ -387,7 +388,6 @@ function RegistrationWidgetForm({
               <p className={styles.error}>{errors.teachDescription.message}</p>
             )}
           </div>
-
           <div className={styles.field}>
             <FileInput variant="skill" onChange={setTeachImage} />
           </div>
