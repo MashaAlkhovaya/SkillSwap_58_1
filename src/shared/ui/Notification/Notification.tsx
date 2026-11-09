@@ -35,7 +35,7 @@ export const Notification: FC<NotificationProps> = ({
     }
   }, [duration, isHovered, onClose])
 
-  const typeClass = styles[`notification_type_${type}`]
+  const typeClass = styles[`notification_${type}`]
 
   return (
     <div
