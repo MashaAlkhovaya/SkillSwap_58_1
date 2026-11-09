@@ -110,6 +110,9 @@ function RegistrationWidgetForm({
     control,
     register,
     setCategory,
+    setGender,
+    setCity,
+    setSubcategory,
     setAvatar,
     setTeachImage,
     setBirthDate,
@@ -223,7 +226,7 @@ function RegistrationWidgetForm({
               id="reg-name"
               placeholder="Введите ваше имя"
               className={styles.input}
-              {...register('name')}
+              {...register('name', { onChange: () => void form.trigger('name') })}
             />
             {errors.name && <p className={styles.error}>{errors.name.message}</p>}
           </div>
@@ -259,7 +262,7 @@ function RegistrationWidgetForm({
                       { value: 'female', label: 'Женский' },
                     ]}
                     value={field.value}
-                    onChange={(values) => field.onChange(values[0] ?? '')}
+                    onChange={(values) => setGender(values[0] ?? '')}
                   />
                 )}
               />
@@ -276,7 +279,7 @@ function RegistrationWidgetForm({
                   placeholder="Не указан"
                   options={[{ value: 'other', label: 'Не указан' }, ...CITY_OPTIONS]}
                   value={field.value}
-                  onChange={(values) => field.onChange(values[0] ?? '')}
+                  onChange={(values) => setCity(values[0] ?? '')}
                 />
               )}
             />
@@ -310,7 +313,7 @@ function RegistrationWidgetForm({
                   placeholder="Выберите подкатегорию"
                   options={wantedSubcategoryOptions}
                   value={field.value}
-                  onChange={(values) => field.onChange(values[0] ?? '')}
+                  onChange={(values) => setSubcategory('wantedSubCategory', values[0] ?? '')}
                 />
               )}
             />
@@ -362,7 +365,7 @@ function RegistrationWidgetForm({
                 placeholder="Выберите подкатегорию навыка"
                 options={teachSubcategoryOptions}
                 value={field.value}
-                onChange={(values) => field.onChange(values[0] ?? '')}
+                onChange={(values) => setSubcategory('teachSubCategory', values[0] ?? '')}
               />
             )}
           />

@@ -1,12 +1,13 @@
 import { InferType, mixed, object, string } from 'yup'
+import { CITIES } from '@/shared/lib/constants'
 
 export const registrationSchema = object({
-  email: string().trim().email('Некорректный email').required('Email должен быть введён'),
+  email: string().trim().required('Email должен быть введён').email('Некорректный email'),
   password: string()
     .min(8, 'Длина пароля должна быть не менее 8 символов')
     .required('Введите пароль'),
   avatar: mixed<File>().nullable().defined(),
-  name: string().trim().required('Введите имя'),
+  name: string().trim().min(2, 'Минимальная длина - 2 символа').required('Введите имя'),
   birthDate: string()
     .required('Введите дату рождения')
     .test('valid-date', 'Введите корректную дату рождения', (value) => {
@@ -22,14 +23,26 @@ export const registrationSchema = object({
         parsed <= new Date()
       )
     }),
-  gender: string().required('Укажите пол'),
-  city: string().required('Выберите город'),
+  gender: string()
+    .required('Укажите пол')
+    .test('selected-gender', 'Укажите пол', (value) => value === 'male' || value === 'female'),
+  city: string()
+    .required('Выберите город')
+    .test('selected-city', 'Выберите город', (value) => CITIES.some((city) => city === value)),
   wantedCategory: string().required('Выберите категорию навыка'),
   wantedSubCategory: string().required('Выберите подкатегорию навыка'),
-  teachSkillName: string().trim().required('Введите название навыка'),
+  teachSkillName: string()
+    .trim()
+    .required('Введите название навыка')
+    .min(3, 'Минимальная длина - 3 символа')
+    .max(50, 'Максимальная длина - 50 символов'),
   teachCategory: string().required('Выберите категорию навыка'),
   teachSubCategory: string().required('Выберите подкатегорию навыка'),
-  teachDescription: string().trim().required('Введите описание навыка'),
+  teachDescription: string()
+    .trim()
+    .required('Введите описание навыка')
+    .min(1, 'Минимальная длина - 1 символа')
+    .max(500, 'Максимальная длина - 500 символов'),
   teachImage: mixed<File>().nullable().defined(),
 })
 
