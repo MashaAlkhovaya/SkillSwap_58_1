@@ -7,12 +7,12 @@ import {
   type RegistrationFormValues,
 } from '@/features/registration'
 import { ALLOWED_IMAGE_TYPES, CITIES, SKILL_CATEGORIES } from '@/shared/lib/constants'
-import { Button } from '@/shared/ui/Button'
-import { DateInput } from '@/shared/ui/DateInput'
-import { FileInput } from '@/shared/ui/FileInput'
-import { AvatarPlaceholderIcon } from '@/shared/ui/FileInput/AvatarPlaceholderIcon'
-import { Select } from '@/shared/ui/Select'
-import { TextInput } from '@/shared/ui/TextInput'
+import { Button } from '@/shared/ui'
+import { TextInput } from '@/shared/ui'
+import { DateInput } from '@/shared/ui'
+import { FileInput } from '@/shared/ui'
+import { Select } from '@/shared/ui'
+import { AvatarPlaceholderIcon } from '@/shared/ui'
 import styles from './RegistrationWidget.module.css'
 
 interface RegistrationWidgetProps {

@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useAuthForm } from '@/features/auth/model/useAuthForm'
-import { Button } from '@/shared/ui/Button'
-import { TextInput } from '@/shared/ui/TextInput'
+import { Button } from '@/shared/ui'
+import { TextInput } from '@/shared/ui'
 import styles from './AuthWidget.module.css'
 
 export function AuthWidget() {
@@ -80,7 +80,7 @@ export function AuthWidget() {
         ) : null}
 
         <Button type="submit" variant="primary" className={styles.submit} disabled={isSubmitting}>
-          Войти
+          {isSubmitting ? 'Входим...' : 'Войти'}
         </Button>
       </form>
     </section>

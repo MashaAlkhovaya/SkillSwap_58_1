@@ -1,0 +1,65 @@
+import { useEffect, useState } from 'react'
+import type { ReactNode } from 'react'
+import { useGetAuthMeQuery } from '../api/authApi'
+import { getAuthUser, saveServerAuthUser } from '../model/authUtils'
+import { logout, setAuthUser } from '../model/authSlice'
+import { useAppDispatch } from '@/store/hooks'
+
+interface SessionGateProps {
+  children: ReactNode
+}
+
+export function SessionGate({ children }: SessionGateProps) {
+  const dispatch = useAppDispatch()
+
+  /** Запоминаем сохранённую сессию при запуске приложения. */
+  const [savedUser] = useState(() => getAuthUser())
+  const [isFinished, setIsFinished] = useState(() => !savedUser?.token)
+
+  const { data, error, refetch } = useGetAuthMeQuery(undefined, {
+    skip: isFinished,
+  })
+
+  useEffect(() => {
+    if (isFinished || !savedUser?.token) {
+      return
+    }
+
+    if (data) {
+      const confirmedUser = {
+        id: data.id,
+        name: data.name,
+        email: data.email,
+        token: savedUser.token,
+      }
+
+      saveServerAuthUser(confirmedUser)
+      dispatch(setAuthUser(confirmedUser))
+      setIsFinished(true)
+      return
+    }
+
+    if (error && 'status' in error && error.status === 401) {
+      void dispatch(logout()).then(() => {
+        setIsFinished(true)
+      })
+    }
+  }, [data, dispatch, error, isFinished, savedUser])
+
+  if (isFinished) {
+    return <>{children}</>
+  }
+
+  if (error && !('status' in error && error.status === 401)) {
+    return (
+      <div role="alert">
+        <p>Не удалось проверить вход. Проверьте подключение и попробуйте ещё раз.</p>
+        <button type="button" onClick={() => void refetch()}>
+          Повторить
+        </button>
+      </div>
+    )
+  }
+
+  return <p>Проверяем вход...</p>
+}
