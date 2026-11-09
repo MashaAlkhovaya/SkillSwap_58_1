@@ -3,11 +3,12 @@ import lightBulb from './light-bulb.svg'
 import userInfo from './user-info.svg'
 import schoolBoard from './school-board.svg'
 import styles from './RegistrationDecoration.module.css'
-
-type RegistrationStep = 1 | 2 | 3
+import clsx from 'clsx'
+import { RegistrationStep } from '@/pages/RegisterPage'
 
 interface RegistrationDecorationProps {
   step: RegistrationStep
+  className?: string
 }
 
 const stepContent = {
@@ -28,11 +29,11 @@ const stepContent = {
   },
 } as const
 
-export function RegistrationDecoration({ step }: RegistrationDecorationProps) {
+export function RegistrationDecoration({ step, className }: RegistrationDecorationProps) {
   const { image, title, description } = stepContent[step]
 
   return (
-    <section className={styles.card} aria-label="Информация о регистрации">
+    <section className={clsx(styles.card, className)} aria-label="Информация о регистрации">
       <div className={styles.content}>
         <img className={styles.image} src={image} alt="" />
 

@@ -4,7 +4,7 @@ import { Button } from '../../shared/ui/Button'
 import { SKILL_CATEGORIES, CITIES } from '../../shared/lib/constants'
 import { FilterMode, FiltersState, Gender } from '../../shared/types/index'
 import { MODE_OPTIONS, GENDER_OPTIONS } from '../../shared/lib/constants'
-import { CloseIcon } from '../../shared/ui/icons'
+import { CloseIcon } from '@/shared/ui'
 import styles from './FilterSidebar.module.css'
 import clsx from 'clsx'
 

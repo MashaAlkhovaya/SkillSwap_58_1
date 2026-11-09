@@ -1,3 +1,4 @@
+import { createRef } from 'react'
 import { fireEvent, render, screen } from '@testing-library/react'
 import { Select } from './index'
 
@@ -37,6 +38,16 @@ describe('Select', () => {
     expect(onChange).toHaveBeenCalledWith(['one'])
     expect(onChange).toHaveBeenCalledTimes(1)
     expect(input).toHaveAttribute('aria-expanded', 'false')
+  })
+
+  it('рендерит раскрытый список вне контейнера селекта', () => {
+    const { container } = render(<Select options={options} onChange={vi.fn()} />)
+
+    fireEvent.keyDown(screen.getByRole('combobox'), { key: 'ArrowDown' })
+
+    const menu = screen.getByRole('listbox')
+    expect(container).not.toContainElement(menu)
+    expect(document.body).toContainElement(menu)
   })
 
   it('фильтрует варианты по введённому label', () => {
@@ -97,5 +108,12 @@ describe('Select', () => {
     const { container } = render(<Select options={options} onChange={vi.fn()} disabled />)
 
     expect(container.querySelector('input')).toBeDisabled()
+  })
+
+  it('прокидывает ref на поле выбора', () => {
+    const ref = createRef<HTMLInputElement>()
+    render(<Select ref={ref} options={options} onChange={vi.fn()} />)
+
+    expect(ref.current).toBe(screen.getByRole('combobox'))
   })
 })

@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import clsx from 'clsx'
-import { Button } from '@/shared/ui/Button'
-import { TextInput } from '@/shared/ui/TextInput'
-import { DateInput } from '@/shared/ui/DateInput'
-import { FileInput } from '@/shared/ui/FileInput'
-import { Select } from '@/shared/ui/Select'
-import { AvatarPlaceholderIcon } from '@/shared/ui/FileInput/AvatarPlaceholderIcon'
+import { Button } from '@/shared/ui'
+import { TextInput } from '@/shared/ui'
+import { DateInput } from '@/shared/ui'
+import { FileInput } from '@/shared/ui'
+import { Select } from '@/shared/ui'
+import { AvatarPlaceholderIcon } from '@/shared/ui'
 import styles from './RegistrationWidget.module.css'
 import { CITIES, SKILL_CATEGORIES, ALLOWED_IMAGE_TYPES } from '@/shared/lib/constants'
 import type { CategoryId } from '@/shared/lib/constants'
@@ -14,6 +14,7 @@ interface RegistrationWidgetProps {
   step: number
   onNext?: () => void
   onBack?: () => void
+  className?: string
 }
 
 const GoogleIcon = () => (
@@ -72,7 +73,12 @@ const CATEGORY_OPTIONS = SKILL_CATEGORIES.map((category) => ({
 const isCategoryId = (value: string): value is CategoryId =>
   SKILL_CATEGORIES.some((category) => category.id === value)
 
-export function RegistrationWidget({ step, onNext, onBack }: RegistrationWidgetProps) {
+export function RegistrationWidget({
+  step,
+  onNext,
+  onBack,
+  className: outerClassName,
+}: RegistrationWidgetProps) {
   const className = clsx(styles.widget, {
     [styles['step-1']]: step === 1,
     [styles['step-2']]: step === 2,
@@ -92,7 +98,7 @@ export function RegistrationWidget({ step, onNext, onBack }: RegistrationWidgetP
     : []
 
   return (
-    <div className={className}>
+    <div className={clsx(className, outerClassName)}>
       {/* --- ШАГ 1 --- */}
       {step === 1 && (
         <>

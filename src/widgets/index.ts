@@ -1,4 +1,5 @@
 export { AuthDecoration } from './AuthDecoration'
 export { AuthWidget } from './AuthWidget'
-export { FilterSidebar } from './Filter-sidebar'
+export { FilterSidebar } from './FilterSidebar'
 export { RegistrationDecoration } from './RegistrationDecoration'
+export { CatalogSection } from './CatalogSection'

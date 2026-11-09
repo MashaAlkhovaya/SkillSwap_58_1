@@ -1,3 +1,4 @@
+import { createRef } from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, expect, vi } from 'vitest'
@@ -126,6 +127,13 @@ describe('DateInput', () => {
 
     const input = screen.getByTestId('date-input-field')
     expect(input).toHaveValue('10.10.2010')
+  })
+
+  test('прокидывает ref на поле ввода даты', () => {
+    const ref = createRef<HTMLInputElement>()
+    render(<DateInput ref={ref} name="birthDate" />)
+
+    expect(ref.current).toBe(screen.getByTestId('date-input-field'))
   })
 })
 
