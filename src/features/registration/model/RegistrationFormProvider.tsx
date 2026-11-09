@@ -9,10 +9,9 @@ import { yupResolver } from '@hookform/resolvers/yup'
 
 interface RegistrationFormProviderProps {
   children: ReactNode
-  onSubmit: (values: RegistrationFormValues) => void
 }
 
-export const RegistrationFormProvider = ({ children, onSubmit }: RegistrationFormProviderProps) => {
+export const RegistrationFormProvider = ({ children }: RegistrationFormProviderProps) => {
   const form = useForm<RegistrationFormValues>({
     defaultValues: registrationDefaultValues,
     resolver: yupResolver(registrationSchema),
@@ -21,7 +20,7 @@ export const RegistrationFormProvider = ({ children, onSubmit }: RegistrationFor
   })
   return (
     <FormProvider {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} noValidate>
+      <form onSubmit={(event) => event.preventDefault()} noValidate>
         {children}
       </form>
     </FormProvider>

@@ -77,16 +77,9 @@ const CATEGORY_OPTIONS = SKILL_CATEGORIES.map((category) => ({
 }))
 
 export function RegistrationWidget({ onSubmit, ...widgetProps }: RegistrationWidgetProps) {
-  const handleSubmit = (values: RegistrationFormValues) => {
-    if (widgetProps.step !== 3) return
-
-    console.log('Данные формы регистрации:', values)
-    onSubmit?.(values)
-  }
-
   return (
-    <RegistrationFormProvider onSubmit={handleSubmit}>
-      <RegistrationWidgetForm {...widgetProps} />
+    <RegistrationFormProvider>
+      <RegistrationWidgetForm {...widgetProps} onSubmit={onSubmit} />
     </RegistrationFormProvider>
   )
 }
@@ -95,6 +88,7 @@ function RegistrationWidgetForm({
   step,
   onNext,
   onBack,
+  onSubmit,
   className: outerClassName,
 }: RegistrationWidgetProps) {
   const className = clsx(styles.widget, {
@@ -119,11 +113,18 @@ function RegistrationWidgetForm({
     wantedSubcategoryOptions,
     teachSubcategoryOptions,
     continueStep: validateAndContinue,
+    handleSubmit,
     formState: { errors },
   } = form
 
   const continueStep = async () => {
-    if (step === 3) return
+    if (step === 3) {
+      await handleSubmit((values) => {
+        console.log('Данные формы регистрации:', values)
+        onSubmit?.(values)
+      })()
+      return
+    }
     await validateAndContinue(step as 1 | 2, onNext)
   }
 
@@ -397,15 +398,10 @@ function RegistrationWidgetForm({
       {/* ---------- Навигация ---------- */}
       {step > 1 && (
         <div className={styles.navButtons}>
-          <Button variant="secondary" size="md" onClick={onBack}>
+          <Button type="button" variant="secondary" size="md" onClick={onBack}>
             Назад
           </Button>
-          <Button
-            variant="primary"
-            size="md"
-            type={step === 3 ? 'submit' : 'button'}
-            onClick={step === 3 ? undefined : continueStep}
-          >
+          <Button variant="primary" size="md" type="button" onClick={continueStep}>
             Продолжить
           </Button>
         </div>
