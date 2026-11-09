@@ -80,7 +80,7 @@ export function AuthWidget() {
         ) : null}
 
         <Button type="submit" variant="primary" className={styles.submit} disabled={isSubmitting}>
-          Войти
+          {isSubmitting ? 'Входим...' : 'Войти'}
         </Button>
       </form>
     </section>

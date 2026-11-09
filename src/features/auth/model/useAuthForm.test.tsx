@@ -4,21 +4,25 @@ import userEvent from '@testing-library/user-event'
 import type { ReactNode } from 'react'
 import { Provider } from 'react-redux'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
-import { fetchUsers } from '@/api/users'
-import type { User } from '@/shared/types'
+import { LOCAL_STORAGE_KEYS } from '@/shared/lib/constants'
 import authReducer from './authSlice'
 import { useAuthForm } from './useAuthForm'
 
-vi.mock('@/api/users', () => ({
-  fetchUsers: vi.fn(),
+const { loginMock, loadingState } = vi.hoisted(() => ({
+  loginMock: vi.fn(),
+  loadingState: { isLoading: false },
+}))
+
+vi.mock('../api/authApi', () => ({
+  useLoginMutation: () => [loginMock, loadingState],
 }))
 
 const user = {
   id: 'user-01',
   name: 'Анна',
   email: 'anna.smirnova@example.com',
-  password: 'SkillSwapMock2025!',
-} as User & { password: string }
+  token: 'token-user-01',
+}
 
 function AuthFormProbe() {
   const { register, handleSubmit, errors, isSubmitting, error } = useAuthForm()
@@ -29,15 +33,19 @@ function AuthFormProbe() {
         Email
         <input {...register('email')} />
       </label>
+
       <label>
         Пароль
         <input {...register('password')} />
       </label>
-      <button type="submit">Войти</button>
+
+      <button type="submit" disabled={isSubmitting}>
+        Войти
+      </button>
+
       {errors.email?.message ? <p>{errors.email.message}</p> : null}
       {errors.password?.message ? <p>{errors.password.message}</p> : null}
       {error ? <p role="alert">{error}</p> : null}
-      <p>{isSubmitting ? 'отправка' : 'ожидание'}</p>
     </form>
   )
 }
@@ -45,6 +53,9 @@ function AuthFormProbe() {
 function renderAuthForm() {
   const store = configureStore({
     reducer: { auth: authReducer },
+    preloadedState: {
+      auth: { user: null },
+    },
   })
 
   function wrapper({ children }: { children: ReactNode }) {
@@ -57,10 +68,11 @@ function renderAuthForm() {
 describe('useAuthForm', () => {
   beforeEach(() => {
     localStorage.clear()
-    vi.mocked(fetchUsers).mockReset()
+    loginMock.mockReset()
+    loadingState.isLoading = false
   })
 
-  it('показывает ошибки полей и не отправляет пустую форму', async () => {
+  it('не отправляет пустую форму и показывает ошибки полей', async () => {
     const userEvents = userEvent.setup()
     renderAuthForm()
 
@@ -68,29 +80,51 @@ describe('useAuthForm', () => {
 
     expect(await screen.findByText('Введите email')).toBeInTheDocument()
     expect(screen.getByText('Введите пароль')).toBeInTheDocument()
-    expect(fetchUsers).not.toHaveBeenCalled()
-    expect(screen.getByText('ожидание')).toBeInTheDocument()
+    expect(loginMock).not.toHaveBeenCalled()
   })
+  it('блокирует кнопку, пока выполняется вход', () => {
+    loadingState.isLoading = true
 
-  it('при повторной отправке сбрасывает старые ошибки полей', async () => {
-    const userEvents = userEvent.setup()
     renderAuthForm()
 
-    await userEvents.click(screen.getByRole('button', { name: 'Войти' }))
-    expect(await screen.findByText('Введите email')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: 'Войти' })).toBeDisabled()
+  })
 
-    await userEvents.type(screen.getByRole('textbox', { name: 'Email' }), 'anna.smirnova')
+  it('сохраняет данные и токен после успешного входа', async () => {
+    loginMock.mockReturnValue({
+      unwrap: () => Promise.resolve(user),
+    })
+
+    const userEvents = userEvent.setup()
+    const { store } = renderAuthForm()
+
+    await userEvents.type(screen.getByRole('textbox', { name: 'Email' }), user.email)
+    await userEvents.type(screen.getByLabelText('Пароль'), 'test-password')
     await userEvents.click(screen.getByRole('button', { name: 'Войти' }))
 
     await waitFor(() => {
-      expect(screen.queryByText('Введите email')).not.toBeInTheDocument()
-      expect(screen.getByText('Введите пароль')).toBeInTheDocument()
+      expect(store.getState().auth.user).toEqual(user)
     })
-    expect(fetchUsers).not.toHaveBeenCalled()
+
+    expect(loginMock).toHaveBeenCalledWith({
+      email: user.email,
+      password: 'test-password',
+    })
+
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.AUTH_USER)
+
+    expect(JSON.parse(saved ?? 'null')).toEqual(user)
   })
 
-  it('показывает общую ошибку, если пара email и пароля неверная', async () => {
-    vi.mocked(fetchUsers).mockResolvedValue([user])
+  it('показывает сообщение сервера при неверных данных', async () => {
+    loginMock.mockReturnValue({
+      unwrap: () =>
+        Promise.reject({
+          status: 401,
+          data: { message: 'Неправильные почта или пароль' },
+        }),
+    })
+
     const userEvents = userEvent.setup()
     const { store } = renderAuthForm()
 
@@ -98,32 +132,94 @@ describe('useAuthForm', () => {
     await userEvents.type(screen.getByLabelText('Пароль'), 'wrong')
     await userEvents.click(screen.getByRole('button', { name: 'Войти' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent('Неверный email или пароль')
-    expect(screen.queryByText('Введите email')).not.toBeInTheDocument()
-    expect(screen.queryByText('Введите пароль')).not.toBeInTheDocument()
-    expect(store.getState().auth).toEqual({ user: null })
+    expect(await screen.findByRole('alert')).toHaveTextContent('Неправильные почта или пароль')
+    expect(store.getState().auth.user).toBeNull()
   })
 
-  it('держит признак отправки, пока вход не завершился', async () => {
-    let resolveUsers: (users: User[]) => void = () => {}
-    vi.mocked(fetchUsers).mockImplementation(
-      () =>
-        new Promise((resolve) => {
-          resolveUsers = resolve
-        }),
+  it('показывает общее сообщение, если сервер недоступен', async () => {
+    loginMock.mockReturnValue({
+      unwrap: () => Promise.reject({ status: 'FETCH_ERROR' }),
+    })
+
+    const userEvents = userEvent.setup()
+    renderAuthForm()
+
+    await userEvents.type(screen.getByRole('textbox', { name: 'Email' }), user.email)
+    await userEvents.type(screen.getByLabelText('Пароль'), 'test-password')
+    await userEvents.click(screen.getByRole('button', { name: 'Войти' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Не удалось войти. Попробуйте ещё раз.',
     )
+  })
+
+  it('показывает ошибку, если сервер вернул ответ без токена', async () => {
+    loginMock.mockReturnValue({
+      unwrap: () =>
+        Promise.resolve({
+          id: 'user-01',
+          name: 'Анна',
+          email: 'anna.smirnova@example.com',
+        }),
+    })
+
     const userEvents = userEvent.setup()
     const { store } = renderAuthForm()
 
     await userEvents.type(screen.getByRole('textbox', { name: 'Email' }), user.email)
-    await userEvents.type(screen.getByLabelText('Пароль'), user.password)
+    await userEvents.type(screen.getByLabelText('Пароль'), 'test-password')
     await userEvents.click(screen.getByRole('button', { name: 'Войти' }))
 
-    expect(await screen.findByText('отправка')).toBeInTheDocument()
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Не удалось войти. Попробуйте ещё раз.',
+    )
 
-    resolveUsers([user])
+    expect(store.getState().auth.user).toBeNull()
+    expect(localStorage.getItem(LOCAL_STORAGE_KEYS.AUTH_USER)).toBeNull()
+  })
 
-    expect(await screen.findByText('ожидание')).toBeInTheDocument()
-    expect(store.getState().auth.user).toMatchObject({ id: 'user-01', email: user.email })
+  it('показывает общее сообщение при ошибке сервера 500', async () => {
+    loginMock.mockReturnValue({
+      unwrap: () =>
+        Promise.reject({
+          status: 500,
+          data: { message: 'Внутренняя ошибка сервера' },
+        }),
+    })
+
+    const userEvents = userEvent.setup()
+    const { store } = renderAuthForm()
+
+    await userEvents.type(screen.getByRole('textbox', { name: 'Email' }), user.email)
+    await userEvents.type(screen.getByLabelText('Пароль'), 'test-password')
+    await userEvents.click(screen.getByRole('button', { name: 'Войти' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Не удалось войти. Попробуйте ещё раз.',
+    )
+
+    expect(store.getState().auth.user).toBeNull()
+    expect(localStorage.getItem(LOCAL_STORAGE_KEYS.AUTH_USER)).toBeNull()
+  })
+
+  it('показывает сообщение сервера при ошибке 400', async () => {
+    loginMock.mockReturnValue({
+      unwrap: () =>
+        Promise.reject({
+          status: 400,
+          data: { message: 'Некорректные данные' },
+        }),
+    })
+
+    const userEvents = userEvent.setup()
+    const { store } = renderAuthForm()
+
+    await userEvents.type(screen.getByRole('textbox', { name: 'Email' }), user.email)
+    await userEvents.type(screen.getByLabelText('Пароль'), 'test-password')
+    await userEvents.click(screen.getByRole('button', { name: 'Войти' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Некорректные данные')
+    expect(store.getState().auth.user).toBeNull()
+    expect(localStorage.getItem(LOCAL_STORAGE_KEYS.AUTH_USER)).toBeNull()
   })
 })
