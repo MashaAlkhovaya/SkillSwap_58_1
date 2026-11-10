@@ -28,6 +28,7 @@ export {
   SearchIcon,
   ShareIcon,
   UserCircleIcon,
+  LogoutIcon,
 } from './icons'
 export type { BellIconProps, HeartIconProps, IconProps } from './icons'
 export { Stepper } from './Stepper'

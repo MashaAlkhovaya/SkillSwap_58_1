@@ -5,17 +5,43 @@ import { LOCAL_STORAGE_KEYS } from '@/shared/lib/constants'
 export function getAuthUser(): AuthUser | null {
   try {
     const raw = localStorage.getItem(LOCAL_STORAGE_KEYS.AUTH_USER)
-    return raw ? (JSON.parse(raw) as AuthUser) : null
+
+    if (!raw) {
+      return null
+    }
+
+    const user: unknown = JSON.parse(raw)
+
+    if (
+      typeof user === 'object' &&
+      user !== null &&
+      'id' in user &&
+      typeof user.id === 'string' &&
+      'name' in user &&
+      typeof user.name === 'string' &&
+      'email' in user &&
+      typeof user.email === 'string' &&
+      'token' in user &&
+      typeof user.token === 'string' &&
+      user.token.length > 0
+    ) {
+      return {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        token: user.token,
+      }
+    }
+
+    return null
   } catch {
     return null
   }
 }
 
-/** Сохраняет пользователя и mock-токен в localStorage */
-export function saveAuthUser(user: Omit<AuthUser, 'token'>): AuthUser {
-  const authUser: AuthUser = { ...user, token: 'mock_token_' + user.id }
-  localStorage.setItem(LOCAL_STORAGE_KEYS.AUTH_USER, JSON.stringify(authUser))
-  return authUser
+/** Сохраняет пользователя и токен, полученные от сервера */
+export function saveServerAuthUser(user: AuthUser): void {
+  localStorage.setItem(LOCAL_STORAGE_KEYS.AUTH_USER, JSON.stringify(user))
 }
 
 /** Удаляет пользователя из localStorage (logout) */
