@@ -100,7 +100,6 @@
 .trailingIcon svg {
   width: 24px;
   height: 24px;
-  fill: currentcolor;
 }
 
 [data-theme='dark'] .variant_primary {
