@@ -1,8 +1,12 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor, act } from '@testing-library/react'
+import { configureStore } from '@reduxjs/toolkit'
+import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
-import { UserMenu } from './UserMenu'
-import * as authUtils from '@/features/auth/model/authUtils'
+import { UserMenu } from './index'
+import authReducer, { setAuthUser } from '@/features/auth/model/authSlice'
+import { LOCAL_STORAGE_KEYS, ROUTES } from '@/shared/lib/constants'
+import type { AuthUser } from '@/shared/types'
 
 const mockedNavigate = vi.fn()
 vi.mock('react-router-dom', async () => {
@@ -13,103 +17,93 @@ vi.mock('react-router-dom', async () => {
   }
 })
 
+const user: AuthUser = {
+  id: '1',
+  name: 'Соня',
+  email: 's@t.com',
+  token: 't',
+}
+
+function renderUserMenu(authUser: AuthUser | null = null) {
+  const store = configureStore({
+    reducer: { auth: authReducer },
+    preloadedState: { auth: { user: authUser } },
+  })
+
+  render(
+    <Provider store={store}>
+      <MemoryRouter>
+        <UserMenu />
+      </MemoryRouter>
+    </Provider>,
+  )
+
+  return store
+}
+
 describe('UserMenu', () => {
   beforeEach(() => {
     vi.clearAllMocks()
     localStorage.clear()
+    document.documentElement.removeAttribute('data-theme')
   })
 
   it('показывает кнопку "Войти" и не показывает иконки уведомлений для гостя', () => {
-    vi.spyOn(authUtils, 'getAuthUser').mockReturnValue(null)
-
-    render(
-      <MemoryRouter>
-        <UserMenu />
-      </MemoryRouter>,
-    )
+    renderUserMenu()
 
     expect(screen.getByText('Войти')).toBeInTheDocument()
     expect(screen.getByText('Зарегистрироваться')).toBeInTheDocument()
-
     expect(screen.queryByLabelText('Уведомления')).not.toBeInTheDocument()
     expect(screen.queryByLabelText('Избранное')).not.toBeInTheDocument()
   })
 
   it('показывает имя пользователя и иконки уведомлений', () => {
-    vi.spyOn(authUtils, 'getAuthUser').mockReturnValue({
-      id: '1',
-      name: 'Соня',
-      email: 's@t.com',
-      token: 't',
-    })
-
-    render(
-      <MemoryRouter>
-        <UserMenu />
-      </MemoryRouter>,
-    )
+    renderUserMenu(user)
 
     expect(screen.getByText('Соня')).toBeInTheDocument()
     expect(screen.getByLabelText('Уведомления')).toBeInTheDocument()
-
-    const favLink = screen.getByLabelText('Избранное')
-    expect(favLink).toHaveAttribute('href', '/favorites')
+    expect(screen.getByLabelText('Избранное')).toHaveAttribute('href', ROUTES.FAVORITES)
   })
 
   it('открывает дропдаун по клику на триггер', () => {
-    vi.spyOn(authUtils, 'getAuthUser').mockReturnValue({
-      id: '1',
-      name: 'Соня',
-      email: 's@t.com',
-      token: 't',
-    })
-
-    render(
-      <MemoryRouter>
-        <UserMenu />
-      </MemoryRouter>,
-    )
+    renderUserMenu(user)
 
     fireEvent.click(screen.getByLabelText('Меню пользователя'))
 
-    expect(screen.getByText('Личный кабинет')).toBeInTheDocument()
+    expect(screen.getByText('Личный кабинет')).toHaveAttribute('href', ROUTES.PROFILE)
     expect(screen.getByText('Выйти из аккаунта')).toBeInTheDocument()
   })
 
-  it('вызывает logout и редирект при клике на "Выйти из аккаунта"', () => {
-    vi.spyOn(authUtils, 'getAuthUser').mockReturnValue({
-      id: '1',
-      name: 'Соня',
-      email: 's@t.com',
-      token: 't',
-    })
-    const clearSpy = vi.spyOn(authUtils, 'clearAuthUser').mockImplementation(() => {})
-
-    render(
-      <MemoryRouter>
-        <UserMenu />
-      </MemoryRouter>,
-    )
+  it('очищает сессию и переводит в каталог при выходе из аккаунта', async () => {
+    localStorage.setItem(LOCAL_STORAGE_KEYS.AUTH_USER, JSON.stringify(user))
+    const store = renderUserMenu(user)
 
     fireEvent.click(screen.getByLabelText('Меню пользователя'))
     fireEvent.click(screen.getByText('Выйти из аккаунта'))
 
-    expect(clearSpy).toHaveBeenCalledTimes(1)
-    expect(mockedNavigate).toHaveBeenCalledWith('/')
+    await waitFor(() => expect(mockedNavigate).toHaveBeenCalledWith(ROUTES.HOME))
+    expect(store.getState().auth.user).toBeNull()
+    expect(localStorage.getItem(LOCAL_STORAGE_KEYS.AUTH_USER)).toBeNull()
+    expect(screen.getByText('Войти')).toBeInTheDocument()
   })
 
   it('переключает тему по клику на луну', () => {
-    vi.spyOn(authUtils, 'getAuthUser').mockReturnValue(null)
+    renderUserMenu()
 
-    render(
-      <MemoryRouter>
-        <UserMenu />
-      </MemoryRouter>,
-    )
+    fireEvent.click(screen.getByLabelText(/Включить темную тему/i))
 
-    const themeBtn = screen.getByLabelText(/Включить темную тему/i)
-    fireEvent.click(themeBtn)
+    expect(localStorage.getItem(LOCAL_STORAGE_KEYS.THEME)).toBe('dark')
+    expect(document.documentElement).toHaveAttribute('data-theme', 'dark')
+  })
 
-    expect(localStorage.getItem('skillswap_theme')).toBe('dark')
+  it('обновляет меню при авторизации через Redux', () => {
+    const store = renderUserMenu()
+
+    act(() => {
+      store.dispatch(setAuthUser(user))
+    })
+
+    expect(screen.getByText('Соня')).toBeInTheDocument()
+    expect(screen.queryByText('Войти')).not.toBeInTheDocument()
   })
 })

@@ -1,17 +1,19 @@
 import { Link, useNavigate } from 'react-router-dom'
-import { getAuthUser, clearAuthUser } from '@/features/auth/model/authUtils'
+import { logout, selectAuthUser } from '@/features/auth/model/authSlice'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { useTheme } from '@/features/theme-switcher'
 import { Avatar, Dropdown, Button, MoonIcon, BellIcon, HeartIcon, LogoutIcon } from '@/shared/ui'
 import { ROUTES } from '@/shared/lib/constants'
 import styles from './UserMenu.module.css'
 
 export function UserMenu() {
-  const user = getAuthUser()
+  const user = useAppSelector(selectAuthUser)
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const { theme, toggleTheme } = useTheme()
 
-  const handleLogout = () => {
-    clearAuthUser()
+  const handleLogout = async () => {
+    await dispatch(logout())
     navigate(ROUTES.HOME)
   }
 
@@ -57,7 +59,7 @@ export function UserMenu() {
               <button
                 onClick={() => {
                   close()
-                  handleLogout()
+                  void handleLogout()
                 }}
                 className={styles.dropdownItem}
                 type="button"
