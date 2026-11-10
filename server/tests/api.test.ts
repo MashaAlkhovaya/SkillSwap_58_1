@@ -123,6 +123,77 @@ test('полная регистрация создаёт профиль, нав�
   }
 })
 
+test('регистрация без фотографий сохраняет навык с пустым imageUrls после перезапуска', async () => {
+  const data = payload()
+  const response = await register(data, 0)
+  assert.equal(response.status, 201)
+  const auth = await json<AuthUser>(response)
+  const me = await json<User>(
+    await fetch(`${baseUrl}/auth/me`, { headers: { Authorization: `Bearer ${auth.token}` } }),
+  )
+  const skillResponse = await fetch(`${baseUrl}/skills/${me.canTeach.id}`)
+  assert.equal(skillResponse.status, 200)
+  const skill = await json<Skill>(skillResponse)
+  assert.equal(skill.authorId, auth.id)
+  assert.equal(skill.title, data.canTeach.title)
+  assert.deepEqual(skill.imageUrls, [])
+  assert.equal(fs.existsSync(path.join(dataDir, 'uploads', 'skills', skill.id)), false)
+
+  const restarted = createApp({ dataDir, defaultDelay: 0 }).listen(0, '127.0.0.1')
+  await once(restarted, 'listening')
+  try {
+    const address = restarted.address()
+    assert(address && typeof address !== 'string')
+    const restartedUrl = `http://127.0.0.1:${address.port}/api`
+    const signedIn = await fetch(`${restartedUrl}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: data.email, password: data.password }),
+    })
+    assert.equal(signedIn.status, 200)
+    assert.deepEqual(await signedIn.json(), auth)
+    const loaded = await fetch(`${restartedUrl}/skills/${skill.id}`)
+    assert.equal(loaded.status, 200)
+    assert.deepEqual(await loaded.json(), skill)
+  } finally {
+    await new Promise<void>((resolve) => restarted.close(() => resolve()))
+  }
+})
+
+test('null и пустой список фото перед отправкой нормализуются в отсутствие файлов', async () => {
+  const emptyImages: (Blob[] | null)[] = [null, []]
+  for (const images of emptyImages) {
+    const form = new FormData()
+    form.append('data', JSON.stringify(payload()))
+    const files = images ?? []
+    files.forEach((file) => form.append('images', file))
+    assert.equal(form.has('images'), false)
+    const response = await fetch(`${baseUrl}/auth/register`, { method: 'POST', body: form })
+    assert.equal(response.status, 201)
+    const auth = await json<AuthUser>(response)
+    const me = await json<User>(
+      await fetch(`${baseUrl}/auth/me`, { headers: { Authorization: `Bearer ${auth.token}` } }),
+    )
+    const skill = await json<Skill>(await fetch(`${baseUrl}/skills/${me.canTeach.id}`))
+    assert.deepEqual(skill.imageUrls, [])
+  }
+})
+
+test('строки null, [] и пустая строка вместо файлов images возвращают 400 без создания записей', async () => {
+  for (const images of ['null', '[]', '']) {
+    const usersBefore = fs.readFileSync(path.join(dataDir, 'users.json'), 'utf8')
+    const skillsBefore = fs.readFileSync(path.join(dataDir, 'skills.json'), 'utf8')
+    const form = new FormData()
+    form.append('data', JSON.stringify(payload()))
+    form.append('images', images)
+    const response = await fetch(`${baseUrl}/auth/register`, { method: 'POST', body: form })
+    assert.equal(response.status, 400)
+    assert.equal(typeof (await json<ApiError>(response)).message, 'string')
+    assert.equal(fs.readFileSync(path.join(dataDir, 'users.json'), 'utf8'), usersBefore)
+    assert.equal(fs.readFileSync(path.join(dataDir, 'skills.json'), 'utf8'), skillsBefore)
+  }
+})
+
 const invalid: [string, (data: Record<string, unknown>) => void][] = [
   [
     'отсутствует имя',
@@ -294,8 +365,7 @@ test('все поля формы и вложенных объектов обяз
   }
 })
 
-test('обязательные файлы, лимиты, неверные типы и сломанный JSON', async () => {
-  assert.equal((await register(payload(), 0)).status, 400)
+test('лимиты файлов, неверные типы и сломанный JSON', async () => {
   assert.equal((await register(payload(), 6)).status, 400)
   assert.equal((await register(payload(), 1, new Uint8Array(2 * 1024 * 1024 + 1))).status, 400)
   assert.equal((await register(payload(), 1, png, 'text/plain')).status, 400)
