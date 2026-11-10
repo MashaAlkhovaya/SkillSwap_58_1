@@ -11,13 +11,17 @@ import {
   GlobalIcon,
   HeartIcon,
   HomeIcon,
+  IdeaIcon,
   LifestyleIcon,
+  MessageTextIcon,
   MoonIcon,
   MoreIcon,
   PaletteIcon,
+  RequestIcon,
   SearchIcon,
   ShareIcon,
   UserCircleIcon,
+  UserIcon,
 } from './index'
 
 const icons: Array<[string, ComponentType<IconProps>]> = [
@@ -27,6 +31,10 @@ const icons: Array<[string, ComponentType<IconProps>]> = [
   ['Moon', MoonIcon],
   ['Bell', BellIcon],
   ['Heart', HeartIcon],
+  ['Request', RequestIcon],
+  ['MessageText', MessageTextIcon],
+  ['Idea', IdeaIcon],
+  ['User', UserIcon],
   ['Briefcase', BriefcaseIcon],
   ['Global', GlobalIcon],
   ['Home', HomeIcon],

@@ -7,6 +7,10 @@ export interface LoginRequest {
   password: string
 }
 
+export type ProfileUpdate = Partial<
+  Pick<User, 'email' | 'name' | 'birthDate' | 'gender' | 'city' | 'bio'>
+>
+
 export type RegisterRequest = LoginRequest &
   Pick<User, 'name' | 'birthDate' | 'gender' | 'city' | 'wantsToLearn'> & {
     canTeach: Pick<Skill, 'title' | 'category' | 'subCategory' | 'description'>

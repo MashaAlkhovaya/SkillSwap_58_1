@@ -1,22 +1,50 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { ROUTES } from '@/shared/lib/constants'
-import { Logo } from '@/shared/ui'
-import { TextInput } from '@/shared/ui'
-import { Button } from '@/shared/ui'
-import { SearchIcon } from '@/shared/ui'
+import { Link, useLocation } from 'react-router-dom'
+import { ROUTES, SKILL_CATEGORIES } from '@/shared/lib/constants'
+import {
+  TextInput,
+  CloseIcon,
+  SearchIcon,
+  ChevronDown,
+  Dropdown,
+  Button,
+  Logo,
+  BriefcaseIcon,
+  PaletteIcon,
+  GlobalIcon,
+  BookIcon,
+  HomeIcon,
+  LifestyleIcon,
+} from '@/shared/ui'
 import styles from './Header.module.css'
-import { logout, selectAuthUser } from '@/features/auth/model/authSlice'
-import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { Dropdown } from '@/shared/ui'
+import { UserMenu } from '@/widgets/UserMenu'
+
+const CATEGORY_ICONS = {
+  business: BriefcaseIcon,
+  art: PaletteIcon,
+  languages: GlobalIcon,
+  education: BookIcon,
+  'home-coziness': HomeIcon,
+  health: LifestyleIcon,
+}
 
 export function Header() {
-  const user = useAppSelector(selectAuthUser)
-  const dispatch = useAppDispatch()
-  const navigate = useNavigate()
+  const { pathname } = useLocation()
+  const normalizedPathname = pathname.replace(/\/+$/, '') || '/'
+  const isCompact = normalizedPathname === ROUTES.LOGIN || normalizedPathname === ROUTES.REGISTER
 
-  async function handleLogout() {
-    await dispatch(logout())
-    navigate(ROUTES.HOME)
+  if (isCompact) {
+    return (
+      <header className={`${styles.header} ${styles.compact}`}>
+        <div className={styles.left}>
+          <Logo />
+        </div>
+        <div className={styles.right}>
+          <Button variant="tertiary" trailingIcon={<CloseIcon />} className={styles.closeButton}>
+            Закрыть
+          </Button>
+        </div>
+      </header>
+    )
   }
 
   return (
@@ -24,42 +52,50 @@ export function Header() {
       <div className={styles.left}>
         <Logo />
         <Link to={ROUTES.ABOUT}>О проекте</Link>
-        {/* TODO: «Все навыки» станет раскрывающимся меню (Dropdown #49) с шевроном */}
-        <Link to={ROUTES.ALL_SKILLS}>Все навыки</Link>
+        <Dropdown
+          trigger={
+            <>
+              Все навыки
+              <ChevronDown aria-hidden="true" />
+            </>
+          }
+          triggerLabel="Открыть меню навыков"
+        >
+          {() => (
+            <div className={styles.skillsMenu}>
+              {SKILL_CATEGORIES.map((category) => {
+                const CategoryIcon = CATEGORY_ICONS[category.id]
+
+                return (
+                  <section key={category.id}>
+                    <div className={styles.categoryTitle}>
+                      <span className={styles.categoryIcon} data-category={category.id}>
+                        <CategoryIcon size={20} />
+                      </span>
+                      <h3>{category.title}</h3>
+                    </div>
+                    <ul>
+                      {category.subcategories.map((subcategory) => (
+                        <li key={subcategory.id}>{subcategory.title}</li>
+                      ))}
+                    </ul>
+                  </section>
+                )
+              })}
+            </div>
+          )}
+        </Dropdown>
       </div>
       <div className={styles.center}>
         {/* TODO: заменить на виджет поиска по навыкам */}
         <TextInput
+          className={styles.searchInput}
           placeholder="Искать навык"
           leftContent={<SearchIcon size={20} color="var(--color-text-secondary)" />}
         />
       </div>
-
       <div className={styles.right}>
-        {/* TODO: иконка луны (переключатель темы) из #66 */}
-        {/* TODO: для авторизованного пользователя вместо кнопок: колокольчик, сердце, имя и Avatar */}
-        {user ? (
-          <Dropdown trigger={user.name} triggerLabel="Меню пользователя">
-            {(close) => (
-              <button
-                type="button"
-                onClick={() => {
-                  close()
-                  void handleLogout()
-                }}
-              >
-                Выйти из аккаунта
-              </button>
-            )}
-          </Dropdown>
-        ) : (
-          <>
-            <Button variant="secondary" onClick={() => navigate(ROUTES.LOGIN)}>
-              Войти
-            </Button>
-            <Button variant="primary">Зарегистрироваться</Button>
-          </>
-        )}
+        <UserMenu />
       </div>
     </header>
   )

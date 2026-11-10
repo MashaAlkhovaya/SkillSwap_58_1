@@ -1,0 +1,87 @@
+.container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 24px;
+}
+
+.iconsGroup {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.iconBtn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  color: var(--color-text);
+  transition: color 0.3s ease;
+}
+
+.iconBtn:hover {
+  color: var(--color-primary);
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+  fill: currentcolor;
+}
+
+.iconActive {
+  fill: var(--color-primary);
+}
+
+.authButtons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.triggerContent {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  outline: none;
+}
+
+.userName {
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-text);
+}
+
+.dropdownContent {
+  display: flex;
+  flex-direction: column;
+  width: 260px;
+  gap: 24px;
+}
+
+.dropdownItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 16px;
+  line-height: 24px;
+  color: var(--color-text);
+  text-decoration: none;
+  text-align: left;
+  transition: color 0.3s ease;
+}
+
+.dropdownItem:hover {
+  color: var(--color-primary);
+}
