@@ -32,6 +32,7 @@ export function SessionGate({ children }: SessionGateProps) {
         name: data.name,
         email: data.email,
         token: savedUser.token,
+        ...('avatarUrl' in data ? { avatarUrl: data.avatarUrl } : {}),
       }
 
       saveServerAuthUser(confirmedUser)

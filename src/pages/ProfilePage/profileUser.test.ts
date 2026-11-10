@@ -1,5 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { apiErrorMessage, profileDateFromIso, toProfileDefaults } from './profileUser'
+import type { AuthUser } from '@/shared/types'
+import { apiErrorMessage, nextAuthUser, profileDateFromIso, toProfileDefaults } from './profileUser'
+
+const current: AuthUser = {
+  id: 'user-01',
+  name: 'Анна',
+  email: 'anna@example.com',
+  token: 'token-user-01',
+}
 
 describe('profileUser', () => {
   it('переводит дату профиля в формат поля', () => {
@@ -24,6 +32,30 @@ describe('profileUser', () => {
       gender: 'female',
       city: 'Москва',
       bio: 'Учу рисовать',
+    })
+  })
+
+  it('возвращает новую сессию только когда изменились имя, почта или аватар', () => {
+    expect(
+      nextAuthUser(current, {
+        id: 'user-01',
+        name: 'Анна',
+        email: 'anna@example.com',
+        avatarUrl: null,
+      }),
+    ).toBeNull()
+
+    expect(
+      nextAuthUser(current, {
+        id: 'user-01',
+        name: 'Мария',
+        email: 'anna@example.com',
+        avatarUrl: null,
+      }),
+    ).toEqual({
+      ...current,
+      name: 'Мария',
+      avatarUrl: null,
     })
   })
 
