@@ -4,7 +4,10 @@ import type { FormEvent } from 'react'
 import { useForm } from 'react-hook-form'
 import * as yup from 'yup'
 import { useAppDispatch } from '@/store/hooks'
-import { login } from './authSlice'
+import { useLoginMutation } from '../api/authApi'
+import { setAuthUser } from './authSlice'
+import { saveServerAuthUser } from './authUtils'
+import type { AuthUser } from '@/shared/types'
 
 const authFormSchema = yup.object({
   email: yup.string().trim().required('Введите email'),
@@ -13,24 +16,69 @@ const authFormSchema = yup.object({
 
 export type AuthFormValues = yup.InferType<typeof authFormSchema>
 
+const DEFAULT_ERROR = 'Не удалось войти. Попробуйте ещё раз.'
+
+function isAuthUser(value: unknown): value is AuthUser {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    'id' in value &&
+    typeof value.id === 'string' &&
+    'name' in value &&
+    typeof value.name === 'string' &&
+    'email' in value &&
+    typeof value.email === 'string' &&
+    'token' in value &&
+    typeof value.token === 'string' &&
+    value.token.length > 0
+  )
+}
+
+function getLoginError(error: unknown): string {
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'status' in error &&
+    (error.status === 400 || error.status === 401) &&
+    'data' in error &&
+    typeof error.data === 'object' &&
+    error.data !== null &&
+    'message' in error.data &&
+    typeof error.data.message === 'string'
+  ) {
+    return error.data.message
+  }
+
+  return DEFAULT_ERROR
+}
+
 export function useAuthForm() {
   const dispatch = useAppDispatch()
+  const [login, { isLoading }] = useLoginMutation()
   const [error, setError] = useState<string | null>(null)
+
   const {
     register,
     handleSubmit,
     clearErrors,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm({
     defaultValues: { email: '', password: '' },
     resolver: yupResolver(authFormSchema),
   })
 
   const submitCredentials = handleSubmit(async (values) => {
-    const result = await dispatch(login(values))
+    try {
+      const user = await login(values).unwrap()
 
-    if (login.rejected.match(result)) {
-      setError(result.payload ?? 'Ошибка авторизации')
+      if (!isAuthUser(user)) {
+        throw new Error('Некорректный ответ сервера')
+      }
+
+      saveServerAuthUser(user)
+      dispatch(setAuthUser(user))
+    } catch (requestError) {
+      setError(getLoginError(requestError))
     }
   })
 
@@ -44,7 +92,7 @@ export function useAuthForm() {
     register,
     handleSubmit: handleFormSubmit,
     errors,
-    isSubmitting,
+    isSubmitting: isLoading,
     error,
   }
 }
