@@ -1,16 +1,12 @@
-import { Link, useLocation, useNavigate } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import { ROUTES, SKILL_CATEGORIES } from '@/shared/lib/constants'
 import {
   TextInput,
   CloseIcon,
-  Avatar,
   SearchIcon,
   ChevronDown,
   Dropdown,
   Button,
-  MoonIcon,
-  BellIcon,
-  HeartIcon,
   Logo,
   BriefcaseIcon,
   PaletteIcon,
@@ -20,8 +16,7 @@ import {
   LifestyleIcon,
 } from '@/shared/ui'
 import styles from './Header.module.css'
-import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { logout, selectAuthUser } from '@/features/auth/model/authSlice'
+import { UserMenu } from '@/widgets/UserMenu'
 
 const CATEGORY_ICONS = {
   business: BriefcaseIcon,
@@ -33,17 +28,9 @@ const CATEGORY_ICONS = {
 }
 
 export function Header() {
-  const user = useAppSelector(selectAuthUser)
-  const dispatch = useAppDispatch()
-  const navigate = useNavigate()
   const { pathname } = useLocation()
   const normalizedPathname = pathname.replace(/\/+$/, '') || '/'
   const isCompact = normalizedPathname === ROUTES.LOGIN || normalizedPathname === ROUTES.REGISTER
-
-  async function handleLogout() {
-    await dispatch(logout())
-    navigate(ROUTES.HOME)
-  }
 
   if (isCompact) {
     return (
@@ -106,51 +93,9 @@ export function Header() {
           placeholder="Искать навык"
           leftContent={<SearchIcon size={20} color="var(--color-text-secondary)" />}
         />
-        <Button
-          variant="tertiary"
-          icon={<MoonIcon color="var(--color-text)" />}
-          aria-label="Переключить тему"
-        />
       </div>
       <div className={styles.right}>
-        {user ? (
-          <>
-            <Button variant="tertiary" icon={<BellIcon />} aria-label="Уведомления" />
-            <Button variant="tertiary" icon={<HeartIcon />} aria-label="Избранное" />
-            <Dropdown
-              trigger={
-                <>
-                  <span>{user.name}</span>
-                  <Avatar
-                    src={user.avatarUrl ?? null}
-                    alt={`Аватар пользователя ${user.name}`}
-                    size="sm"
-                  />
-                </>
-              }
-              triggerLabel="Меню пользователя"
-            >
-              {(close) => (
-                <button
-                  type="button"
-                  onClick={() => {
-                    close()
-                    void handleLogout()
-                  }}
-                >
-                  Выйти из аккаунта
-                </button>
-              )}
-            </Dropdown>
-          </>
-        ) : (
-          <>
-            <Button variant="secondary" onClick={() => navigate(ROUTES.LOGIN)}>
-              Войти
-            </Button>
-            <Button variant="primary">Зарегистрироваться</Button>
-          </>
-        )}
+        <UserMenu />
       </div>
     </header>
   )
