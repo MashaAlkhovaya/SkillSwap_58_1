@@ -13,7 +13,13 @@ import type {
   StoredUser,
   UserListQuery,
 } from './types'
-import { HttpError, parseLogin, parseRegistration, parseUserFilters } from './validation'
+import {
+  HttpError,
+  parseLogin,
+  parseProfileUpdate,
+  parseRegistration,
+  parseUserFilters,
+} from './validation'
 
 const PORT = 4000
 const DEFAULT_DATA = path.join(__dirname, 'data')
@@ -85,6 +91,15 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
     for (const id of user.likes) likesReceived.set(id, (likesReceived.get(id) || 0) + 1)
   }
   const publicUser = ({ password: _password, ...rest }: StoredUser): User => rest
+  const currentUser = (req: Request): StoredUser => {
+    const authorization = req.headers.authorization || ''
+    const id = authorization.startsWith('Bearer token-')
+      ? authorization.slice('Bearer token-'.length)
+      : ''
+    const user = users.find((item) => item.id === id)
+    if (!user) throw new HttpError(401, 'Нужна авторизация')
+    return user
+  }
   const authUser = (user: StoredUser): AuthUser => ({
     id: user.id,
     name: user.name,
@@ -280,23 +295,82 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
     res.json(authUser(user))
   })
   app.get<Record<string, never>, User | ApiError>('/api/auth/me', (req, res) => {
-    const authorization = req.headers.authorization || ''
-    const id = authorization.startsWith('Bearer token-')
-      ? authorization.slice('Bearer token-'.length)
-      : ''
-    const user = users.find((item) => item.id === id)
-    if (!user) {
-      res.status(401).json({ message: 'Нужна авторизация' })
-      return
-    }
-    res.json(publicUser(user))
+    res.json(publicUser(currentUser(req)))
   })
+  app.patch<Record<string, never>, User | ApiError, unknown>(
+    '/api/auth/me',
+    (req, _res, next) => {
+      currentUser(req)
+      if (!req.is('application/json') && !req.is('multipart/form-data')) {
+        throw new HttpError(400, 'Ожидается JSON или multipart/form-data с полями data и avatar')
+      }
+      next()
+    },
+    upload.single('avatar'),
+    (req, res) => {
+      const user = currentUser(req)
+      let raw: unknown = req.body
+      if (req.is('multipart/form-data')) {
+        const body = req.body as Record<string, unknown>
+        if (Object.keys(body).some((key) => key !== 'data')) {
+          throw new HttpError(400, 'Допустимы поле data и один файл avatar')
+        }
+        if (body.data === undefined) raw = {}
+        else {
+          if (typeof body.data !== 'string') throw new HttpError(400, 'Поле data должно быть JSON')
+          try {
+            raw = JSON.parse(body.data)
+          } catch {
+            throw new HttpError(400, 'Некорректный JSON в поле data')
+          }
+        }
+      }
+      const data = parseProfileUpdate(raw)
+      if (Object.keys(data).length === 0 && !req.file) {
+        throw new HttpError(400, 'Передайте поля профиля или аватарку')
+      }
+      if (
+        data.email &&
+        users.some((item) => item.id !== user.id && item.email.trim().toLowerCase() === data.email)
+      ) {
+        throw new HttpError(409, 'Этот email уже занят')
+      }
+      const folder = path.join(dataDir, 'uploads', 'avatars', encodeURIComponent(user.id))
+      const prefix = `/api/uploads/avatars/${encodeURIComponent(user.id)}/`
+      const name = req.file ? `${randomUUID()}${imageExtension(req.file)}` : undefined
+      const updated = { ...user, ...data, avatarUrl: name ? prefix + name : user.avatarUrl }
+      try {
+        if (name && req.file) {
+          fs.mkdirSync(folder, { recursive: true })
+          fs.writeFileSync(path.join(folder, name), req.file.buffer)
+        }
+        save(
+          'users',
+          users.map((item) => (item.id === user.id ? updated : item)),
+        )
+      } catch (error) {
+        if (name) fs.rmSync(path.join(folder, name), { force: true })
+        throw error
+      }
+      users[users.indexOf(user)] = updated
+      // Удаляем только собственный файл и только после успешного сохранения профиля.
+      const oldName = user.avatarUrl?.startsWith(prefix) ? user.avatarUrl.slice(prefix.length) : ''
+      if (name && /^[a-f0-9-]{36}\.(png|jpg|webp)$/.test(oldName)) {
+        try {
+          fs.rmSync(path.join(folder, oldName), { force: true })
+        } catch (error) {
+          console.error('Не удалось удалить старую аватарку', error)
+        }
+      }
+      res.json(publicUser(updated))
+    },
+  )
   app.use((req: Request, res: express.Response<ApiError>) => {
     res.status(404).json({ message: `Ручки ${req.method} ${req.path} нет` })
   })
   const handleError: ErrorRequestHandler = (
     error: unknown,
-    _req,
+    req,
     res: express.Response<ApiError>,
     _next,
   ) => {
@@ -308,7 +382,9 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
       const message =
         error.code === 'LIMIT_FILE_SIZE'
           ? 'Размер изображения превышает 2 МБ'
-          : 'Допустимы поле data и от 1 до 5 файлов images'
+          : req.method === 'PATCH' && req.path === '/api/auth/me'
+            ? 'Допустимы поле data и один файл avatar'
+            : 'Допустимы поле data и от 1 до 5 файлов images'
       res.status(400).json({ message })
       return
     }
