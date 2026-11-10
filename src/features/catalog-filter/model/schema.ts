@@ -1,7 +1,6 @@
 import { SubCategoryId } from '@/shared/lib/constants'
 import { FilterMode, FiltersState, Gender } from '@/shared/types'
-import yup from 'yup'
-
+import * as yup from 'yup'
 export const filtersSchema: yup.ObjectSchema<FiltersState> = yup.object({
   mode: yup
     .string<FilterMode>()
