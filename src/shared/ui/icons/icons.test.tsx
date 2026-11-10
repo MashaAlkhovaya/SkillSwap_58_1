@@ -2,8 +2,10 @@ import { render } from '@testing-library/react'
 import { describe, expect, test } from 'vitest'
 import { BellIcon } from './BellIcon'
 import { HeartIcon } from './HeartIcon'
+import { GalleryEditIcon } from './GalleryEditIcon'
 import { IdeaIcon } from './IdeaIcon'
 import { MessageTextIcon } from './MessageTextIcon'
+import { PencilIcon } from './PencilIcon'
 import { RequestIcon } from './RequestIcon'
 import { SearchIcon } from './SearchIcon'
 import { UserIcon } from './UserIcon'
@@ -47,9 +49,11 @@ describe('icons', () => {
   })
 
   test.each([
+    ['правка фото', GalleryEditIcon],
     ['заявки', RequestIcon],
     ['сообщение', MessageTextIcon],
     ['лампочка', IdeaIcon],
+    ['карандаш', PencilIcon],
     ['пользователь', UserIcon],
   ])('%s рисует иконку 24px текущего цвета', (_, Icon) => {
     const { container } = render(<Icon size={24} color="#253017" />)
