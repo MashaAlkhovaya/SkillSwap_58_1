@@ -1,5 +1,5 @@
 import styles from './Select.module.css'
-import { forwardRef, useCallback, useId, useRef } from 'react'
+import { forwardRef, useCallback, useId, useRef, useState } from 'react'
 import ReactSelect, {
   components,
   type ClearIndicatorProps,
@@ -100,10 +100,10 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(function Select(
         placeholder={placeholder ?? ''}
         isDisabled={disabled}
         isClearable={clearable}
-        {...(value !== undefined
-          ? { value: value ? (options.find((option) => option.value === value) ?? null) : null }
-          : {})}
-        onChange={(selected) => onChange(selected ? [selected.value] : [])}
+        onChange={(selected) => {
+          if (value === undefined) setInternalValue(selected)
+          onChange(selected ? [selected.value] : [])
+        }}
         components={{
           ClearIndicator,
           ...(chevron === 'outline'
