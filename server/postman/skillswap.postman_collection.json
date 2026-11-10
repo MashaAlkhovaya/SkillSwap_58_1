@@ -1075,7 +1075,7 @@
                 }
               ]
             },
-            "description": "**Авторизация:** не требуется.\n\n**Тело:** `multipart/form-data`. Оба поля обязательны:\n\n| Поле | Формат | Ограничения |\n| --- | --- | --- |\n| `data` | Текст с JSON объекта формы | До 32 КБ; поля ниже |\n| `images` | Файлы, отдельные части с одинаковым именем | От 1 до 5, JPEG/PNG/WebP, каждый до 2 МБ; проверяются MIME и сигнатура |\n\nВ JSON `data` обязательны все поля:\n\n| Поле | Тип | Правило |\n| --- | --- | --- |\n| `email` | string | Корректная почта; trim и нижний регистр; должна быть свободна |\n| `password` | string | Минимум 8 символов, пробелы сохраняются |\n| `name` | string | Минимум 2 символа после trim |\n| `birthDate` | string | Существующая дата ISO UTC, как `1995-02-08T00:00:00.000Z`, не в будущем |\n| `gender` | string | `female` или `male` |\n| `city` | string | Одно из значений `CITIES` в `src/shared/lib/constants.ts` |\n| `wantsToLearn` | string[] | Непустой массив уникальных ID подкатегорий из `SKILL_CATEGORIES` |\n| `canTeach.title` | string | 3–50 символов после trim |\n| `canTeach.description` | string | 1–500 символов после trim |\n| `canTeach.category` | string | ID категории из `SKILL_CATEGORIES` |\n| `canTeach.subCategory` | string | ID подкатегории, принадлежащей указанной категории |\n\n**Успех:** `201`, `{ id, name, email, token }`. Создаются пользователь, навык `teach` и изображения. **Ошибки:** `400` — тело, поля или файлы не прошли проверку; `409` — почта занята; `500` — внутренняя ошибка. Формат ошибки: `{ message: string }`.\n\nВ браузере используйте `FormData`: `form.append('data', JSON.stringify(data))`, затем `form.append('images', file)` для каждого файла. Не задавайте `Content-Type` вручную: клиент добавит boundary. В Postman Desktop задайте Working directory на корень репозитория: файлы запроса лежат в `server/postman/fixtures/`. При отправке успешного примера скрипт создаёт уникальный `referenceEmail`."
+            "description": "**Авторизация:** не требуется.\n\n**Тело:** `multipart/form-data`. Поле `data` обязательно, `images` можно не передавать:\n\n| Поле | Формат | Ограничения |\n| --- | --- | --- |\n| `data` | Текст с JSON объекта формы | До 32 КБ; поля ниже |\n| `images` | Файлы, отдельные части с одинаковым именем | Необязательно, до 5 файлов, JPEG/PNG/WebP, каждый до 2 МБ; проверяются MIME и сигнатура |\n\nВ JSON `data` обязательны все поля:\n\n| Поле | Тип | Правило |\n| --- | --- | --- |\n| `email` | string | Корректная почта; trim и нижний регистр; должна быть свободна |\n| `password` | string | Минимум 8 символов, пробелы сохраняются |\n| `name` | string | Минимум 2 символа после trim |\n| `birthDate` | string | Существующая дата ISO UTC, как `1995-02-08T00:00:00.000Z`, не в будущем |\n| `gender` | string | `female` или `male` |\n| `city` | string | Одно из значений `CITIES` в `src/shared/lib/constants.ts` |\n| `wantsToLearn` | string[] | Непустой массив уникальных ID подкатегорий из `SKILL_CATEGORIES` |\n| `canTeach.title` | string | 3–50 символов после trim |\n| `canTeach.description` | string | 1–500 символов после trim |\n| `canTeach.category` | string | ID категории из `SKILL_CATEGORIES` |\n| `canTeach.subCategory` | string | ID подкатегории, принадлежащей указанной категории |\n\n**Успех:** `201`, `{ id, name, email, token }`. Создаются пользователь и навык `teach`; без фото навык содержит `imageUrls: []`. **Ошибки:** `400` — тело, поля или файлы не прошли проверку; `409` — почта занята; `500` — внутренняя ошибка. Формат ошибки: `{ message: string }`.\n\nВ браузере используйте `FormData`: `form.append('data', JSON.stringify(data))`, затем `form.append('images', file)` для каждого файла. Не задавайте `Content-Type` вручную: клиент добавит boundary. В Postman Desktop задайте Working directory на корень репозитория: файлы запроса лежат в `server/postman/fixtures/`. При отправке успешного примера скрипт создаёт уникальный `referenceEmail`."
           },
           "event": [
             {
@@ -1225,40 +1225,6 @@
               ],
               "cookie": [],
               "body": "{\n  \"message\": \"Некорректный email\"\n}"
-            },
-            {
-              "name": "400 — Регистрация — нет изображений (400)",
-              "originalRequest": {
-                "method": "POST",
-                "header": [],
-                "url": {
-                  "raw": "{{baseUrl}}/auth/register",
-                  "host": ["{{baseUrl}}"],
-                  "path": ["auth", "register"]
-                },
-                "body": {
-                  "mode": "formdata",
-                  "formdata": [
-                    {
-                      "key": "data",
-                      "value": "{\n  \"email\": \"{{newEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Тестовый Юзер\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\",\n    \"acting\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Уроки рисования\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу рисовать акварелью\"\n  }\n}",
-                      "type": "text",
-                      "contentType": "application/json"
-                    }
-                  ]
-                }
-              },
-              "status": "Bad Request",
-              "code": 400,
-              "_postman_previewlanguage": "json",
-              "header": [
-                {
-                  "key": "Content-Type",
-                  "value": "application/json; charset=utf-8"
-                }
-              ],
-              "cookie": [],
-              "body": "{\n  \"message\": \"Добавьте от 1 до 5 изображений\"\n}"
             },
             {
               "name": "400 — Регистрация — файл не изображение (400)",
@@ -2165,7 +2131,7 @@
                 }
               ]
             },
-            "description": "**Авторизация:** не требуется.\n\n**Тело:** `multipart/form-data`. Оба поля обязательны:\n\n| Поле | Формат | Ограничения |\n| --- | --- | --- |\n| `data` | Текст с JSON объекта формы | До 32 КБ; поля ниже |\n| `images` | Файлы, отдельные части с одинаковым именем | От 1 до 5, JPEG/PNG/WebP, каждый до 2 МБ; проверяются MIME и сигнатура |\n\nВ JSON `data` обязательны все поля:\n\n| Поле | Тип | Правило |\n| --- | --- | --- |\n| `email` | string | Корректная почта; trim и нижний регистр; должна быть свободна |\n| `password` | string | Минимум 8 символов, пробелы сохраняются |\n| `name` | string | Минимум 2 символа после trim |\n| `birthDate` | string | Существующая дата ISO UTC, как `1995-02-08T00:00:00.000Z`, не в будущем |\n| `gender` | string | `female` или `male` |\n| `city` | string | Одно из значений `CITIES` в `src/shared/lib/constants.ts` |\n| `wantsToLearn` | string[] | Непустой массив уникальных ID подкатегорий из `SKILL_CATEGORIES` |\n| `canTeach.title` | string | 3–50 символов после trim |\n| `canTeach.description` | string | 1–500 символов после trim |\n| `canTeach.category` | string | ID категории из `SKILL_CATEGORIES` |\n| `canTeach.subCategory` | string | ID подкатегории, принадлежащей указанной категории |\n\n**Успех:** `201`, `{ id, name, email, token }`. Создаются пользователь, навык `teach` и изображения. **Ошибки:** `400` — тело, поля или файлы не прошли проверку; `409` — почта занята; `500` — внутренняя ошибка. Формат ошибки: `{ message: string }`.\n\nВ браузере используйте `FormData`: `form.append('data', JSON.stringify(data))`, затем `form.append('images', file)` для каждого файла. Не задавайте `Content-Type` вручную: клиент добавит boundary. В Postman Desktop задайте Working directory на корень репозитория: файлы запроса лежат в `server/postman/fixtures/`. При отправке успешного примера скрипт создаёт уникальный `newEmail`.\n\n**Этот сценарий:** Регистрация — успех, 5 изображений (201)"
+            "description": "**Авторизация:** не требуется.\n\n**Тело:** `multipart/form-data`. Поле `data` обязательно, `images` можно не передавать:\n\n| Поле | Формат | Ограничения |\n| --- | --- | --- |\n| `data` | Текст с JSON объекта формы | До 32 КБ; поля ниже |\n| `images` | Файлы, отдельные части с одинаковым именем | Необязательно, до 5 файлов, JPEG/PNG/WebP, каждый до 2 МБ; проверяются MIME и сигнатура |\n\nВ JSON `data` обязательны все поля:\n\n| Поле | Тип | Правило |\n| --- | --- | --- |\n| `email` | string | Корректная почта; trim и нижний регистр; должна быть свободна |\n| `password` | string | Минимум 8 символов, пробелы сохраняются |\n| `name` | string | Минимум 2 символа после trim |\n| `birthDate` | string | Существующая дата ISO UTC, как `1995-02-08T00:00:00.000Z`, не в будущем |\n| `gender` | string | `female` или `male` |\n| `city` | string | Одно из значений `CITIES` в `src/shared/lib/constants.ts` |\n| `wantsToLearn` | string[] | Непустой массив уникальных ID подкатегорий из `SKILL_CATEGORIES` |\n| `canTeach.title` | string | 3–50 символов после trim |\n| `canTeach.description` | string | 1–500 символов после trim |\n| `canTeach.category` | string | ID категории из `SKILL_CATEGORIES` |\n| `canTeach.subCategory` | string | ID подкатегории, принадлежащей указанной категории |\n\n**Успех:** `201`, `{ id, name, email, token }`. Создаются пользователь и навык `teach`; без фото навык содержит `imageUrls: []`. **Ошибки:** `400` — тело, поля или файлы не прошли проверку; `409` — почта занята; `500` — внутренняя ошибка. Формат ошибки: `{ message: string }`.\n\nВ браузере используйте `FormData`: `form.append('data', JSON.stringify(data))`, затем `form.append('images', file)` для каждого файла. Не задавайте `Content-Type` вручную: клиент добавит boundary. В Postman Desktop задайте Working directory на корень репозитория: файлы запроса лежат в `server/postman/fixtures/`. При отправке успешного примера скрипт создаёт уникальный `newEmail`.\n\n**Этот сценарий:** Регистрация — успех, 5 изображений (201)"
           },
           "event": [
             {
@@ -3102,7 +3068,7 @@
           ]
         },
         {
-          "name": "Регистрация — нет изображений (400)",
+          "name": "Регистрация — без изображений (201)",
           "request": {
             "method": "POST",
             "header": [],
@@ -3122,16 +3088,34 @@
                 }
               ]
             },
-            "description": "**Авторизация:** не требуется.\n\nНегативная проверка `POST /auth/register`. Формат и ограничения полей — в папке «Справочник API», запрос «Регистрация».\n\n**Этот сценарий:** Регистрация — нет изображений (400)\n\n**Ожидаемый ответ:** `400`, `{ message: string }`. Профиль и навык не создаются."
+            "description": "**Авторизация:** не требуется.\n\nРегистрация без необязательного поля `images`: передаётся только `data` в `multipart/form-data`.\n\n**Ожидаемый ответ:** `201`, `{ id, name, email, token }`. Создаются пользователь и навык с `imageUrls: []`."
           },
           "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.set('newEmail', `qa.no-photo.${Date.now()}.${Math.random().toString(16).slice(2)}@example.com`)"
+                ]
+              }
+            },
             {
               "listen": "test",
               "script": {
                 "type": "text/javascript",
                 "exec": [
-                  "pm.test('400', () => pm.response.to.have.status(400))",
-                  "pm.test('ошибка в формате { message }', () => pm.expect(pm.response.json().message).to.be.a('string'))"
+                  "pm.test('201', () => pm.response.to.have.status(201))",
+                  "const body = pm.response.json()",
+                  "pm.test('AuthUser без пароля и логина', () => pm.expect(body).to.have.all.keys('id', 'name', 'email', 'token'))",
+                  "pm.test('токен связан с пользователем', () => pm.expect(body.token).to.eql(`token-${body.id}`))",
+                  "pm.sendRequest({ url: pm.variables.replaceIn('{{baseUrl}}/auth/me'), header: { Authorization: `Bearer ${body.token}` } }, (error, response) => {",
+                  "  pm.test('профиль доступен', () => { pm.expect(error).to.equal(null); pm.expect(response.code).to.eql(200) })",
+                  "  if (error || response.code !== 200) return",
+                  "  pm.sendRequest(pm.variables.replaceIn('{{baseUrl}}/skills/') + response.json().canTeach.id, (skillError, skillResponse) => {",
+                  "    pm.test('навык без изображений', () => { pm.expect(skillError).to.equal(null); pm.expect(skillResponse.code).to.eql(200); pm.expect(skillResponse.json().imageUrls).to.deep.eql([]) })",
+                  "  })",
+                  "})"
                 ]
               }
             }

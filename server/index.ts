@@ -209,7 +209,7 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
     '/api/auth/register',
     (req, _res, next) => {
       if (!req.is('multipart/form-data')) {
-        next(new HttpError(400, 'Ожидается multipart/form-data с полями data и images'))
+        next(new HttpError(400, 'Ожидается multipart/form-data с полем data'))
         return
       }
       next()
@@ -226,8 +226,7 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
         throw new HttpError(400, 'Некорректный JSON в поле data')
       }
       const data = parseRegistration(parsed)
-      const files = req.files as Express.Multer.File[] | undefined
-      if (!files?.length) throw new HttpError(400, 'Добавьте от 1 до 5 изображений')
+      const files = (req.files as Express.Multer.File[] | undefined) ?? []
       const extensions = files.map(imageExtension)
       if (users.some((user) => user.email.trim().toLowerCase() === data.email)) {
         throw new HttpError(409, 'Этот email уже занят')
@@ -264,7 +263,7 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
         likes: [],
       }
       try {
-        fs.mkdirSync(folder, { recursive: true })
+        if (files.length) fs.mkdirSync(folder, { recursive: true })
         files.forEach((file, index) =>
           fs.writeFileSync(path.join(folder, names[index]), file.buffer),
         )
@@ -384,7 +383,7 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
           ? 'Размер изображения превышает 2 МБ'
           : req.method === 'PATCH' && req.path === '/api/auth/me'
             ? 'Допустимы поле data и один файл avatar'
-            : 'Допустимы поле data и от 1 до 5 файлов images'
+            : 'Допустимы поле data и до 5 файлов images'
       res.status(400).json({ message })
       return
     }
