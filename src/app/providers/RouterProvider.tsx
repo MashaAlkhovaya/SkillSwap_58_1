@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { lazy, Suspense } from 'react'
 import { ROUTES } from '@/shared/lib/constants'
 import { MainLayout } from '../Layouts/MainLayout'
+import { Skeleton } from '@/shared/ui'
 
 // Lazy-загрузка страниц — каждая страница грузится только при переходе на неё
 const CatalogPage = lazy(() => import('@/pages/CatalogPage'))
@@ -16,7 +17,7 @@ const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 export function AppRouter() {
   return (
     <BrowserRouter>
-      <Suspense fallback={<div>Загрузка...</div>}>
+      <Suspense fallback={<Skeleton width="100%" height="100vh" />}>
         <Routes>
           {/* 1. Главный маршрут — это наш лейаут */}
           <Route element={<MainLayout />}>

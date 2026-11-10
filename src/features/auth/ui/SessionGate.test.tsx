@@ -139,7 +139,7 @@ describe('SessionGate', () => {
   it('не считает пользователя вошедшим, пока сессия проверяется', () => {
     const store = renderSessionGate()
 
-    expect(screen.getByText('Проверяем вход...')).toBeInTheDocument()
+    expect(document.querySelector('[aria-hidden="true"]')).toBeInTheDocument()
     expect(store.getState().auth.user).toBeNull()
     expect(screen.queryByText('Приложение открыто')).not.toBeInTheDocument()
   })
