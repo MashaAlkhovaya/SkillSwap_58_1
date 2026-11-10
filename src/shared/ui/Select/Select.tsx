@@ -74,6 +74,9 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(function Select(
   ref,
 ) {
   const id = useId()
+  const [internalValue, setInternalValue] = useState<SelectItem | null>(null)
+  const selectedValue =
+    value === undefined ? internalValue : (options.find((option) => option.value === value) ?? null)
   const forwardedRef = useRef(ref)
   forwardedRef.current = ref
   const setSelectRef = useCallback((instance: SelectInstance<SelectItem> | null) => {
@@ -93,6 +96,7 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(function Select(
         ref={setSelectRef}
         inputId={id}
         options={options}
+        value={selectedValue}
         placeholder={placeholder ?? ''}
         isDisabled={disabled}
         isClearable={clearable}

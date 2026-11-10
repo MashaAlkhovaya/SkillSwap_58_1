@@ -1,6 +1,7 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
 import RegisterPage, { RegistrationStep } from './index'
+import userEvent from '@testing-library/user-event'
 
 const stepTitles = {
   1: 'Добро пожаловать в SkillSwap!',
@@ -86,17 +87,15 @@ describe('RegisterPage', () => {
     },
   )
 
-  it('переходит к следующему шагу и остаётся на последнем', () => {
+  it('переходит на следующий шаг после валидного заполнения текущего', async () => {
     render(<RegisterPage currentStep={1} totalSteps={3} />)
 
-    fireEvent.click(screen.getByRole('button', { name: 'Далее' }))
-    expectSynchronizedStep(2, 3)
+    const user = userEvent.setup()
 
-    fireEvent.click(screen.getByRole('button', { name: 'Продолжить' }))
-    expectSynchronizedStep(3, 3)
-
-    fireEvent.click(screen.getByRole('button', { name: 'Продолжить' }))
-    expectSynchronizedStep(3, 3)
+    await user.type(screen.getByLabelText('Email'), 'user@example.com')
+    await user.type(screen.getByLabelText('Пароль'), 'secure-pass-123')
+    await user.click(screen.getByRole('button', { name: 'Далее' }))
+    await waitFor(() => expectSynchronizedStep(2, 3))
   })
 
   it('возвращается к предыдущему шагу', () => {
