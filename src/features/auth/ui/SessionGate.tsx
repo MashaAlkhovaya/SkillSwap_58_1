@@ -62,5 +62,5 @@ export function SessionGate({ children }: SessionGateProps) {
     )
   }
 
-  return <Skeleton width="___" height="___" />
+  return <Skeleton width="100%" height="100vh" />
 }
