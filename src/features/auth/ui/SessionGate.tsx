@@ -4,6 +4,7 @@ import { useGetAuthMeQuery } from '../api/authApi'
 import { getAuthUser, saveServerAuthUser } from '../model/authUtils'
 import { logout, setAuthUser } from '../model/authSlice'
 import { useAppDispatch } from '@/store/hooks'
+import { Skeleton } from '@/shared/ui'
 
 interface SessionGateProps {
   children: ReactNode
@@ -61,5 +62,5 @@ export function SessionGate({ children }: SessionGateProps) {
     )
   }
 
-  return <p>Проверяем вход...</p>
+  return <Skeleton width="100%" height="100vh" />
 }
