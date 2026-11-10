@@ -1,0 +1,257 @@
+.card {
+  width: 100%;
+  max-width: 916px;
+  min-width: 0;
+  min-height: 324px;
+  height: auto;
+  padding: 0;
+  container-type: inline-size;
+  container-name: skill-card;
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 399fr) minmax(0, 440fr);
+  gap: 77px;
+  min-width: 0;
+}
+
+.content {
+  display: flex;
+  min-width: 0;
+  min-height: 324px;
+}
+
+.info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
+  min-width: 0;
+  min-height: 324px;
+}
+
+.title {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-size: var(--font-size-3xl);
+  font-weight: var(--font-weight-medium);
+  line-height: 40px;
+  letter-spacing: -0.011em;
+  overflow-wrap: anywhere;
+}
+
+.category {
+  margin-top: var(--space-xs);
+  color: var(--color-text-caption);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-sm);
+  line-height: 20px;
+}
+
+.description {
+  min-width: 0;
+  margin-top: var(--space-lg);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-lg);
+  font-weight: var(--font-weight-regular);
+  line-height: 1.5;
+}
+
+.controls {
+  display: flex;
+  align-items: stretch;
+  gap: var(--space-md);
+  width: 100%;
+  margin-top: auto;
+}
+
+.controls > * {
+  flex: 1;
+  min-width: 0;
+}
+
+.gallery {
+  display: grid;
+  grid-template-columns: 324px 92px;
+  gap: 24px;
+  width: 440px;
+  height: 324px;
+  min-width: 0;
+  align-self: center;
+}
+
+.mainImage {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-bg-secondary);
+}
+
+.mainImageEmpty {
+  grid-column: 1 / -1;
+}
+
+.mainImage img,
+.thumbnail img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+  padding: var(--space-lg);
+  box-sizing: border-box;
+  color: var(--color-text-placeholder);
+  background-color: var(--color-bg);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  text-align: center;
+}
+
+.arrow {
+  position: absolute;
+  top: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  color: var(--color-text-placeholder);
+  background-color: var(--color-bg);
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  transform: translateY(-50%);
+  font-size: 26px;
+  line-height: 1;
+}
+
+.arrow span {
+  display: block;
+  line-height: 1;
+  transform: translate(0, -2px);
+}
+
+.arrow:hover {
+  opacity: 0.85;
+}
+
+.arrow:focus-visible,
+.thumbnail:focus-visible {
+  outline: 2px solid var(--color-link);
+  outline-offset: 2px;
+}
+
+.previous {
+  left: var(--space-sm);
+}
+
+.next {
+  right: var(--space-sm);
+}
+
+.thumbnails {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 92px;
+  height: 324px;
+}
+
+.thumbnail {
+  position: relative;
+  flex: 0 0 92px;
+  width: 92px;
+  height: 92px;
+  padding: 0;
+  overflow: hidden;
+  border: none;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+}
+
+.thumbnail:hover {
+  opacity: 0.85;
+}
+
+.thumbnail:only-child {
+  flex: 1 1 auto;
+  height: auto;
+  aspect-ratio: auto;
+}
+
+.moreOverlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-main);
+  background: rgb(0 0 0 / 35%);
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-base);
+  pointer-events: none;
+}
+
+@container skill-card (max-width: 915px) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-lg);
+  }
+
+  .content,
+  .info {
+    min-height: auto;
+  }
+
+  .gallery {
+    width: 100%;
+    max-width: 440px;
+    height: auto;
+    aspect-ratio: 440 / 324;
+    margin-inline: auto;
+    grid-template-columns: minmax(0, 324fr) minmax(0, 92fr);
+  }
+
+  .thumbnails {
+    width: auto;
+    height: 100%;
+    min-height: 0;
+  }
+
+  .thumbnail {
+    flex: 1 1 0;
+    width: 100%;
+    height: auto;
+    min-width: 0;
+    min-height: 0;
+    aspect-ratio: 1;
+  }
+}
+
+@media (width <= 480px) {
+  .layout {
+    gap: var(--space-md);
+  }
+
+  .gallery,
+  .thumbnails {
+    gap: var(--space-md);
+  }
+
+  .description {
+    margin-top: var(--space-md);
+  }
+}
