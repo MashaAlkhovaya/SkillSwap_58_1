@@ -65,6 +65,26 @@ describe('FileInput', () => {
     expect(click).toHaveBeenCalled()
   })
 
+  it('показывает сохранённый адрес аватара и не открывает выбор по клику', () => {
+    const ref = createRef<HTMLInputElement>()
+    render(
+      <FileInput
+        ref={ref}
+        onChange={vi.fn()}
+        variant="avatar"
+        previewUrl="http://localhost/api/uploads/avatars/user-01/photo.png"
+      />,
+    )
+
+    expect(screen.getByAltText('Превью')).toHaveAttribute(
+      'src',
+      'http://localhost/api/uploads/avatars/user-01/photo.png',
+    )
+    const click = vi.spyOn(ref.current as HTMLInputElement, 'click')
+    fireEvent.click(screen.getByAltText('Превью'))
+    expect(click).not.toHaveBeenCalled()
+  })
+
   it('после загрузки фото аватара не открывает выбор файла по клику и перетаскиванию', () => {
     const handleChange = vi.fn()
     const ref = createRef<HTMLInputElement>()

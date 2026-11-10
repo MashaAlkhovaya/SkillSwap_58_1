@@ -1,10 +1,12 @@
-import { useUpdateProfileMutation } from '@/features/auth/api/authApi'
+import { useGetAuthMeQuery, useUpdateProfileMutation } from '@/features/auth/api/authApi'
 import { ProfileForm, type ProfileFormValues } from '@/widgets/ProfileForm'
 import { ProfileSidebar } from '@/widgets/ProfileSidebar'
+import { toProfileDefaults } from './profileUser'
 import { toProfileUpdate } from './toProfileUpdate'
 import styles from './ProfilePage.module.css'
 
 export default function ProfilePage() {
+  const { data: profile, isLoading } = useGetAuthMeQuery()
   const [updateProfile] = useUpdateProfileMutation()
 
   const handleSubmit = (values: ProfileFormValues) => {
@@ -16,7 +18,13 @@ export default function ProfilePage() {
   return (
     <div className={styles.page}>
       <ProfileSidebar />
-      <ProfileForm onSubmit={handleSubmit} />
+      {isLoading ? null : (
+        <ProfileForm
+          defaultValues={profile ? toProfileDefaults(profile) : undefined}
+          avatarUrl={profile?.avatarUrl}
+          onSubmit={handleSubmit}
+        />
+      )}
     </div>
   )
 }

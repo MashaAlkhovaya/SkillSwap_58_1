@@ -8,10 +8,11 @@ export interface FileInputProps {
   onChange: (file: File) => void
   variant?: 'skill' | 'avatar'
   size?: number
+  previewUrl?: string | null
 }
 
 export const FileInput = forwardRef<HTMLInputElement, FileInputProps>(function FileInput(
-  { onChange, variant = 'skill', size },
+  { onChange, variant = 'skill', size, previewUrl },
   ref,
 ) {
   const [file, setFile] = useState<File | null>(null)
@@ -47,7 +48,8 @@ export const FileInput = forwardRef<HTMLInputElement, FileInputProps>(function F
     if (file) handleFile(file)
   }
 
-  const avatarLocked = variant === 'avatar' && preview !== null
+  const shownPreview = preview ?? previewUrl ?? null
+  const avatarLocked = variant === 'avatar' && shownPreview !== null
 
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault()
@@ -97,9 +99,9 @@ export const FileInput = forwardRef<HTMLInputElement, FileInputProps>(function F
           hidden
         />
 
-        {preview ? (
+        {shownPreview ? (
           <img
-            src={preview}
+            src={shownPreview}
             alt="Превью"
             className={variant === 'avatar' ? styles.previewAvatar : styles.previewSkill}
           />

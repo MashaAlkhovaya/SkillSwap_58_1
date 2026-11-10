@@ -32,6 +32,7 @@ export type ProfileFormValues = {
 export type ProfileFormProps = {
   className?: string
   defaultValues?: Partial<Omit<ProfileFormValues, 'avatar'>>
+  avatarUrl?: string | null
   onSubmit: (values: ProfileFormValues) => void
   onPasswordChange?: () => void
 }
@@ -44,6 +45,7 @@ const toBirthDate = (value: Date | string | null) => {
 export function ProfileForm({
   className,
   defaultValues,
+  avatarUrl,
   onSubmit,
   onPasswordChange,
 }: ProfileFormProps) {
@@ -182,7 +184,13 @@ export function ProfileForm({
       </div>
 
       <div className={styles.avatar}>
-        <FileInput ref={fileRef} variant="avatar" size={244} onChange={setAvatar} />
+        <FileInput
+          ref={fileRef}
+          variant="avatar"
+          size={244}
+          previewUrl={avatarUrl}
+          onChange={setAvatar}
+        />
         <button
           type="button"
           className={styles.edit}
