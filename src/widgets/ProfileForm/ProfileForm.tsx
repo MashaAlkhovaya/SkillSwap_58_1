@@ -33,6 +33,7 @@ export type ProfileFormProps = {
   className?: string
   defaultValues?: Partial<Omit<ProfileFormValues, 'avatar'>>
   avatarUrl?: string | null
+  error?: string | null
   onSubmit: (values: ProfileFormValues) => void
   onPasswordChange?: () => void
 }
@@ -46,6 +47,7 @@ export function ProfileForm({
   className,
   defaultValues,
   avatarUrl,
+  error,
   onSubmit,
   onPasswordChange,
 }: ProfileFormProps) {
@@ -178,6 +180,11 @@ export function ProfileForm({
           </div>
         </div>
 
+        {error ? (
+          <p className={styles.error} role="alert">
+            {error}
+          </p>
+        ) : null}
         <Button type="submit" variant="primary" className={styles.submit}>
           Сохранить
         </Button>

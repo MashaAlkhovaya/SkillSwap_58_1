@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { profileDateFromIso, toProfileDefaults } from './profileUser'
+import { apiErrorMessage, profileDateFromIso, toProfileDefaults } from './profileUser'
 
 describe('profileUser', () => {
   it('переводит дату профиля в формат поля', () => {
@@ -25,5 +25,12 @@ describe('profileUser', () => {
       city: 'Москва',
       bio: 'Учу рисовать',
     })
+  })
+
+  it('читает сообщение ошибки API', () => {
+    expect(apiErrorMessage({ data: { message: 'Этот email уже занят' } })).toBe(
+      'Этот email уже занят',
+    )
+    expect(apiErrorMessage({ status: 500 })).toBe('Не удалось сохранить профиль')
   })
 })

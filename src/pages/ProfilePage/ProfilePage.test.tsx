@@ -96,4 +96,30 @@ describe('ProfilePage', () => {
       bio: 'Учу рисовать',
     })
   })
+
+  it('показывает ошибку API и не меняет сессию', async () => {
+    const user = userEvent.setup()
+    const saved = JSON.stringify({
+      id: 'user-01',
+      name: 'Анна',
+      email: 'anna@example.com',
+      token: 'token-user-01',
+    })
+    localStorage.setItem(LOCAL_STORAGE_KEYS.AUTH_USER, saved)
+    const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
+      const request = requestOf(input)
+      if (request.method === 'PATCH') {
+        return Response.json({ message: 'Этот email уже занят' }, { status: 409 })
+      }
+      return Response.json(profile)
+    })
+    vi.stubGlobal('fetch', fetchMock)
+
+    renderPage()
+    await screen.findByLabelText('Почта')
+    await user.click(screen.getByRole('button', { name: 'Сохранить' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent('Этот email уже занят')
+    expect(localStorage.getItem(LOCAL_STORAGE_KEYS.AUTH_USER)).toBe(saved)
+  })
 })

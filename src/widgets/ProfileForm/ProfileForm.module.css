@@ -139,6 +139,13 @@
   outline: none;
 }
 
+.error {
+  margin: 0;
+  font-size: var(--font-size-sm);
+  line-height: 20px;
+  color: var(--color-error);
+}
+
 .submit {
   width: 100%;
   height: 48px;

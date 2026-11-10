@@ -27,3 +27,20 @@ export const toProfileDefaults = (user: ProfileSource): Omit<ProfileFormValues, 
   city: user.city,
   bio: user.bio,
 })
+
+export const apiErrorMessage = (error: unknown): string => {
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'data' in error &&
+    typeof error.data === 'object' &&
+    error.data !== null &&
+    'message' in error.data &&
+    typeof error.data.message === 'string' &&
+    error.data.message.trim()
+  ) {
+    return error.data.message
+  }
+
+  return 'Не удалось сохранить профиль'
+}
