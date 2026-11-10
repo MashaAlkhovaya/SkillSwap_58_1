@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Button } from './index'
-import { Skeleton } from '../Skeleton'
 
 const SortIcon = () => (
   <svg width="18" height="19" viewBox="0 0 18 19" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -105,8 +104,8 @@ export const Loading: Story = {
   args: { variant: 'primary' },
   render: () => (
     <div style={{ width: 436 }}>
-      <Button variant="primary" disabled style={{ width: '100%' }}>
-        <Skeleton variant="text" width="6rem" />
+      <Button variant="primary" isLoading style={{ width: '100%' }}>
+        Войти
       </Button>
     </div>
   ),
