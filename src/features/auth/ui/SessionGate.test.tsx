@@ -112,6 +112,7 @@ describe('SessionGate', () => {
       name: queryState.data.name,
       email: queryState.data.email,
       token: savedUser.token,
+      avatarUrl: null as string | null,
     }
 
     expect(store.getState().auth.user).toEqual(expectedUser)
