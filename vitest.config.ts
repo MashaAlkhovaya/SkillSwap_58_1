@@ -27,6 +27,7 @@ export default defineConfig({
           environment: 'jsdom',
           globals: true,
           setupFiles: ['./src/setupTests.ts'],
+          execArgv: ['--no-webstorage'],
           exclude: ['**/node_modules/**', '**/dist/**', '**/*.stories.*', 'server/**'],
         },
       },

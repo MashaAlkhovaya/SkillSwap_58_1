@@ -3,6 +3,7 @@ import { lazy, Suspense } from 'react'
 import { ROUTES } from '@/shared/lib/constants'
 import { MainLayout } from '../Layouts/MainLayout'
 import { Skeleton } from '@/shared/ui'
+import { PrivateRoute } from '@/features/auth/ui/PrivateRoute'
 
 // Lazy-загрузка страниц — каждая страница грузится только при переходе на неё
 const CatalogPage = lazy(() => import('@/pages/CatalogPage'))
@@ -32,9 +33,11 @@ export function AppRouter() {
               path={ROUTES.REGISTER}
               element={<RegisterPage currentStep={1} totalSteps={3} />}
             />
-            {/* Защищённые маршруты — добавь PrivateRoute обёртку */}
-            <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
-            <Route path={ROUTES.CREATE} element={<CreateSkillPage />} />
+            {/* защищённые маршруты */}
+            <Route element={<PrivateRoute />}>
+              <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
+              <Route path={ROUTES.CREATE} element={<CreateSkillPage />} />
+            </Route>
 
             {/* 3. Обработка 404 */}
             <Route path="*" element={<NotFoundPage />} />

@@ -12,8 +12,8 @@ import styles from './ProfilePage.module.css'
 export default function ProfilePage() {
   const dispatch = useAppDispatch()
   const authUser = useAppSelector(selectAuthUser)
-  const { data: profile, isLoading, isError, error: loadError } = useGetAuthMeQuery()
-  const [updateProfile] = useUpdateProfileMutation()
+  const { data: profile, isError, error: loadError } = useGetAuthMeQuery()
+  const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation()
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   const handleSubmit = async (values: ProfileFormValues) => {
@@ -42,16 +42,17 @@ export default function ProfilePage() {
   return (
     <div className={styles.page}>
       <ProfileSidebar />
-      {isLoading ? null : (
+      {profile ? (
         <ProfileForm
-          defaultValues={profile ? toProfileDefaults(profile) : undefined}
-          avatarUrl={profile?.avatarUrl}
+          defaultValues={toProfileDefaults(profile)}
+          avatarUrl={profile.avatarUrl}
           error={message}
+          isSubmitting={isUpdating}
           onSubmit={(values) => {
             void handleSubmit(values)
           }}
         />
-      )}
+      ) : null}
     </div>
   )
 }
