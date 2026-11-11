@@ -13,7 +13,7 @@ function renderHeader() {
   const store = configureStore({
     reducer: { auth: authReducer },
     preloadedState: {
-      auth: { user: null },
+      auth: { user: null, profile: null },
     },
   })
 
@@ -75,7 +75,7 @@ describe('Header', () => {
     const store = configureStore({
       reducer: { auth: authReducer },
       preloadedState: {
-        auth: { user },
+        auth: { user, profile: null },
       },
     })
 

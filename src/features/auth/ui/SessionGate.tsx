@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useGetAuthMeQuery } from '../api/authApi'
-import { getAuthUser, saveServerAuthUser } from '../model/authUtils'
-import { logout, setAuthUser } from '../model/authSlice'
+import { getAuthUser, saveServerAuthUser, saveUserProfile } from '../model/authUtils'
+import { logout, setAuthUser, setProfile } from '../model/authSlice'
 import { useAppDispatch } from '@/store/hooks'
 
 interface SessionGateProps {
@@ -34,7 +34,9 @@ export function SessionGate({ children }: SessionGateProps) {
       }
 
       saveServerAuthUser(confirmedUser)
+      saveUserProfile(data)
       dispatch(setAuthUser(confirmedUser))
+      dispatch(setProfile(data))
       setIsFinished(true)
       return
     }
