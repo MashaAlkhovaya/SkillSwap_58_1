@@ -38,7 +38,12 @@ function renderPage() {
       auth: authReducer,
       [baseApi.reducerPath]: baseApi.reducer,
     },
-    preloadedState: { auth: { user: authUser } },
+    preloadedState: {
+      auth: {
+        user: authUser,
+        profile: null,
+      },
+    },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(baseApi.middleware),
   })
 

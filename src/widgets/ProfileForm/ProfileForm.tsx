@@ -9,6 +9,7 @@ import {
   PencilIcon,
   Select,
   TextInput,
+  Skeleton,
 } from '@/shared/ui'
 import styles from './ProfileForm.module.css'
 
@@ -36,6 +37,8 @@ export type ProfileFormProps = {
   error?: string | null
   onSubmit: (values: ProfileFormValues) => void
   onPasswordChange?: () => void
+  isLoading?: boolean
+  isSubmitting?: boolean
 }
 
 const toBirthDate = (value: Date | string | null) => {
@@ -50,6 +53,8 @@ export function ProfileForm({
   error,
   onSubmit,
   onPasswordChange,
+  isLoading = false,
+  isSubmitting = false,
 }: ProfileFormProps) {
   const fileRef = useRef<HTMLInputElement>(null)
   const birthRef = useRef<HTMLInputElement>(null)
@@ -60,6 +65,31 @@ export function ProfileForm({
   const [city, setCity] = useState(defaultValues?.city ?? '')
   const [bio, setBio] = useState(defaultValues?.bio ?? '')
   const [avatar, setAvatar] = useState<File | null>(null)
+
+  if (isLoading) {
+    return (
+      <form className={clsx(styles.form, className)} aria-hidden="true">
+        <div className={styles.fields}>
+          <div className={styles.inputs}>
+            {/* почта + «Изменить пароль» */}
+            <Skeleton variant="rect" height={112} />
+            {/* имя */}
+            <Skeleton variant="rect" height={76} />
+            {/* дата рождения + пол */}
+            <Skeleton variant="rect" height={76} />
+            {/* город */}
+            <Skeleton variant="rect" height={76} />
+            {/* о себе */}
+            <Skeleton variant="rect" height={120} />
+          </div>
+          <Skeleton variant="rect" height={48} className={styles.submit} />
+        </div>
+        <div className={styles.avatar}>
+          <Skeleton variant="circle" width={244} height={244} />
+        </div>
+      </form>
+    )
+  }
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault()
@@ -185,8 +215,14 @@ export function ProfileForm({
             {error}
           </p>
         ) : null}
-        <Button type="submit" variant="primary" className={styles.submit}>
-          Сохранить
+        <Button
+          type="submit"
+          variant="primary"
+          className={styles.submit}
+          disabled={isSubmitting}
+          aria-busy={isSubmitting}
+        >
+          {isSubmitting ? <Skeleton variant="rect" width="56%" height={16} /> : 'Сохранить'}
         </Button>
       </div>
 
