@@ -1,3 +1,4 @@
+import type { User } from '@/shared/types'
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { fetchSkillById } from '@/api/skills'
@@ -61,7 +62,12 @@ export const SkillPage = () => {
       <SkillInfoCard skill={skill} />
 
       {/* Временная заглушка для похожих навыков */}
-      <SimilarSkills similarSkills={[] as Skill[]} />
+      <SimilarSkills
+        users={[] as User[]}
+        favoriteIds={[]}
+        onDetails={() => {}}
+        onFavoriteToggle={() => {}}
+      />
     </main>
   )
 }
