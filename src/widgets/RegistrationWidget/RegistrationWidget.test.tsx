@@ -1,5 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
-import { render, screen, fireEvent } from '@testing-library/react'
+import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import '@testing-library/jest-dom/vitest'
 import { RegistrationWidget } from './RegistrationWidget'
 
@@ -9,18 +10,20 @@ describe('RegistrationWidget', () => {
     it('отображает поля первого шага', () => {
       render(<RegistrationWidget step={1} />)
 
-      expect(screen.getByRole('button', { name: /Продолжить с Google/i })).toBeInTheDocument()
-      expect(screen.getByRole('button', { name: /Продолжить с Apple/i })).toBeInTheDocument()
       expect(screen.getByLabelText('Email')).toBeInTheDocument()
       expect(screen.getByLabelText('Пароль')).toBeInTheDocument()
     })
 
-    it('вызывает onNext по клику на «Далее»', () => {
+    it('вызывает onNext после заполнения валидных полей шага', async () => {
       const onNext = vi.fn()
+      const user = userEvent.setup()
       render(<RegistrationWidget step={1} onNext={onNext} />)
 
-      fireEvent.click(screen.getByRole('button', { name: 'Далее' }))
-      expect(onNext).toHaveBeenCalledTimes(1)
+      await user.type(screen.getByLabelText('Email'), 'user@example.com')
+      await user.type(screen.getByLabelText('Пароль'), 'secure-pass-123')
+      await user.click(screen.getByRole('button', { name: 'Далее' }))
+
+      await waitFor(() => expect(onNext).toHaveBeenCalledOnce())
     })
 
     it('не показывает кнопку «Назад»', () => {
@@ -43,12 +46,14 @@ describe('RegistrationWidget', () => {
       expect(screen.getByText('Подкатегория навыка, которому хотите научиться')).toBeInTheDocument()
     })
 
-    it('вызывает onNext по клику на «Продолжить»', () => {
+    it('не вызывает onNext, пока обязательные поля шага не заполнены', async () => {
       const onNext = vi.fn()
       render(<RegistrationWidget step={2} onNext={onNext} />)
 
       fireEvent.click(screen.getByRole('button', { name: 'Продолжить' }))
-      expect(onNext).toHaveBeenCalledTimes(1)
+
+      expect(await screen.findByText('Введите имя')).toBeInTheDocument()
+      expect(onNext).not.toHaveBeenCalled()
     })
 
     it('вызывает onBack по клику на «Назад»', () => {
@@ -72,12 +77,16 @@ describe('RegistrationWidget', () => {
       expect(screen.getByText('Перетащите или выберите изображения навыка')).toBeInTheDocument()
     })
 
-    it('вызывает onNext по клику на «Продолжить»', () => {
+    it('не вызывает onNext и не отправляет невалидную форму', async () => {
       const onNext = vi.fn()
-      render(<RegistrationWidget step={3} onNext={onNext} />)
+      const onSubmit = vi.fn()
+      render(<RegistrationWidget step={3} onNext={onNext} onSubmit={onSubmit} />)
 
       fireEvent.click(screen.getByRole('button', { name: 'Продолжить' }))
-      expect(onNext).toHaveBeenCalledTimes(1)
+
+      expect(await screen.findByText('Введите название навыка')).toBeInTheDocument()
+      expect(onNext).not.toHaveBeenCalled()
+      expect(onSubmit).not.toHaveBeenCalled()
     })
 
     it('вызывает onBack по клику на «Назад»', () => {
@@ -90,10 +99,12 @@ describe('RegistrationWidget', () => {
   })
 
   //
-  it('не падает при клике на кнопки, если onNext/onBack не переданы', () => {
+  it('не падает при клике на кнопки, если onNext/onBack не переданы', async () => {
+    const user = userEvent.setup()
     render(<RegistrationWidget step={2} />)
 
-    expect(() => fireEvent.click(screen.getByRole('button', { name: 'Продолжить' }))).not.toThrow()
-    expect(() => fireEvent.click(screen.getByRole('button', { name: 'Назад' }))).not.toThrow()
+    await user.click(screen.getByRole('button', { name: 'Продолжить' }))
+    await screen.findByText('Введите имя')
+    await user.click(screen.getByRole('button', { name: 'Назад' }))
   })
 })

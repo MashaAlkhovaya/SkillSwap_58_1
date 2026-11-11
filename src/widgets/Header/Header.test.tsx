@@ -27,17 +27,17 @@ function renderHeader() {
 }
 
 describe('Header', () => {
-  it('показывает логотип и все ссылки с корректными адресами', () => {
+  it('показывает логотип, ссылку «О проекте» и кнопку меню навыков', () => {
     renderHeader()
 
     const header = within(screen.getByRole('banner'))
     const expectedLinks = [
       ['SkillSwap', ROUTES.HOME],
       ['О проекте', ROUTES.ABOUT],
-      ['Все навыки', ROUTES.ALL_SKILLS],
     ] as const
 
     expect(header.getAllByRole('link')).toHaveLength(expectedLinks.length)
+    expect(header.getByRole('button', { name: 'Открыть меню навыков' })).toBeInTheDocument()
 
     for (const [name, href] of expectedLinks) {
       expect(header.getByRole('link', { name })).toHaveAttribute('href', href)

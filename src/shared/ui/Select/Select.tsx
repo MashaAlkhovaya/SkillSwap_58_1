@@ -1,5 +1,5 @@
 import styles from './Select.module.css'
-import { forwardRef, useCallback, useId, useRef } from 'react'
+import { forwardRef, useCallback, useId, useRef, useState } from 'react'
 import ReactSelect, { type ClearIndicatorProps, type SelectInstance } from 'react-select'
 
 interface SelectItem {
@@ -12,6 +12,7 @@ interface SelectProps {
   placeholder?: string
   options: SelectItem[]
   onChange: (values: string[]) => void
+  value?: string
   disabled?: boolean
   className?: string
 }
@@ -29,10 +30,13 @@ const ClearIndicator = ({ clearValue }: ClearIndicatorProps<SelectItem>) => (
 )
 
 export const Select = forwardRef<HTMLInputElement, SelectProps>(function Select(
-  { label, placeholder, options, onChange, disabled = false, className },
+  { label, placeholder, options, onChange, value, disabled = false, className },
   ref,
 ) {
   const id = useId()
+  const [internalValue, setInternalValue] = useState<SelectItem | null>(null)
+  const selectedValue =
+    value === undefined ? internalValue : (options.find((option) => option.value === value) ?? null)
   const forwardedRef = useRef(ref)
   forwardedRef.current = ref
   const setSelectRef = useCallback((instance: SelectInstance<SelectItem> | null) => {
@@ -52,10 +56,14 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(function Select(
         ref={setSelectRef}
         inputId={id}
         options={options}
+        value={selectedValue}
         placeholder={placeholder ?? ''}
         isDisabled={disabled}
         isClearable
-        onChange={(selected) => onChange(selected ? [selected.value] : [])}
+        onChange={(selected) => {
+          if (value === undefined) setInternalValue(selected)
+          onChange(selected ? [selected.value] : [])
+        }}
         components={{ ClearIndicator }}
         className={className}
         menuPosition="fixed"

@@ -17,6 +17,7 @@ export function BellIcon({ badge = false, ...props }: BellIconProps) {
           strokeLinecap="round"
           strokeLinejoin="round"
           stroke="currentColor"
+          fill="none"
         />
         <path
           d="M5.70115 16.05C6.11335 17.6025 7.56955 18.75 9.30115 18.75C11.0337 18.75 12.4881 17.6025 12.9012 16.05"
@@ -24,6 +25,7 @@ export function BellIcon({ badge = false, ...props }: BellIconProps) {
           strokeLinecap="round"
           strokeLinejoin="round"
           stroke="currentColor"
+          fill="none"
         />
       </g>
       {badge ? <circle cx="18" cy="6" r="6" fill={badgeColor} /> : null}

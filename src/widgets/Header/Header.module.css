@@ -11,7 +11,22 @@
 }
 
 .center {
+  display: flex;
+  align-items: center;
+  gap: var(--space-lg);
   flex-grow: 1;
+  min-width: 0;
+}
+
+.searchInput {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (width <= 768px) {
+  .center {
+    flex-basis: 100%;
+  }
 }
 
 .left,
@@ -19,4 +34,68 @@
   display: flex;
   align-items: center;
   gap: var(--space-lg);
+}
+
+.compact {
+  justify-content: space-between;
+}
+
+.compact .closeButton {
+  background-color: var(--color-bg-surface);
+}
+
+.skillsMenu {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-xl);
+  width: min(760px, calc(100vw - 64px));
+}
+
+.skillsMenu ul {
+  list-style: none;
+  margin: var(--space-sm) 0 0 calc(28px + var(--space-sm));
+  padding: 0;
+}
+
+.categoryTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.categoryTitle h3 {
+  margin: 0;
+}
+
+.categoryIcon {
+  display: grid;
+  flex: 0 0 28px;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border-radius: 50%;
+}
+
+.categoryIcon[data-category='business'] {
+  background-color: var(--chip-business-bg);
+}
+
+.categoryIcon[data-category='art'] {
+  background-color: var(--chip-art-bg);
+}
+
+.categoryIcon[data-category='languages'] {
+  background-color: var(--chip-languages-bg);
+}
+
+.categoryIcon[data-category='education'] {
+  background-color: var(--chip-education-bg);
+}
+
+.categoryIcon[data-category='home-coziness'] {
+  background-color: var(--chip-home-coziness-bg);
+}
+
+.categoryIcon[data-category='health'] {
+  background-color: var(--chip-health-bg);
 }

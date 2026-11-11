@@ -1,5 +1,12 @@
 import { useState } from 'react'
 import clsx from 'clsx'
+import { Controller } from 'react-hook-form'
+import {
+  RegistrationFormProvider,
+  useRegistrationForm,
+  type RegistrationFormValues,
+} from '@/features/registration'
+import { ALLOWED_IMAGE_TYPES, CITIES, SKILL_CATEGORIES } from '@/shared/lib/constants'
 import { Button } from '@/shared/ui'
 import { TextInput } from '@/shared/ui'
 import { DateInput } from '@/shared/ui'
@@ -7,14 +14,13 @@ import { FileInput } from '@/shared/ui'
 import { Select } from '@/shared/ui'
 import { AvatarPlaceholderIcon } from '@/shared/ui'
 import styles from './RegistrationWidget.module.css'
-import { CITIES, SKILL_CATEGORIES, ALLOWED_IMAGE_TYPES } from '@/shared/lib/constants'
-import type { CategoryId } from '@/shared/lib/constants'
 
 interface RegistrationWidgetProps {
   step: number
   onNext?: () => void
   onBack?: () => void
   className?: string
+  onSubmit?: (values: RegistrationFormValues) => void
 }
 
 const GoogleIcon = () => (
@@ -70,13 +76,19 @@ const CATEGORY_OPTIONS = SKILL_CATEGORIES.map((category) => ({
   label: category.title,
 }))
 
-const isCategoryId = (value: string): value is CategoryId =>
-  SKILL_CATEGORIES.some((category) => category.id === value)
+export function RegistrationWidget({ onSubmit, ...widgetProps }: RegistrationWidgetProps) {
+  return (
+    <RegistrationFormProvider>
+      <RegistrationWidgetForm {...widgetProps} onSubmit={onSubmit} />
+    </RegistrationFormProvider>
+  )
+}
 
-export function RegistrationWidget({
+function RegistrationWidgetForm({
   step,
   onNext,
   onBack,
+  onSubmit,
   className: outerClassName,
 }: RegistrationWidgetProps) {
   const className = clsx(styles.widget, {
@@ -86,19 +98,38 @@ export function RegistrationWidget({
   })
 
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
-  const [selectedCategoryId, setSelectedCategoryId] = useState<CategoryId | null>(null)
 
-  const subcategoryOptions = selectedCategoryId
-    ? (
-        SKILL_CATEGORIES.find((category) => category.id === selectedCategoryId)?.subcategories ?? []
-      ).map((subcategory) => ({
-        value: subcategory.id,
-        label: subcategory.title,
-      }))
-    : []
+  const form = useRegistrationForm()
+  const {
+    control,
+    register,
+    setCategory,
+    setGender,
+    setCity,
+    setSubcategory,
+    setAvatar,
+    setTeachImage,
+    setBirthDate,
+    wantedSubcategoryOptions,
+    teachSubcategoryOptions,
+    continueStep: validateAndContinue,
+    handleSubmit,
+    formState: { errors },
+  } = form
+
+  const continueStep = async () => {
+    if (step === 3) {
+      await handleSubmit((values) => {
+        console.log('Данные формы регистрации:', values)
+        onSubmit?.(values)
+      })()
+      return
+    }
+    await validateAndContinue(step as 1 | 2, onNext)
+  }
 
   return (
-    <div className={clsx(className, outerClassName)}>
+    <section className={clsx(className, outerClassName)}>
       {/* --- ШАГ 1 --- */}
       {step === 1 && (
         <>
@@ -129,7 +160,9 @@ export function RegistrationWidget({
                 type="email"
                 placeholder="Введите email"
                 className={styles.input}
+                {...register('email')}
               />
+              {errors.email && <p className={styles.error}>{errors.email.message}</p>}
             </div>
             <div className={styles.field}>
               <label htmlFor="reg-password" className={styles.label}>
@@ -140,6 +173,7 @@ export function RegistrationWidget({
                 placeholder="Придумайте надёжный пароль"
                 type={isPasswordVisible ? 'text' : 'password'}
                 className={styles.input}
+                {...register('password')}
                 rightContent={
                   <button
                     type="button"
@@ -153,10 +187,11 @@ export function RegistrationWidget({
                 }
               />
               <p className={styles.hint}>Пароль должен содержать не менее 8 знаков</p>
+              {errors.password && <p className={styles.error}>{errors.password.message}</p>}
             </div>
           </div>
 
-          <Button variant="primary" size="md" className={styles.mainBtn} onClick={onNext}>
+          <Button variant="primary" size="md" className={styles.mainBtn} onClick={continueStep}>
             Далее
           </Button>
 
@@ -180,55 +215,113 @@ export function RegistrationWidget({
                 accept={ALLOWED_IMAGE_TYPES.join(',')}
                 className={styles.avatarInput}
                 aria-label="Загрузить аватар"
+                onChange={(event) => setAvatar(event.target.files?.[0] ?? null)}
               />
             </label>
           </div>
-
           <div className={styles.field}>
             <label htmlFor="reg-name" className={styles.label}>
               Имя
             </label>
-            <TextInput id="reg-name" placeholder="Введите ваше имя" className={styles.input} />
-          </div>
-
-          <div className={styles.row}>
-            <DateInput name="reg-birth" label="Дата рождения" className={styles.dateField} />
-            <Select
-              label="Пол"
-              placeholder="Не указан"
-              className={styles.selectRoot}
-              options={[
-                { value: 'other', label: 'Не указан' },
-                { value: 'male', label: 'Мужской' },
-                { value: 'female', label: 'Женский' },
-              ]}
-              onChange={() => {}}
+            <TextInput
+              id="reg-name"
+              placeholder="Введите ваше имя"
+              className={styles.input}
+              {...register('name', { onChange: () => void form.trigger('name') })}
             />
+            {errors.name && <p className={styles.error}>{errors.name.message}</p>}
           </div>
-
-          <Select
-            label="Город"
-            placeholder="Не указан"
-            options={[{ value: 'other', label: 'Не указан' }, ...CITY_OPTIONS]}
-            onChange={() => {}}
-          />
-
-          <Select
-            label="Категория навыка, которому хотите научиться"
-            placeholder="Выберите категорию"
-            options={CATEGORY_OPTIONS}
-            onChange={(values) => {
-              const id = values[0]
-              setSelectedCategoryId(id !== undefined && isCategoryId(id) ? id : null)
-            }}
-          />
-
-          <Select
-            label="Подкатегория навыка, которому хотите научиться"
-            placeholder="Выберите подкатегорию"
-            options={subcategoryOptions}
-            onChange={() => {}}
-          />
+          <div className={styles.row}>
+            <div>
+              <Controller
+                control={control}
+                name="birthDate"
+                render={({ field }) => (
+                  <DateInput
+                    name="reg-birth"
+                    label="Дата рождения"
+                    className={styles.dateField}
+                    value={field.value}
+                    onChange={setBirthDate}
+                  />
+                )}
+              />
+              {errors.birthDate && <p className={styles.error}>{errors.birthDate.message}</p>}
+            </div>
+            <div>
+              <Controller
+                control={control}
+                name="gender"
+                render={({ field }) => (
+                  <Select
+                    label="Пол"
+                    placeholder="Не указан"
+                    className={styles.selectRoot}
+                    options={[
+                      { value: 'other', label: 'Не указан' },
+                      { value: 'male', label: 'Мужской' },
+                      { value: 'female', label: 'Женский' },
+                    ]}
+                    value={field.value}
+                    onChange={(values) => setGender(values[0] ?? '')}
+                  />
+                )}
+              />
+              {errors.gender && <p className={styles.error}>{errors.gender.message}</p>}
+            </div>
+          </div>
+          <div>
+            <Controller
+              control={control}
+              name="city"
+              render={({ field }) => (
+                <Select
+                  label="Город"
+                  placeholder="Не указан"
+                  options={[{ value: 'other', label: 'Не указан' }, ...CITY_OPTIONS]}
+                  value={field.value}
+                  onChange={(values) => setCity(values[0] ?? '')}
+                />
+              )}
+            />
+            {errors.city && <p className={styles.error}>{errors.city.message}</p>}
+          </div>
+          <div>
+            <Controller
+              control={control}
+              name="wantedCategory"
+              render={({ field }) => (
+                <Select
+                  label="Категория навыка, которому хотите научиться"
+                  placeholder="Выберите категорию"
+                  options={CATEGORY_OPTIONS}
+                  value={field.value}
+                  onChange={(values) => setCategory('wantedCategory', values[0])}
+                />
+              )}
+            />
+            {errors.wantedCategory && (
+              <p className={styles.error}>{errors.wantedCategory.message}</p>
+            )}
+          </div>
+          <div>
+            <Controller
+              control={control}
+              name="wantedSubCategory"
+              render={({ field }) => (
+                <Select
+                  label="Подкатегория навыка, которому хотите научиться"
+                  placeholder="Выберите подкатегорию"
+                  options={wantedSubcategoryOptions}
+                  value={field.value}
+                  onChange={(values) => setSubcategory('wantedSubCategory', values[0] ?? '')}
+                />
+              )}
+            />
+            {errors.wantedSubCategory && (
+              <p className={styles.error}>{errors.wantedSubCategory.message}</p>
+            )}
+          </div>
         </div>
       )}
 
@@ -242,26 +335,46 @@ export function RegistrationWidget({
               id="reg-skill-name"
               placeholder="Введите название вашего навыка"
               className={styles.input}
+              {...register('teachSkillName')}
             />
+            {errors.teachSkillName && (
+              <p className={styles.error}>{errors.teachSkillName.message}</p>
+            )}
           </div>
-
-          <Select
-            label="Категория навыка"
-            placeholder="Выберите категорию навыка"
-            options={CATEGORY_OPTIONS}
-            onChange={(values) => {
-              const id = values[0]
-              setSelectedCategoryId(id !== undefined && isCategoryId(id) ? id : null)
-            }}
-          />
-
-          <Select
-            label="Подкатегория навыка"
-            placeholder="Выберите подкатегорию навыка"
-            options={subcategoryOptions}
-            onChange={() => {}}
-          />
-
+          <div>
+            <Controller
+              control={control}
+              name="teachCategory"
+              render={({ field }) => (
+                <Select
+                  label="Категория навыка"
+                  placeholder="Выберите категорию навыка"
+                  options={CATEGORY_OPTIONS}
+                  value={field.value}
+                  onChange={(values) => setCategory('teachCategory', values[0])}
+                />
+              )}
+            />
+            {errors.teachCategory && <p className={styles.error}>{errors.teachCategory.message}</p>}
+          </div>
+          <div>
+            <Controller
+              control={control}
+              name="teachSubCategory"
+              render={({ field }) => (
+                <Select
+                  label="Подкатегория навыка"
+                  placeholder="Выберите подкатегорию навыка"
+                  options={teachSubcategoryOptions}
+                  value={field.value}
+                  onChange={(values) => setSubcategory('teachSubCategory', values[0] ?? '')}
+                />
+              )}
+            />
+            {errors.teachSubCategory && (
+              <p className={styles.error}>{errors.teachSubCategory.message}</p>
+            )}
+          </div>
           <div className={styles.field}>
             <label htmlFor="reg-skill-desc" className={styles.label}>
               Описание
@@ -270,11 +383,14 @@ export function RegistrationWidget({
               id="reg-skill-desc"
               placeholder="Коротко опишите, чему можете научить"
               className={styles.textarea}
+              {...register('teachDescription')}
             />
+            {errors.teachDescription && (
+              <p className={styles.error}>{errors.teachDescription.message}</p>
+            )}
           </div>
-
           <div className={styles.field}>
-            <FileInput variant="skill" onChange={(file) => console.log('Selected file:', file)} />
+            <FileInput variant="skill" onChange={setTeachImage} />
           </div>
         </div>
       )}
@@ -282,14 +398,14 @@ export function RegistrationWidget({
       {/* ---------- Навигация ---------- */}
       {step > 1 && (
         <div className={styles.navButtons}>
-          <Button variant="secondary" size="md" onClick={onBack}>
+          <Button type="button" variant="secondary" size="md" onClick={onBack}>
             Назад
           </Button>
-          <Button variant="primary" size="md" onClick={onNext}>
+          <Button variant="primary" size="md" type="button" onClick={continueStep}>
             Продолжить
           </Button>
         </div>
       )}
-    </div>
+    </section>
   )
 }
