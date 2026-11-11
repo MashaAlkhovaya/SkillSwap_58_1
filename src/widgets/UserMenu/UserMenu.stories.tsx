@@ -14,7 +14,7 @@ const meta = {
     (Story) => {
       const store = configureStore({
         reducer: { auth: authReducer },
-        preloadedState: { auth: { user: authUtils.getAuthUser() } },
+        preloadedState: { auth: { user: authUtils.getAuthUser(), profile: null } },
       })
 
       return (
