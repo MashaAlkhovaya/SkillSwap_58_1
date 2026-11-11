@@ -10,6 +10,8 @@ import type { AuthUser } from '@/shared/types'
 import { authApi, useLoginMutation } from '../api/authApi'
 import { logout, setAuthUser, setProfile } from './authSlice'
 import { getAuthUser, saveServerAuthUser, saveUserProfile } from './authUtils'
+import { useNavigate } from 'react-router'
+import { ROUTES } from '@/shared/lib/constants'
 
 const authFormSchema = yup.object({
   email: yup.string().trim().required('Введите email'),
@@ -57,14 +59,15 @@ function getLoginError(error: unknown): string {
 export function useAuthForm() {
   const dispatch = useAppDispatch()
   const appStore = useStore.withTypes<typeof store>()()
-  const [login, { isLoading }] = useLoginMutation()
+  const [login] = useLoginMutation()
   const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate()
 
   const {
     register,
     handleSubmit,
     clearErrors,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: { email: '', password: '' },
     resolver: yupResolver(authFormSchema),
@@ -98,6 +101,7 @@ export function useAuthForm() {
         ) {
           saveUserProfile(profile)
           dispatch(setProfile(profile))
+          navigate(ROUTES.HOME, { replace: true })
         }
       } catch (profileError) {
         // Не обрабатываем ошибку, если сессия уже изменилась.
@@ -136,7 +140,7 @@ export function useAuthForm() {
     register,
     handleSubmit: handleFormSubmit,
     errors,
-    isSubmitting: isLoading,
+    isSubmitting,
     error,
   }
 }
