@@ -27,7 +27,7 @@ const user: AuthUser = {
 function renderUserMenu(authUser: AuthUser | null = null) {
   const store = configureStore({
     reducer: { auth: authReducer },
-    preloadedState: { auth: { user: authUser } },
+    preloadedState: { auth: { user: authUser, profile: null } },
   })
 
   render(
