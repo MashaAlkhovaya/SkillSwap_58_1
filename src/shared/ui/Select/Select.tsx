@@ -1,6 +1,11 @@
 import styles from './Select.module.css'
 import { forwardRef, useCallback, useId, useRef, useState } from 'react'
-import ReactSelect, { type ClearIndicatorProps, type SelectInstance } from 'react-select'
+import ReactSelect, {
+  components,
+  type ClearIndicatorProps,
+  type DropdownIndicatorProps,
+  type SelectInstance,
+} from 'react-select'
 
 interface SelectItem {
   value: string
@@ -12,7 +17,9 @@ interface SelectProps {
   placeholder?: string
   options: SelectItem[]
   onChange: (values: string[]) => void
-  value?: string
+  value?: string | null
+  chevron?: 'default' | 'outline'
+  clearable?: boolean
   disabled?: boolean
   className?: string
 }
@@ -29,8 +36,41 @@ const ClearIndicator = ({ clearValue }: ClearIndicatorProps<SelectItem>) => (
   </button>
 )
 
+const OutlineDropdownIndicator = (props: DropdownIndicatorProps<SelectItem, false>) => (
+  <components.DropdownIndicator {...props}>
+    <svg
+      className={props.selectProps.menuIsOpen ? styles.chevronOpen : styles.chevron}
+      width="20"
+      height="20"
+      viewBox="0 0 20 20"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M5 7.5 10 12.5 15 7.5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        style={{ fill: 'none', strokeWidth: 1.5 }}
+      />
+    </svg>
+  </components.DropdownIndicator>
+)
+
 export const Select = forwardRef<HTMLInputElement, SelectProps>(function Select(
-  { label, placeholder, options, onChange, value, disabled = false, className },
+  {
+    label,
+    placeholder,
+    options,
+    onChange,
+    value,
+    chevron = 'default',
+    clearable = true,
+    disabled = false,
+    className,
+  },
   ref,
 ) {
   const id = useId()
@@ -59,12 +99,17 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>(function Select(
         value={selectedValue}
         placeholder={placeholder ?? ''}
         isDisabled={disabled}
-        isClearable
+        isClearable={clearable}
         onChange={(selected) => {
           if (value === undefined) setInternalValue(selected)
           onChange(selected ? [selected.value] : [])
         }}
-        components={{ ClearIndicator }}
+        components={{
+          ClearIndicator,
+          ...(chevron === 'outline'
+            ? { DropdownIndicator: OutlineDropdownIndicator, IndicatorSeparator: () => null }
+            : {}),
+        }}
         className={className}
         menuPosition="fixed"
         menuPortalTarget={typeof document === 'undefined' ? undefined : document.body}

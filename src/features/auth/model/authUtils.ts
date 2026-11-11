@@ -25,11 +25,17 @@ export function getAuthUser(): AuthUser | null {
       typeof user.token === 'string' &&
       user.token.length > 0
     ) {
+      const avatarUrl =
+        'avatarUrl' in user && (typeof user.avatarUrl === 'string' || user.avatarUrl === null)
+          ? user.avatarUrl
+          : undefined
+
       return {
         id: user.id,
         name: user.name,
         email: user.email,
         token: user.token,
+        ...(avatarUrl !== undefined ? { avatarUrl } : {}),
       }
     }
 
