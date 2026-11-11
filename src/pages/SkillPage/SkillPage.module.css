@@ -1,0 +1,30 @@
+.page {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 40px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.loaderContainer,
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  text-align: center;
+  gap: 16px;
+}
+
+.loader {
+  font-size: 20px;
+  color: var(--text-secondary, #666);
+}
+
+.errorContainer h2 {
+  font-size: 48px;
+  margin: 0;
+  color: var(--text-primary, #333);
+}
