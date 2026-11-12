@@ -137,7 +137,7 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
   app.use((_req, res, next) => {
     res.set('Access-Control-Allow-Origin', '*')
     res.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-    res.set('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS')
+    res.set('Access-Control-Allow-Methods', 'GET, POST, PUT, PATCH, DELETE, OPTIONS')
     if (_req.method === 'OPTIONS') {
       res.sendStatus(204)
       return
@@ -178,8 +178,18 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
         res.status(400).json({ message: `Неизвестная сортировка: ${req.query.sort}` })
         return
       }
-      const { gender, city, type, subCategoryIds } = parseUserFilters(req.query)
+      const { gender, city, type, subCategoryIds, userIds, name } = parseUserFilters(req.query)
+      const requestedIds = userIds === undefined ? undefined : new Set(userIds)
+      const matchingSkillIds = name
+        ? new Set(
+            skills
+              .filter((skill) => skill.title.toLowerCase().includes(name))
+              .map((skill) => skill.id),
+          )
+        : undefined
       const list = users.filter((user) => {
+        if (requestedIds && !requestedIds.has(user.id)) return false
+        if (matchingSkillIds && !matchingSkillIds.has(user.canTeach.id)) return false
         if (gender !== undefined && user.gender !== gender) return false
         if (city !== undefined && user.city !== city) return false
         if (subCategoryIds.length === 0) return true
@@ -296,6 +306,30 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
   app.get<Record<string, never>, User | ApiError>('/api/auth/me', (req, res) => {
     res.json(publicUser(currentUser(req)))
   })
+  const updateLike = (req: Request<{ targetUserId: string }>, res: express.Response<ApiError>) => {
+    const user = currentUser(req)
+    const target = users.find((item) => item.id === req.params.targetUserId)
+    if (!target) throw new HttpError(404, 'Пользователь не найден')
+    const liked = req.method === 'PUT'
+    if (user.likes.includes(target.id) === liked) {
+      res.status(204).end()
+      return
+    }
+    const updated = {
+      ...user,
+      likes: liked ? [...user.likes, target.id] : user.likes.filter((id) => id !== target.id),
+    }
+    // Публикуем изменение профиля и популярности только после сохранения базы.
+    save(
+      'users',
+      users.map((item) => (item.id === user.id ? updated : item)),
+    )
+    users[users.indexOf(user)] = updated
+    likesReceived.set(target.id, (likesReceived.get(target.id) || 0) + (liked ? 1 : -1))
+    res.status(liked ? 201 : 204).end()
+  }
+  app.put('/api/auth/me/likes/:targetUserId', updateLike)
+  app.delete('/api/auth/me/likes/:targetUserId', updateLike)
   app.patch<Record<string, never>, User | ApiError, unknown>(
     '/api/auth/me',
     (req, _res, next) => {

@@ -43,5 +43,7 @@ export interface ListQuery {
 export interface UserListQuery extends ListQuery {
   gender?: string
   city?: string
+  name?: string
+  'ids[]'?: string | string[]
   'subCategoryId[]'?: string | string[]
 }

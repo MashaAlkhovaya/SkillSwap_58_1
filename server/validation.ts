@@ -50,10 +50,15 @@ function choices<T extends string>(value: unknown, values: readonly T[], field: 
 export function parseUserFilters(query: UserListQuery) {
   const rawIds = query['subCategoryId[]']
   const ids = rawIds === undefined ? [] : Array.isArray(rawIds) ? rawIds : [rawIds]
+  const rawUserIds = query['ids[]']
+  const userIds =
+    rawUserIds === undefined ? undefined : Array.isArray(rawUserIds) ? rawUserIds : [rawUserIds]
   const allowedIds = SKILL_CATEGORIES.flatMap((category) =>
     category.subcategories.map((subCategory) => subCategory.id),
   )
   return {
+    name: query.name === undefined ? '' : text(query.name, 'name', 0).toLowerCase(),
+    userIds: userIds?.map((id) => text(id, 'ids[]')),
     gender:
       query.gender === undefined
         ? undefined
