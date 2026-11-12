@@ -26,7 +26,7 @@ function createUsers(count: number): User[] {
 }
 
 describe('CatalogSection', () => {
-  it('показывает 3 карточки, раскрывает до 9 и сворачивает обратно', async () => {
+  it('показывает 3 карточки, раскрывает все загруженные и сворачивает обратно', async () => {
     const user = userEvent.setup()
 
     render(
@@ -46,7 +46,7 @@ describe('CatalogSection', () => {
 
     await user.click(toggle)
 
-    expect(screen.getAllByRole('button', { name: 'Подробнее' })).toHaveLength(9)
+    expect(screen.getAllByRole('button', { name: 'Подробнее' })).toHaveLength(12)
     expect(screen.getByRole('button', { name: 'Скрыть' })).toHaveAttribute('aria-expanded', 'true')
 
     await user.click(screen.getByRole('button', { name: 'Скрыть' }))
