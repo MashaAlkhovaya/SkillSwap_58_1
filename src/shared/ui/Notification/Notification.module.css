@@ -7,7 +7,7 @@
   background-color: var(--bg-color, #fff);
   border-left: 4px solid var(--border-color, #ccc);
   box-shadow: 0 4px 12px rgb(0 0 0 / 15%);
-  min-width: 300px;
+  min-width: min(300px, calc(100vw - 2 * var(--space-lg)));
   max-width: 400px;
   position: relative;
   box-sizing: border-box;
