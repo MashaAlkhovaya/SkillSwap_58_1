@@ -1,7 +1,6 @@
 // TODO: реализовать страницу CatalogPage
 
 import { loadUsers } from '@/entities/user/model/usersSlice'
-import { User } from '@/shared/types'
 import { Card, Skeleton } from '@/shared/ui'
 import { RootState } from '@/store'
 import { useAppDispatch } from '@/store/hooks'
@@ -43,12 +42,8 @@ export default function CatalogPage() {
             isLoadingMore={isPopularLoading}
             onLoadMore={() => dispatch(loadUsers({ page: pages.popular + 1, sort: 'popular' }))}
             favoriteIds={[]}
-            onDetails={function (user: User): void {
-              throw new Error('Function not implemented.')
-            }}
-            onFavoriteToggle={function (user: User): void {
-              throw new Error('Function not implemented.')
-            }}
+            onDetails={() => undefined}
+            onFavoriteToggle={() => undefined}
           />
         )}
       </section>
@@ -65,12 +60,8 @@ export default function CatalogPage() {
             isLoadingMore={isNewLoading}
             onLoadMore={() => dispatch(loadUsers({ page: pages.new + 1, sort: 'new' }))}
             favoriteIds={[]}
-            onDetails={function (user: User): void {
-              throw new Error('Function not implemented.')
-            }}
-            onFavoriteToggle={function (user: User): void {
-              throw new Error('Function not implemented.')
-            }}
+            onDetails={() => undefined}
+            onFavoriteToggle={() => undefined}
           />
         )}
       </section>
@@ -87,12 +78,8 @@ export default function CatalogPage() {
             isLoadingMore={isRecommendedLoading}
             onLoadMore={() => dispatch(loadUsers({ page: pages.random + 1, sort: 'random' }))}
             favoriteIds={[]}
-            onDetails={function (user: User): void {
-              throw new Error('Function not implemented.')
-            }}
-            onFavoriteToggle={function (user: User): void {
-              throw new Error('Function not implemented.')
-            }}
+            onDetails={() => undefined}
+            onFavoriteToggle={() => undefined}
           />
         )}
       </section>
