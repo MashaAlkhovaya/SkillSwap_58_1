@@ -3,7 +3,7 @@ import path from 'node:path'
 import { randomUUID } from 'node:crypto'
 import express, { type ErrorRequestHandler, type Request } from 'express'
 import multer from 'multer'
-import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE } from '@/shared/lib/constants'
+import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE, SKILL_CATEGORIES } from '@/shared/lib/constants'
 import type { AuthUser, Skill, User } from '@/shared/types'
 import type {
   ApiError,
@@ -187,13 +187,27 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
               .map((skill) => skill.id),
           )
         : undefined
+      const matchingSubCategoryIds = name
+        ? new Set(
+            SKILL_CATEGORIES.flatMap((category) =>
+              category.subcategories
+                .filter((subCategory) => subCategory.title.toLowerCase().includes(name))
+                .map((subCategory) => subCategory.id),
+            ),
+          )
+        : undefined
       const list = users.filter((user) => {
         if (requestedIds && !requestedIds.has(user.id)) return false
-        if (matchingSkillIds && !matchingSkillIds.has(user.canTeach.id)) return false
+        // Режим описывает желание посетителя: учиться у преподавателя или обучать ученика.
+        if (name) {
+          const canTeach = type !== 'teach' && matchingSkillIds?.has(user.canTeach.id)
+          const wantsToLearn =
+            type !== 'learn' && user.wantsToLearn.some((id) => matchingSubCategoryIds?.has(id))
+          if (!canTeach && !wantsToLearn) return false
+        }
         if (gender !== undefined && user.gender !== gender) return false
         if (city !== undefined && user.city !== city) return false
         if (subCategoryIds.length === 0) return true
-        // Режим описывает желание посетителя: учиться у преподавателя или обучать ученика.
         return (
           (type !== 'teach' && subCategoryIds.includes(user.canTeach.subCategory)) ||
           (type !== 'learn' && user.wantsToLearn.some((id) => subCategoryIds.includes(id)))
