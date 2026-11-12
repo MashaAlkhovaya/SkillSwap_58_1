@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "b0c1d2e3-4f56-4789-a0b1-c2d3e4f5a6b7",
     "name": "SkillSwap mock API",
-    "description": "# SkillSwap mock API\n\nЛокальный учебный Express-сервер. Начните с папки **Справочник API**: здесь основные запросы и сохранённые примеры успешных ответов и ошибок. Остальные папки — последовательные проверки API; их порядок важен для переменных сценариев.\n\n## Быстрый старт\n\nИз корня репозитория:\n\n```bash\nnpm --prefix server ci\nnpm --prefix server run dev\n```\n\n`baseUrl = http://localhost:4000/api`. Для Vite-прокси: `http://localhost:5173/api` при запущенном `npm run dev`. Каждый участник запускает сервер у себя. Сохранённые Examples читаются без сервера; отправка запросов требует запущенного API. Публикация документации не публикует сервер.\n\n## Общие правила\n\n- Данные — JSON. Ошибки — `{ message: string }`.\n- Списки — `{ items, page, limit, total, hasMore }`, по умолчанию 10 элементов.\n- Токен нужен только для `GET /auth/me` и `PATCH /auth/me`. Передавайте его как `Authorization: Bearer <token>`.\n- Задержка по умолчанию 1000 мс. Параметр `delay` задаёт 1000–5000 мс. Неизвестные параметры игнорируются; `fail` не имитирует ошибку.\n- Изображения доступны по `/api/uploads/skills/...` и `/api/uploads/avatars/...` без искусственной задержки.\n- Запрос регистрации меняет базу и сохраняет файлы. Не повторяйте его автоматически после сетевой ошибки: проверьте вход с той же почтой.\n- Все учётные данные в файле — демонстрационные. Это локальный мок, а не система реальной авторизации.\n\n## Переменные и сценарии\n\n`demoEmail` и `demoPassword` — тестовый пользователь из public/db. `authToken` заполняется успешным входом. `newEmail`, `newUserId`, `newToken`, `newSkillId`, `skillImagePath` создаются сценариями регистрации. `referenceEmail` — отдельная почта для регистрации из справочника, генерируется локально перед запросом и не мешает тестовым сценариям. Вычисляемые переменные вручную заполнять не нужно.\n\nРабочая папка Postman Desktop — корень репозитория. Файлы — `server/postman/fixtures/`. В Runner запускайте папки целиком по порядку. Прогон регистрации создаёт пользователя, навык и файлы; повторный прогон использует новую почту. Папка «Редактирование профиля» запускается после «Авторизация», меняет созданного пользователя и проверяет замену аватарки, вход и сохранность навыка.\n\n## Примеры и хранение\n\nExamples сняты с работающего сервера на временной базе из сидов. UUID, время создания и тестовая почта могут отличаться при повторном запуске; токены примеров демонстрационные. Примеры ошибок содержат соответствующий неуспешный запрос.\n\nИсходник документации — `server/postman/skillswap.postman_collection.json`, инструкция запуска — `server/README.md`. При изменении API обновляйте коллекцию в том же PR. После импорта изменения файла в Git сами по себе не синхронизируются с Postman. Перед экспортом очистите значения токенов и переменных прогона. Сброс собственной базы: остановите сервер, выполните `npm --prefix server run reset`, затем запустите снова; это также удалит загруженные изображения.\n\nPATCH /auth/me поддерживает частичное изменение email, name, birthDate, gender, city, bio; avatar передаётся файлом в multipart/form-data. Описание контракта и примеры находятся в «Справочник API». Регистрация и PATCH меняют базу; весь Runner запускайте на своей локальной или временной базе.\n",
+    "description": "# SkillSwap mock API\n\nЛокальный учебный Express-сервер. Начните с папки **Справочник API**: здесь основные запросы и сохранённые примеры успешных ответов и ошибок. Остальные папки — последовательные проверки API; их порядок важен для переменных сценариев.\n\n## Быстрый старт\n\nИз корня репозитория:\n\n```bash\nnpm --prefix server ci\nnpm --prefix server run dev\n```\n\n`baseUrl = http://localhost:4000/api`. Для Vite-прокси: `http://localhost:5173/api` при запущенном `npm run dev`. Каждый участник запускает сервер у себя. Сохранённые Examples читаются без сервера; отправка запросов требует запущенного API. Публикация документации не публикует сервер.\n\n## Общие правила\n\n- Данные — JSON. Ошибки — `{ message: string }`.\n- Списки — `{ items, page, limit, total, hasMore }`, по умолчанию 10 элементов.\n- Токен нужен для профиля и постановки/снятия лайков. Каталог и фильтр `ids[]` доступны без авторизации.\n- Задержка по умолчанию 1000 мс. Параметр `delay` задаёт 1000–5000 мс. Неизвестные параметры игнорируются; `fail` не имитирует ошибку.\n- Изображения доступны по `/api/uploads/skills/...` и `/api/uploads/avatars/...` без искусственной задержки.\n- Запрос регистрации меняет базу и сохраняет файлы. Не повторяйте его автоматически после сетевой ошибки: проверьте вход с той же почтой.\n- Все учётные данные в файле — демонстрационные. Это локальный мок, а не система реальной авторизации.\n\n## Переменные и сценарии\n\n`demoEmail` и `demoPassword` — тестовый пользователь из public/db. `authToken` заполняется успешным входом. `newEmail`, `newUserId`, `newToken`, `newSkillId`, `skillImagePath` создаются сценариями регистрации. `referenceEmail` — отдельная почта для регистрации из справочника, генерируется локально перед запросом и не мешает тестовым сценариям. Вычисляемые переменные вручную заполнять не нужно.\n\nРабочая папка Postman Desktop — корень репозитория. Файлы — `server/postman/fixtures/`. В Runner запускайте папки целиком по порядку. Прогон регистрации создаёт пользователя, навык и файлы; повторный прогон использует новую почту. Папка «Редактирование профиля» запускается после «Авторизация», меняет созданного пользователя и проверяет замену аватарки, вход и сохранность навыка.\n\n## Примеры и хранение\n\nExamples сняты с работающего сервера на временной базе из сидов. UUID, время создания и тестовая почта могут отличаться при повторном запуске; токены примеров демонстрационные. Примеры ошибок содержат соответствующий неуспешный запрос.\n\nИсходник документации — `server/postman/skillswap.postman_collection.json`, инструкция запуска — `server/README.md`. При изменении API обновляйте коллекцию в том же PR. После импорта изменения файла в Git сами по себе не синхронизируются с Postman. Перед экспортом очистите значения токенов и переменных прогона. Сброс собственной базы: остановите сервер, выполните `npm --prefix server run reset`, затем запустите снова; это также удалит загруженные изображения.\n\nPATCH /auth/me поддерживает частичное изменение email, name, birthDate, gender, city, bio; avatar передаётся файлом в multipart/form-data. Описание контракта и примеры находятся в «Справочник API». Регистрация и PATCH меняют базу; весь Runner запускайте на своей локальной или временной базе.\n\n\nЛайки хранятся в существующем `User.likes`. `PUT /auth/me/likes/:targetUserId` ставит лайк, `DELETE` снимает его. `/users` поддерживает `ids[]` для получения избранных по ID из профиля и `name` для поиска по названию навыка без учёта регистра. Папка «Лайки и поиск» самодостаточна и после успешного прогона восстанавливает исходный массив лайков.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -70,12 +70,42 @@
       "key": "profileUpdated",
       "value": "",
       "type": "string"
+    },
+    {
+      "key": "likesToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "likesOriginal",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "likesActorId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "likesTargetId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "likesTargetSkillId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "likesSearchName",
+      "value": "",
+      "type": "string"
     }
   ],
   "item": [
     {
       "name": "Справочник API",
-      "description": "Основные операции для интеграции фронтенда. Раскройте Examples под запросом: сохранены реальные ответы сервера, включая ошибки. Для профиля сначала выполните «Вход». Регистрация создаёт пользователя, навык и пять файлов. Подробные тестовые сценарии находятся в следующих папках. Запросы «Изменить профиль» принимают JSON или multipart с avatar; нужны токен и локальный сервер.",
+      "description": "Основные операции для интеграции фронтенда. Раскройте Examples под запросом: сохранены реальные ответы сервера, включая ошибки. Для профиля сначала выполните «Вход». Регистрация создаёт пользователя, навык и пять файлов. Подробные тестовые сценарии находятся в следующих папках. Запросы «Изменить профиль» принимают JSON или multipart с avatar; нужны токен и локальный сервер. Для лайков доступны PUT и DELETE; состояние хранится в likes профиля.",
       "item": [
         {
           "name": "Вход",
@@ -694,10 +724,27 @@
                   "value": "german",
                   "description": "Любая из переданных подкатегорий.",
                   "disabled": true
+                },
+                {
+                  "key": "ids[]",
+                  "value": "user-01",
+                  "disabled": true,
+                  "description": "ID пользователя; повторяйте ключ для массива."
+                },
+                {
+                  "key": "ids[]",
+                  "value": "user-02",
+                  "disabled": true
+                },
+                {
+                  "key": "name",
+                  "value": "БАРАБАН",
+                  "disabled": true,
+                  "description": "Подстрока названия без учёта регистра: type=learn — навык canTeach, type=teach — подкатегории wantsToLearn, type=all — оба поля; пустая строка не ограничивает поиск."
                 }
               ]
             },
-            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\nФильтры пользователей: `gender` — `female` или `male`; `city` — точное название из `CITIES`; `type` описывает желание посетителя: `learn` («хочу научиться») ищет в `canTeach.subCategory`, `teach` («могу научить») — в `wantsToLearn`, `all` (по умолчанию) — в обоих полях. Массив подкатегорий: `subCategoryId[]=english&subCategoryId[]=german`; ID из `SKILL_CATEGORIES`. Достаточно одного совпадения; повторяющиеся ID не дублируют пользователей. Без массива навыки не ограничиваются. Разные фильтры объединяются через И до сортировки и пагинации. Недопустимые и пустые значения, повторение одиночных `gender`, `city`, `type` → `400`, `{ message }`."
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\nФильтры пользователей: `gender` — `female` или `male`; `city` — точное название из `CITIES`; `type` описывает желание посетителя: `learn` («хочу научиться») ищет в `canTeach.subCategory`, `teach` («могу научить») — в `wantsToLearn`, `all` (по умолчанию) — в обоих полях. Массив подкатегорий: `subCategoryId[]=english&subCategoryId[]=german`; ID из `SKILL_CATEGORIES`. Достаточно одного совпадения; повторяющиеся ID не дублируют пользователей. Без массива навыки не ограничиваются. Разные фильтры объединяются через И до сортировки и пагинации. Недопустимые и пустые значения, повторение одиночных `gender`, `city`, `type` → `400`, `{ message }`.\n\nДополнительные фильтры: `ids[]=user-01&ids[]=user-02` выбирает пользователей по ID; дубликаты учитываются один раз, неизвестные ID пропускаются. Без `ids[]` ограничений по ID нет; пустой ID → `400`. Для избранного используйте ID из существующего `likes` профиля `/auth/me`.\n\n`name` — подстрока названия; поле поиска выбирает `type`: `learn` — название навыка по `canTeach.id`; `teach` — названия подкатегорий из `wantsToLearn` по справочнику `SKILL_CATEGORIES`; `all` (по умолчанию) — оба поля через ИЛИ. Регистр не учитывается, пробелы по краям удаляются. Отсутствующее, пустое или состоящее из пробелов значение не ограничивает список. Имя пользователя, теги, описание и ID подкатегорий не участвуют в поиске, склонения не обрабатываются: `type=learn&name=БАРАБАН` находит «Игра на барабанах», `type=teach&name=АНГЛ` — желающих изучать «Английский». Повторный `name` → `400`. Эти фильтры объединяются с остальными через И до сортировки и пагинации. Ответ остаётся `{ items, page, limit, total, hasMore }`."
           },
           "response": [
             {
@@ -1266,6 +1313,273 @@
               "body": "{\n  \"message\": \"Разрешены только JPEG, PNG и WebP\"\n}"
             }
           ]
+        },
+        {
+          "name": "Пользователи — ID и название навыка",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users?ids[]=user-01&ids[]=user-02&name=БАРАБАН&page=1&limit=12",
+            "description": "Дополнительные фильтры: `ids[]=user-01&ids[]=user-02` выбирает пользователей по ID; дубликаты учитываются один раз, неизвестные ID пропускаются. Без `ids[]` ограничений по ID нет; пустой ID → `400`. Для избранного используйте ID из существующего `likes` профиля `/auth/me`.\n\n`name` — подстрока названия; поле поиска выбирает `type`: `learn` — название навыка по `canTeach.id`; `teach` — названия подкатегорий из `wantsToLearn` по справочнику `SKILL_CATEGORIES`; `all` (по умолчанию) — оба поля через ИЛИ. Регистр не учитывается, пробелы по краям удаляются. Отсутствующее, пустое или состоящее из пробелов значение не ограничивает список. Имя пользователя, теги, описание и ID подкатегорий не участвуют в поиске, склонения не обрабатываются: `type=learn&name=БАРАБАН` находит «Игра на барабанах», `type=teach&name=АНГЛ` — желающих изучать «Английский». Повторный `name` → `400`. Эти фильтры объединяются с остальными через И до сортировки и пагинации. Ответ остаётся `{ items, page, limit, total, hasMore }`."
+          },
+          "response": [
+            {
+              "name": "200 — фильтрация до пагинации",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/users?ids[]=user-01&ids[]=user-02&name=БАРАБАН&page=1&limit=12",
+                "description": "Дополнительные фильтры: `ids[]=user-01&ids[]=user-02` выбирает пользователей по ID; дубликаты учитываются один раз, неизвестные ID пропускаются. Без `ids[]` ограничений по ID нет; пустой ID → `400`. Для избранного используйте ID из существующего `likes` профиля `/auth/me`.\n\n`name` — подстрока названия; поле поиска выбирает `type`: `learn` — название навыка по `canTeach.id`; `teach` — названия подкатегорий из `wantsToLearn` по справочнику `SKILL_CATEGORIES`; `all` (по умолчанию) — оба поля через ИЛИ. Регистр не учитывается, пробелы по краям удаляются. Отсутствующее, пустое или состоящее из пробелов значение не ограничивает список. Имя пользователя, теги, описание и ID подкатегорий не участвуют в поиске, склонения не обрабатываются: `type=learn&name=БАРАБАН` находит «Игра на барабанах», `type=teach&name=АНГЛ` — желающих изучать «Английский». Повторный `name` → `400`. Эти фильтры объединяются с остальными через И до сортировки и пагинации. Ответ остаётся `{ items, page, limit, total, hasMore }`."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"items\": [\n    {\n      \"id\": \"user-01\",\n      \"name\": \"Анна\",\n      \"email\": \"anna.smirnova@example.com\",\n      \"avatarUrl\": \"/db/avatars/figma/anna.jpg\",\n      \"createdAt\": \"2025-01-16T11:15:00.000Z\",\n      \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n      \"gender\": \"female\",\n      \"city\": \"Санкт-Петербург\",\n      \"bio\": \"Доброжелательная и любознательная, ценю искреннее общение и тёплые встречи с близкими.\",\n      \"likes\": [\n        \"user-02\"\n      ],\n      \"canTeach\": {\n        \"id\": \"skill-01\",\n        \"category\": \"art\",\n        \"subCategory\": \"music-sound\"\n      },\n      \"wantsToLearn\": [\n        \"acting\",\n        \"german\",\n        \"team-management\"\n      ]\n    }\n  ],\n  \"page\": 1,\n  \"limit\": 12,\n  \"total\": 1,\n  \"hasMore\": false\n}"
+            },
+            {
+              "name": "400 — повторный name",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/users?name=a&name=b"
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Некорректное поле name\"\n}"
+            },
+            {
+              "name": "400 — пустой ID",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": "{{baseUrl}}/users?ids[]="
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Некорректное поле ids[]\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Поставить лайк пользователю",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/me/likes/user-03",
+            "description": "**Авторизация:** `Authorization: Bearer <token>`. Тело не требуется. Владелец токена меняет только свой существующий `likes`, добавляя или удаляя ID из пути. Данные сохраняются в users.json; популярность обновляется сразу. `PUT`: `201` при создании, `204`, если лайк уже есть. `DELETE`: `204`, в том числе когда лайка уже нет. Успешные ответы без тела. Ошибки `{ message }`: `401` без действительного токена, `404` для неизвестного получателя, `500` при ошибке записи без изменения профиля и популярности. Повторные запросы не создают дубликатов и не меняют счётчик повторно."
+          },
+          "response": [
+            {
+              "name": "201 — лайк добавлен",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/auth/me/likes/user-03",
+                "description": "**Авторизация:** `Authorization: Bearer <token>`. Тело не требуется. Владелец токена меняет только свой существующий `likes`, добавляя или удаляя ID из пути. Данные сохраняются в users.json; популярность обновляется сразу. `PUT`: `201` при создании, `204`, если лайк уже есть. `DELETE`: `204`, в том числе когда лайка уже нет. Успешные ответы без тела. Ошибки `{ message }`: `401` без действительного токена, `404` для неизвестного получателя, `500` при ошибке записи без изменения профиля и популярности. Повторные запросы не создают дубликатов и не меняют счётчик повторно."
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "204 — повторный запрос",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/auth/me/likes/user-03",
+                "description": "**Авторизация:** `Authorization: Bearer <token>`. Тело не требуется. Владелец токена меняет только свой существующий `likes`, добавляя или удаляя ID из пути. Данные сохраняются в users.json; популярность обновляется сразу. `PUT`: `201` при создании, `204`, если лайк уже есть. `DELETE`: `204`, в том числе когда лайка уже нет. Успешные ответы без тела. Ошибки `{ message }`: `401` без действительного токена, `404` для неизвестного получателя, `500` при ошибке записи без изменения профиля и популярности. Повторные запросы не создают дубликатов и не меняют счётчик повторно."
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "401 — нет токена",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [],
+                "url": "{{baseUrl}}/auth/me/likes/user-03"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Нужна авторизация\"\n}"
+            },
+            {
+              "name": "404 — получатель не найден",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/auth/me/likes/missing"
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Пользователь не найден\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Снять лайк с пользователя",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/me/likes/user-03",
+            "description": "**Авторизация:** `Authorization: Bearer <token>`. Тело не требуется. Владелец токена меняет только свой существующий `likes`, добавляя или удаляя ID из пути. Данные сохраняются в users.json; популярность обновляется сразу. `PUT`: `201` при создании, `204`, если лайк уже есть. `DELETE`: `204`, в том числе когда лайка уже нет. Успешные ответы без тела. Ошибки `{ message }`: `401` без действительного токена, `404` для неизвестного получателя, `500` при ошибке записи без изменения профиля и популярности. Повторные запросы не создают дубликатов и не меняют счётчик повторно."
+          },
+          "response": [
+            {
+              "name": "204 — лайк снят",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/auth/me/likes/user-03",
+                "description": "**Авторизация:** `Authorization: Bearer <token>`. Тело не требуется. Владелец токена меняет только свой существующий `likes`, добавляя или удаляя ID из пути. Данные сохраняются в users.json; популярность обновляется сразу. `PUT`: `201` при создании, `204`, если лайк уже есть. `DELETE`: `204`, в том числе когда лайка уже нет. Успешные ответы без тела. Ошибки `{ message }`: `401` без действительного токена, `404` для неизвестного получателя, `500` при ошибке записи без изменения профиля и популярности. Повторные запросы не создают дубликатов и не меняют счётчик повторно."
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "204 — повторный запрос",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/auth/me/likes/user-03",
+                "description": "**Авторизация:** `Authorization: Bearer <token>`. Тело не требуется. Владелец токена меняет только свой существующий `likes`, добавляя или удаляя ID из пути. Данные сохраняются в users.json; популярность обновляется сразу. `PUT`: `201` при создании, `204`, если лайк уже есть. `DELETE`: `204`, в том числе когда лайка уже нет. Успешные ответы без тела. Ошибки `{ message }`: `401` без действительного токена, `404` для неизвестного получателя, `500` при ошибке записи без изменения профиля и популярности. Повторные запросы не создают дубликатов и не меняют счётчик повторно."
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "401 — нет токена",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": "{{baseUrl}}/auth/me/likes/user-03"
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Нужна авторизация\"\n}"
+            },
+            {
+              "name": "404 — получатель не найден",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": "{{baseUrl}}/auth/me/likes/missing"
+              },
+              "status": "Not Found",
+              "code": 404,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Пользователь не найден\"\n}"
+            }
+          ]
         }
       ]
     },
@@ -1672,10 +1986,27 @@
                   "key": "limit",
                   "value": "10",
                   "description": "Размер страницы, по умолчанию 10, от 1 до 100."
+                },
+                {
+                  "key": "ids[]",
+                  "value": "user-01",
+                  "disabled": true,
+                  "description": "ID пользователя; повторяйте ключ для массива."
+                },
+                {
+                  "key": "ids[]",
+                  "value": "user-02",
+                  "disabled": true
+                },
+                {
+                  "key": "name",
+                  "value": "БАРАБАН",
+                  "disabled": true,
+                  "description": "Подстрока названия без учёта регистра: type=learn — навык canTeach, type=teach — подкатегории wantsToLearn, type=all — оба поля; пустая строка не ограничивает поиск."
                 }
               ]
             },
-            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** Главная проверка — пароли не утекают наружу.\n\nФильтры пользователей: `gender` — `female` или `male`; `city` — точное название из `CITIES`; `type` описывает желание посетителя: `learn` («хочу научиться») ищет в `canTeach.subCategory`, `teach` («могу научить») — в `wantsToLearn`, `all` (по умолчанию) — в обоих полях. Массив подкатегорий: `subCategoryId[]=english&subCategoryId[]=german`; ID из `SKILL_CATEGORIES`. Достаточно одного совпадения; повторяющиеся ID не дублируют пользователей. Без массива навыки не ограничиваются. Разные фильтры объединяются через И до сортировки и пагинации. Недопустимые и пустые значения, повторение одиночных `gender`, `city`, `type` → `400`, `{ message }`."
+            "description": "**Авторизация:** не требуется.\n\nВсе параметры необязательны. `page` — номер страницы (по умолчанию 1, минимум 1); `limit` — размер страницы (по умолчанию 10, диапазон 1–100). Ответ `200`: `{ items, page, limit, total, hasMore }`. `total` — количество после фильтрации; `hasMore` — есть ли следующая страница. За пределами выборки `items: []` и `hasMore: false`.\n\n`sort` необязателен: `new` (по умолчанию) — сначала новые; `popular` — сначала с большим числом входящих лайков; `random` — порядок стабилен в пределах текущей даты UTC при неизменной базе. Неизвестный `sort` → `400` и `{ message }`. Пользователь: `id`, `name`, `email`, `avatarUrl: string | null`, `birthDate`, `gender`, `city`, `bio`, `createdAt`, `likes: string[]`, `canTeach: { id, category, subCategory }`, `wantsToLearn: string[]`. `likes` содержит ID тех, кого лайкнул этот пользователь. `password`, `login`, `likesReceived` не возвращаются.\n\n**Этот сценарий:** Главная проверка — пароли не утекают наружу.\n\nФильтры пользователей: `gender` — `female` или `male`; `city` — точное название из `CITIES`; `type` описывает желание посетителя: `learn` («хочу научиться») ищет в `canTeach.subCategory`, `teach` («могу научить») — в `wantsToLearn`, `all` (по умолчанию) — в обоих полях. Массив подкатегорий: `subCategoryId[]=english&subCategoryId[]=german`; ID из `SKILL_CATEGORIES`. Достаточно одного совпадения; повторяющиеся ID не дублируют пользователей. Без массива навыки не ограничиваются. Разные фильтры объединяются через И до сортировки и пагинации. Недопустимые и пустые значения, повторение одиночных `gender`, `city`, `type` → `400`, `{ message }`.\n\nДополнительные фильтры: `ids[]=user-01&ids[]=user-02` выбирает пользователей по ID; дубликаты учитываются один раз, неизвестные ID пропускаются. Без `ids[]` ограничений по ID нет; пустой ID → `400`. Для избранного используйте ID из существующего `likes` профиля `/auth/me`.\n\n`name` — подстрока названия; поле поиска выбирает `type`: `learn` — название навыка по `canTeach.id`; `teach` — названия подкатегорий из `wantsToLearn` по справочнику `SKILL_CATEGORIES`; `all` (по умолчанию) — оба поля через ИЛИ. Регистр не учитывается, пробелы по краям удаляются. Отсутствующее, пустое или состоящее из пробелов значение не ограничивает список. Имя пользователя, теги, описание и ID подкатегорий не участвуют в поиске, склонения не обрабатываются: `type=learn&name=БАРАБАН` находит «Игра на барабанах», `type=teach&name=АНГЛ` — желающих изучать «Английский». Повторный `name` → `400`. Эти фильтры объединяются с остальными через И до сортировки и пагинации. Ответ остаётся `{ items, page, limit, total, hasMore }`."
           },
           "event": [
             {
@@ -4142,6 +4473,511 @@
                 "exec": [
                   "pm.test('HTTP 200', () => pm.response.to.have.status(200))",
                   "pm.test('Данные навыка сохранены', () => pm.expect(pm.response.json()).to.eql(JSON.parse(pm.collectionVariables.get('profileSkillBefore'))))"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Лайки и поиск",
+      "description": "Самодостаточный сценарий на локальной или временной базе из сидов. Выполняет вход, выбирает получателя без лайка, проверяет операции, ids[] и name, затем снимает тестовый лайк и сверяет исходный массив. При прерванном прогоне лайк может остаться.",
+      "item": [
+        {
+          "name": "Вход для проверки лайков",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/login",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{demoEmail}}\",\n  \"password\": \"{{demoPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "pm.collectionVariables.set('likesToken', pm.response.json().token)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Исходные лайки",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{likesToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/me"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "const me = pm.response.json()",
+                  "pm.collectionVariables.set('likesActorId', me.id)",
+                  "pm.collectionVariables.set('likesOriginal', JSON.stringify(me.likes))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Выбрать получателя без лайка",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users?limit=100"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "const original = JSON.parse(pm.collectionVariables.get('likesOriginal'))",
+                  "const actor = pm.collectionVariables.get('likesActorId')",
+                  "const target = pm.response.json().items.find(user => user.id !== actor && !original.includes(user.id))",
+                  "pm.test('получатель найден', () => pm.expect(target).to.exist)",
+                  "pm.collectionVariables.set('likesTargetId', target.id)",
+                  "pm.collectionVariables.set('likesTargetSkillId', target.canTeach.id)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Название навыка для поиска",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/skills/{{likesTargetSkillId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "pm.collectionVariables.set('likesSearchName', encodeURIComponent(pm.response.json().title.toUpperCase()))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Поставить лайк — 201",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{likesToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/me/likes/{{likesTargetId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201', () => pm.response.to.have.status(201))",
+                  "pm.test('нет тела', () => pm.expect(pm.response.text()).to.eql(''))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Повторный лайк — 204",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{likesToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/me/likes/{{likesTargetId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('204', () => pm.response.to.have.status(204))",
+                  "pm.test('нет тела', () => pm.expect(pm.response.text()).to.eql(''))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Лайк добавлен один раз",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{likesToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/me"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "const original = JSON.parse(pm.collectionVariables.get('likesOriginal'))",
+                  "const target = pm.collectionVariables.get('likesTargetId')",
+                  "pm.test('likes содержит прежние ID и один новый', () => pm.expect(pm.response.json().likes).to.eql([...original, target]))",
+                  "pm.test('нет счётчика входящих лайков', () => pm.expect(pm.response.json()).to.not.have.property('likesReceived'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Фильтр ID — дубликаты и неизвестный ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users?ids[]={{likesTargetId}}&ids[]={{likesTargetId}}&ids[]=missing&limit=1"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "const body = pm.response.json()",
+                  "pm.test('один получатель без дубликатов', () => pm.expect(body.items.map(user => user.id)).to.eql([pm.collectionVariables.get('likesTargetId')]))",
+                  "pm.test('пагинация после фильтрации', () => {",
+                  "  pm.expect(body.total).to.eql(1)",
+                  "  pm.expect(body.hasMore).to.eql(false)",
+                  "})"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Поиск названия без учёта регистра",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users?ids[]={{likesTargetId}}&name={{likesSearchName}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "pm.test('найден владелец навыка', () => pm.expect(pm.response.json().items.map(user => user.id)).to.eql([pm.collectionVariables.get('likesTargetId')]))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Пустой name не ограничивает выборку",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users?ids[]={{likesTargetId}}&name="
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "pm.test('найден получатель', () => pm.expect(pm.response.json().total).to.eql(1))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Повторный name — 400",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users?name=a&name=b"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('400', () => pm.response.to.have.status(400))"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Пустой ID — 400",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users?ids[]="
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('400', () => pm.response.to.have.status(400))"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Неизвестные ID — пустой список",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users?ids[]=missing"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "pm.test('пустая выборка', () => {",
+                  "  const body = pm.response.json()",
+                  "  pm.expect(body.items).to.eql([])",
+                  "  pm.expect(body.total).to.eql(0)",
+                  "  pm.expect(body.hasMore).to.eql(false)",
+                  "})"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Поставить лайк без токена — 401",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": "{{baseUrl}}/auth/me/likes/{{likesTargetId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('401', () => pm.response.to.have.status(401))"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Снять лайк без токена — 401",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": "{{baseUrl}}/auth/me/likes/{{likesTargetId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('401', () => pm.response.to.have.status(401))"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Поставить лайк неизвестному пользователю — 404",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{likesToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/me/likes/missing"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('404', () => pm.response.to.have.status(404))"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Снять лайк неизвестного пользователя — 404",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{likesToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/me/likes/missing"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('404', () => pm.response.to.have.status(404))"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Снять лайк — 204",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{likesToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/me/likes/{{likesTargetId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('204', () => pm.response.to.have.status(204))"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Повторное снятие — 204",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{likesToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/me/likes/{{likesTargetId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('204', () => pm.response.to.have.status(204))"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Исходные лайки восстановлены",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{likesToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/me"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "pm.test('likes совпадает с исходным', () => pm.expect(pm.response.json().likes).to.eql(JSON.parse(pm.collectionVariables.get('likesOriginal'))))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CORS разрешает PUT",
+          "request": {
+            "method": "OPTIONS",
+            "header": [
+              {
+                "key": "Origin",
+                "value": "http://localhost:5173"
+              },
+              {
+                "key": "Access-Control-Request-Method",
+                "value": "PUT"
+              },
+              {
+                "key": "Access-Control-Request-Headers",
+                "value": "Authorization"
+              }
+            ],
+            "url": "{{baseUrl}}/auth/me/likes/{{likesTargetId}}"
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('204', () => pm.response.to.have.status(204))",
+                  "",
+                  "pm.test('PUT разрешён', () => pm.expect(pm.response.headers.get('Access-Control-Allow-Methods').split(', ')).to.include('PUT'))"
                 ]
               }
             }

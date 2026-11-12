@@ -2,12 +2,16 @@ import { yupResolver } from '@hookform/resolvers/yup'
 import { useState } from 'react'
 import type { FormEvent } from 'react'
 import { useForm } from 'react-hook-form'
+import { useStore } from 'react-redux'
 import * as yup from 'yup'
+import type { store } from '@/store'
 import { useAppDispatch } from '@/store/hooks'
-import { useLoginMutation } from '../api/authApi'
-import { setAuthUser } from './authSlice'
-import { saveServerAuthUser } from './authUtils'
 import type { AuthUser } from '@/shared/types'
+import { authApi, useLoginMutation } from '../api/authApi'
+import { logout, setAuthUser, setProfile } from './authSlice'
+import { getAuthUser, saveServerAuthUser, saveUserProfile } from './authUtils'
+import { useNavigate } from 'react-router'
+import { ROUTES } from '@/shared/lib/constants'
 
 const authFormSchema = yup.object({
   email: yup.string().trim().required('Введите email'),
@@ -54,14 +58,16 @@ function getLoginError(error: unknown): string {
 
 export function useAuthForm() {
   const dispatch = useAppDispatch()
-  const [login, { isLoading }] = useLoginMutation()
+  const appStore = useStore.withTypes<typeof store>()()
+  const [login] = useLoginMutation()
   const [error, setError] = useState<string | null>(null)
+  const navigate = useNavigate()
 
   const {
     register,
     handleSubmit,
     clearErrors,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm({
     defaultValues: { email: '', password: '' },
     resolver: yupResolver(authFormSchema),
@@ -77,6 +83,48 @@ export function useAuthForm() {
 
       saveServerAuthUser(user)
       dispatch(setAuthUser(user))
+
+      const currentSession = appStore.getState().auth.user
+
+      try {
+        const profile = await dispatch(
+          authApi.endpoints.getAuthMe.initiate(undefined, {
+            subscribe: false,
+            forceRefetch: true,
+          }),
+        ).unwrap()
+
+        // Не сохраняем ответ, если пользователь вышел или вошел заново.
+        if (
+          appStore.getState().auth.user === currentSession &&
+          getAuthUser()?.token === user.token
+        ) {
+          saveUserProfile(profile)
+          dispatch(setProfile(profile))
+          navigate(ROUTES.HOME, { replace: true })
+        }
+      } catch (profileError) {
+        // Не обрабатываем ошибку, если сессия уже изменилась.
+        if (
+          appStore.getState().auth.user !== currentSession ||
+          getAuthUser()?.token !== user.token
+        ) {
+          return
+        }
+
+        if (
+          typeof profileError === 'object' &&
+          profileError !== null &&
+          'status' in profileError &&
+          profileError.status === 401
+        ) {
+          await dispatch(logout())
+          setError('Сессия недействительна. Войдите ещё раз.')
+          return
+        }
+
+        setError('Вы вошли, но не удалось загрузить профиль. Попробуйте обновить страницу.')
+      }
     } catch (requestError) {
       setError(getLoginError(requestError))
     }
@@ -92,7 +140,7 @@ export function useAuthForm() {
     register,
     handleSubmit: handleFormSubmit,
     errors,
-    isSubmitting: isLoading,
+    isSubmitting,
     error,
   }
 }
