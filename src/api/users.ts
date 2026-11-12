@@ -10,14 +10,24 @@ interface UsersResponse {
   hasMore: boolean
 }
 
-export async function fetchUsers(): Promise<User[]> {
-  const response = await fetch(`${BASE_URL}/users?delay=2000`)
+export async function fetchUsers(
+  page = 1,
+  limit = 10,
+  sort = 'random',
+): Promise<{ users: User[]; hasMore: boolean }> {
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+    delay: sort === 'new' ? '5000' : '100',
+    sort: sort,
+  })
+  const response = await fetch(`${BASE_URL}/users?${params}`)
   if (!response.ok) throw new Error('Failed to fetch users')
   const data: UsersResponse = await response.json()
-  return data.items
+  return { users: data.items, hasMore: data.hasMore }
 }
 
 export async function fetchUserById(id: string): Promise<User | undefined> {
-  const users = await fetchUsers()
+  const { users } = await fetchUsers()
   return users.find((user) => user.id === id)
 }

@@ -10,23 +10,38 @@ import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 
 export default function CatalogPage() {
-  const { users, isLoading, error } = useSelector((store: RootState) => store.users)
+  const {
+    newUsers,
+    popularUsers,
+    recommendedUsers,
+    isPopularLoading,
+    isNewLoading,
+    isRecommendedLoading,
+    errors,
+    pages,
+    hasMore,
+  } = useSelector((store: RootState) => store.users)
   const dispatch = useAppDispatch()
 
   useEffect(() => {
-    dispatch(loadUsers())
-  }, [])
-  if (error) return <h2>Ошибка: {error}</h2>
-
+    dispatch(loadUsers({ page: 1, sort: 'popular' }))
+    dispatch(loadUsers({ page: 1, sort: 'new' }))
+    dispatch(loadUsers({ page: 1, sort: 'random' }))
+  }, [dispatch])
   return (
     <div style={{ display: 'grid', gap: '40px' }}>
       <section>
-        {isLoading ? (
+        {isPopularLoading && popularUsers.length === 0 ? (
           <CatalogPreloader />
+        ) : errors.popular ? (
+          <h2>Ошибка: {errors.popular}</h2>
         ) : (
           <CatalogSection
             title={'Популярное'}
-            users={users}
+            users={popularUsers}
+            hasMore={hasMore.popular}
+            isLoadingMore={isPopularLoading}
+            onLoadMore={() => dispatch(loadUsers({ page: pages.popular + 1, sort: 'popular' }))}
             favoriteIds={[]}
             onDetails={function (user: User): void {
               throw new Error('Function not implemented.')
@@ -38,12 +53,17 @@ export default function CatalogPage() {
         )}
       </section>
       <section>
-        {isLoading ? (
+        {isNewLoading && newUsers.length === 0 ? (
           <CatalogPreloader />
+        ) : errors.new ? (
+          <h2>Ошибка: {errors.new}</h2>
         ) : (
           <CatalogSection
             title={'Новое'}
-            users={users}
+            users={newUsers}
+            hasMore={hasMore.new}
+            isLoadingMore={isNewLoading}
+            onLoadMore={() => dispatch(loadUsers({ page: pages.new + 1, sort: 'new' }))}
             favoriteIds={[]}
             onDetails={function (user: User): void {
               throw new Error('Function not implemented.')
@@ -55,12 +75,17 @@ export default function CatalogPage() {
         )}
       </section>
       <section>
-        {isLoading ? (
+        {isRecommendedLoading && recommendedUsers.length === 0 ? (
           <CatalogPreloader />
+        ) : errors.random ? (
+          <h2>Ошибка: {errors.random}</h2>
         ) : (
           <CatalogSection
             title={'Рекомендуем'}
-            users={users}
+            users={recommendedUsers}
+            hasMore={hasMore.random}
+            isLoadingMore={isRecommendedLoading}
+            onLoadMore={() => dispatch(loadUsers({ page: pages.random + 1, sort: 'random' }))}
             favoriteIds={[]}
             onDetails={function (user: User): void {
               throw new Error('Function not implemented.')
