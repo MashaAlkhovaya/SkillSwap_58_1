@@ -1,10 +1,12 @@
 import { useCallback } from 'react'
+import { generatePath, Link } from 'react-router-dom'
 import {
   removeNotification,
   selectNotifications,
   type NotificationItem,
 } from '@/features/notifications'
-import { Notification } from '@/shared/ui'
+import { ROUTES } from '@/shared/lib/constants'
+import { IdeaIcon, Notification } from '@/shared/ui'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import styles from './NotificationStack.module.css'
 
@@ -26,6 +28,20 @@ function NotificationStackItem({ notification }: NotificationStackItemProps) {
       message={notification.message}
       duration={notification.duration}
       onClose={handleClose}
+      icon={notification.exchangeSkillId && <IdeaIcon />}
+      action={
+        notification.exchangeSkillId && (
+          <Link
+            className={styles.link}
+            to={generatePath(ROUTES.SKILL, {
+              id: encodeURIComponent(notification.exchangeSkillId),
+            })}
+            onClick={handleClose}
+          >
+            Перейти
+          </Link>
+        )
+      }
     />
   )
 }

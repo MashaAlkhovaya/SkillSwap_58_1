@@ -3,8 +3,8 @@ import { useAuthForm } from '@/features/auth/model/useAuthForm'
 import { TextInput, Button } from '@/shared/ui'
 import styles from './AuthWidget.module.css'
 
-export function AuthWidget() {
-  const { register, handleSubmit, errors, isSubmitting, error } = useAuthForm()
+export function AuthWidget({ returnTo }: { returnTo?: string }) {
+  const { register, handleSubmit, errors, isSubmitting, error } = useAuthForm(returnTo)
   const [passwordVisible, setPasswordVisible] = useState(false)
 
   return (

@@ -56,7 +56,7 @@ function getLoginError(error: unknown): string {
   return DEFAULT_ERROR
 }
 
-export function useAuthForm() {
+export function useAuthForm(returnTo: string = ROUTES.HOME) {
   const dispatch = useAppDispatch()
   const appStore = useStore.withTypes<typeof store>()()
   const [login] = useLoginMutation()
@@ -101,7 +101,7 @@ export function useAuthForm() {
         ) {
           saveUserProfile(profile)
           dispatch(setProfile(profile))
-          navigate(ROUTES.HOME, { replace: true })
+          navigate(returnTo, { replace: true })
         }
       } catch (profileError) {
         // Не обрабатываем ошибку, если сессия уже изменилась.
