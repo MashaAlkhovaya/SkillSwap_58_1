@@ -33,7 +33,7 @@ const initialState: UsersState = {
 export const loadUsers = createAsyncThunk(
   'users/load',
   async (params: { page?: number; limit?: number; sort: UserSort }) => {
-    const { page = 1, limit = 6, sort } = params
+    const { page = 1, limit = 9, sort } = params
     const data = await fetchUsers(page, limit, sort)
     return { users: data.users, hasMore: data.hasMore, sort, page }
   },

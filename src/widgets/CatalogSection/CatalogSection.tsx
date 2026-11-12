@@ -1,8 +1,9 @@
-import { useEffect, useId, useRef, useState } from 'react'
+import { useId, useState } from 'react'
 import { Title } from '@/shared/ui'
 import type { User } from '@/shared/types'
 import { CatalogUserCard } from '@/widgets/CatalogUserCard'
 import styles from './CatalogSection.module.css'
+import { useInfiniteScroll } from '../../shared/hooks/useInfiniteScroll'
 
 const COLLAPSED_COUNT = 3
 
@@ -30,24 +31,17 @@ export function CatalogSection({
   onLoadMore,
 }: CatalogSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false)
-  const sentinelRef = useRef<HTMLDivElement>(null)
   const headingId = useId()
   const listId = useId()
 
   const visibleCount = isExpanded ? users.length : COLLAPSED_COUNT
   const visibleUsers = users.slice(0, visibleCount)
   const canExpand = showExpandButton && users.length > COLLAPSED_COUNT
-
-  useEffect(() => {
-    const sentinel = sentinelRef.current
-    if (!sentinel || !isExpanded || !hasMore || isLoadingMore || !onLoadMore) return
-
-    const observer = new IntersectionObserver(([entry]) => {
-      if (entry.isIntersecting) onLoadMore()
-    })
-    observer.observe(sentinel)
-    return () => observer.disconnect()
-  }, [hasMore, isExpanded, isLoadingMore, onLoadMore, users.length])
+  const sentinelRef = useInfiniteScroll({
+    enabled: isExpanded && hasMore && !isLoadingMore,
+    itemsCount: users.length,
+    onLoadMore,
+  })
 
   return (
     <section className={styles.section} aria-labelledby={headingId}>
