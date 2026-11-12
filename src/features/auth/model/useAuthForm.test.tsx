@@ -8,6 +8,7 @@ import { LOCAL_STORAGE_KEYS } from '@/shared/lib/constants'
 import authReducer, { logout, setAuthUser } from './authSlice'
 import { saveServerAuthUser } from './authUtils'
 import { useAuthForm } from './useAuthForm'
+import { MemoryRouter } from 'react-router'
 
 const { loginMock, profileMock, loadingState } = vi.hoisted(() => ({
   loginMock: vi.fn(),
@@ -89,7 +90,11 @@ function renderAuthForm() {
   })
 
   function wrapper({ children }: { children: ReactNode }) {
-    return <Provider store={store}>{children}</Provider>
+    return (
+      <Provider store={store}>
+        <MemoryRouter>{children}</MemoryRouter>
+      </Provider>
+    )
   }
 
   return { store, ...render(<AuthFormProbe />, { wrapper }) }
@@ -183,12 +188,21 @@ describe('useAuthForm', () => {
     expect(loginMock).not.toHaveBeenCalled()
   })
 
-  it('блокирует кнопку, пока выполняется вход', () => {
-    loadingState.isLoading = true
+  it('блокирует кнопку, пока выполняется вход', async () => {
+    loginMock.mockReturnValue({
+      unwrap: () => new Promise<typeof user>(() => {}), // логин "висит"
+    })
 
+    const userEvents = userEvent.setup()
     renderAuthForm()
 
-    expect(screen.getByRole('button', { name: 'Войти' })).toBeDisabled()
+    await userEvents.type(screen.getByRole('textbox', { name: 'Email' }), user.email)
+    await userEvents.type(screen.getByLabelText('Пароль'), 'test-password')
+    await userEvents.click(screen.getByRole('button', { name: 'Войти' }))
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: 'Войти' })).toBeDisabled()
+    })
   })
 
   it('сохраняет данные и токен после успешного входа', async () => {
