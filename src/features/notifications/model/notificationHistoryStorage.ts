@@ -30,7 +30,7 @@ export function readNotificationHistory(userId: string): NotificationHistoryStat
     const saved = localStorage.getItem(STORAGE_KEY_PREFIX + userId)
     const parsed: unknown = saved ? JSON.parse(saved) : null
 
-    // В черновой версии по этому ключу сохранялся только массив уведомлений.
+    // Поддерживаем ранее сохраненную историю в формате массива.
     if (Array.isArray(parsed)) {
       return { ...initialNotificationHistory, items: parsed.filter(isHistoryNotification) }
     }
