@@ -32,6 +32,10 @@
   gap: var(--space-lg);
 }
 
+.loadMoreSentinel {
+  min-height: 1px;
+}
+
 @media (width <= 760px) {
   .grid {
     grid-template-columns: repeat(2, minmax(0, 324px));

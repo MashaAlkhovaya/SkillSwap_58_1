@@ -3,6 +3,7 @@ import { lazy, Suspense, useEffect } from 'react'
 import { ROUTES } from '@/shared/lib/constants'
 import { MainLayout } from '../Layouts/MainLayout'
 import { Skeleton } from '@/shared/ui'
+import { NotificationStack } from '@/widgets/NotificationStack'
 import { PrivateRoute } from '@/features/auth/ui/PrivateRoute'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { clearApiError } from '@/shared/api/model/apiErrorSlice'
@@ -74,6 +75,7 @@ export function AppRouter() {
           </Route>
         </Routes>
       </Suspense>
+      <NotificationStack />
     </BrowserRouter>
   )
 }
