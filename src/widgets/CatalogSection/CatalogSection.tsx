@@ -4,8 +4,10 @@ import type { User } from '@/shared/types'
 import { CatalogUserCard } from '@/widgets/CatalogUserCard'
 import styles from './CatalogSection.module.css'
 import { useInfiniteScroll } from '../../shared/hooks/useInfiniteScroll'
+import { CatalogCardSkeleton } from './CatalogCardSkeleton'
 
 const COLLAPSED_COUNT = 3
+const SKELETON_COUNT = 9
 
 interface CatalogSectionProps {
   title: string
@@ -37,6 +39,7 @@ export function CatalogSection({
   const visibleCount = isExpanded ? users.length : COLLAPSED_COUNT
   const visibleUsers = users.slice(0, visibleCount)
   const canExpand = showExpandButton && users.length > COLLAPSED_COUNT
+
   const sentinelRef = useInfiniteScroll({
     enabled: isExpanded && hasMore && !isLoadingMore,
     itemsCount: users.length,
@@ -73,11 +76,18 @@ export function CatalogSection({
             onFavoriteToggle={() => onFavoriteToggle(user)}
           />
         ))}
+
+        {isExpanded && hasMore && isLoadingMore && (
+          <>
+            {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
+              <CatalogCardSkeleton key={`skeleton-${index}`} />
+            ))}
+          </>
+        )}
       </div>
+
       {isExpanded && hasMore && (
-        <div ref={sentinelRef} className={styles.loadMoreSentinel} aria-hidden="true">
-          {isLoadingMore ? 'Загружаем ещё…' : null}
-        </div>
+        <div ref={sentinelRef} className={styles.loadMoreSentinel} aria-hidden="true" />
       )}
     </section>
   )

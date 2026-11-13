@@ -107,4 +107,48 @@ describe('CatalogSection', () => {
     expect(screen.getAllByRole('button', { name: 'Подробнее' })).toHaveLength(3)
     expect(screen.queryByRole('button', { name: 'Смотреть все' })).not.toBeInTheDocument()
   })
+
+  it('показывает 9 скелетонов при isLoadingMore = true и hasMore = true', async () => {
+    const user = userEvent.setup()
+    render(
+      <CatalogSection
+        title="Тест скелетонов"
+        users={createUsers(5)}
+        favoriteIds={[]}
+        onDetails={() => {}}
+        onFavoriteToggle={() => {}}
+        hasMore={true}
+        isLoadingMore={true}
+      />,
+    )
+
+    expect(screen.queryAllByTestId('user-card-skeleton')).toHaveLength(0)
+
+    await user.click(screen.getByRole('button', { name: 'Смотреть все' }))
+
+    expect(screen.queryByText('Загружаем ещё…')).not.toBeInTheDocument()
+
+    const skeletons = screen.getAllByTestId('user-card-skeleton')
+    expect(skeletons).toHaveLength(9)
+  })
+
+  it('не показывает скелетоны, если isLoadingMore = false', async () => {
+    const user = userEvent.setup()
+    render(
+      <CatalogSection
+        title="Тест без загрузки"
+        users={createUsers(5)}
+        favoriteIds={[]}
+        onDetails={() => {}}
+        onFavoriteToggle={() => {}}
+        hasMore={true}
+        isLoadingMore={false}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: 'Смотреть все' }))
+
+    const skeletons = screen.queryAllByTestId('user-card-skeleton')
+    expect(skeletons).toHaveLength(0)
+  })
 })
