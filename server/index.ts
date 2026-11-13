@@ -125,7 +125,7 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
 
   const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: MAX_FILE_SIZE, files: 5, fields: 1, fieldSize: 32 * 1024 },
+    limits: { fileSize: MAX_FILE_SIZE, files: 6, fields: 1, fieldSize: 32 * 1024 },
     fileFilter: (_req, file, callback) => {
       if (!ALLOWED_IMAGE_TYPES.some((type) => type === file.mimetype)) {
         callback(new HttpError(400, 'Разрешены только JPEG, PNG и WebP'))
@@ -238,7 +238,10 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
       }
       next()
     },
-    upload.array('images', 5),
+    upload.fields([
+      { name: 'images', maxCount: 5 },
+      { name: 'avatar', maxCount: 1 },
+    ]),
     (req, res) => {
       const body: unknown = req.body
       const raw = body && typeof body === 'object' && 'data' in body ? body.data : undefined
@@ -250,8 +253,11 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
         throw new HttpError(400, 'Некорректный JSON в поле data')
       }
       const data = parseRegistration(parsed)
-      const files = (req.files as Express.Multer.File[] | undefined) ?? []
+      const uploads = req.files as Record<string, Express.Multer.File[]> | undefined
+      const files = uploads?.images ?? []
+      const avatar = uploads?.avatar?.[0]
       const extensions = files.map(imageExtension)
+      const avatarExtension = avatar ? imageExtension(avatar) : undefined
       if (users.some((user) => user.email.trim().toLowerCase() === data.email)) {
         throw new HttpError(409, 'Этот email уже занят')
       }
@@ -260,6 +266,8 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
       const skillId = `skill-${randomUUID()}`
       const createdAt = new Date().toISOString()
       const folder = path.join(dataDir, 'uploads', 'skills', skillId)
+      const avatarFolder = path.join(dataDir, 'uploads', 'avatars', encodeURIComponent(userId))
+      const avatarName = avatarExtension ? `${randomUUID()}${avatarExtension}` : undefined
       const names = extensions.map((extension) => `${randomUUID()}${extension}`)
       const imageUrls = names.map((name) => `/api/uploads/skills/${skillId}/${name}`)
       const skill: Skill = {
@@ -282,7 +290,9 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
         wantsToLearn: data.wantsToLearn,
         canTeach: { id: skillId, category: skill.category, subCategory: skill.subCategory },
         createdAt,
-        avatarUrl: null,
+        avatarUrl: avatarName
+          ? `/api/uploads/avatars/${encodeURIComponent(userId)}/${avatarName}`
+          : null,
         bio: '',
         likes: [],
       }
@@ -291,6 +301,10 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
         files.forEach((file, index) =>
           fs.writeFileSync(path.join(folder, names[index]), file.buffer),
         )
+        if (avatar && avatarName) {
+          fs.mkdirSync(avatarFolder, { recursive: true })
+          fs.writeFileSync(path.join(avatarFolder, avatarName), avatar.buffer)
+        }
         save('skills', [...skills, skill])
         try {
           save('users', [...users, user])
@@ -301,11 +315,15 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
         }
       } catch (error) {
         fs.rmSync(folder, { recursive: true, force: true })
+        fs.rmSync(avatarFolder, { recursive: true, force: true })
         throw error
       }
       skills.push(skill)
       users.push(user)
-      res.status(201).json(authUser(user))
+      res.status(201).json({
+        ...authUser(user),
+        ...(avatarName ? { avatarUrl: user.avatarUrl } : {}),
+      })
     },
   )
   app.post<Record<string, never>, AuthResponse, unknown>('/api/auth/login', (req, res) => {
@@ -431,7 +449,7 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
           ? 'Размер изображения превышает 2 МБ'
           : req.method === 'PATCH' && req.path === '/api/auth/me'
             ? 'Допустимы поле data и один файл avatar'
-            : 'Допустимы поле data и до 5 файлов images'
+            : 'Допустимы поле data, до 5 файлов images и один файл avatar'
       res.status(400).json({ message })
       return
     }

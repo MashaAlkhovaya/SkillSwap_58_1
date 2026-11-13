@@ -3,9 +3,11 @@ import { Title } from '@/shared/ui'
 import type { User } from '@/shared/types'
 import { CatalogUserCard } from '@/widgets/CatalogUserCard'
 import styles from './CatalogSection.module.css'
+import { useInfiniteScroll } from '../../shared/hooks/useInfiniteScroll'
+import { CatalogCardSkeleton } from './CatalogCardSkeleton'
 
 const COLLAPSED_COUNT = 3
-const EXPANDED_COUNT = 9
+const SKELETON_COUNT = 9
 
 interface CatalogSectionProps {
   title: string
@@ -15,6 +17,9 @@ interface CatalogSectionProps {
   onFavoriteToggle: (user: User) => void
   showExpandButton?: boolean
   proposedSkillIds?: string[]
+  hasMore?: boolean
+  isLoadingMore?: boolean
+  onLoadMore?: () => void
 }
 
 export function CatalogSection({
@@ -25,14 +30,23 @@ export function CatalogSection({
   onFavoriteToggle,
   showExpandButton = true,
   proposedSkillIds = [],
+  hasMore = false,
+  isLoadingMore = false,
+  onLoadMore,
 }: CatalogSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const headingId = useId()
   const listId = useId()
 
-  const visibleCount = isExpanded ? EXPANDED_COUNT : COLLAPSED_COUNT
+  const visibleCount = isExpanded ? users.length : COLLAPSED_COUNT
   const visibleUsers = users.slice(0, visibleCount)
   const canExpand = showExpandButton && users.length > COLLAPSED_COUNT
+
+  const sentinelRef = useInfiniteScroll({
+    enabled: isExpanded && hasMore && !isLoadingMore,
+    itemsCount: users.length,
+    onLoadMore,
+  })
 
   return (
     <section className={styles.section} aria-labelledby={headingId}>
@@ -54,7 +68,6 @@ export function CatalogSection({
         )}
       </div>
 
-      {/* ленивая загрузка карточек по N штук */}
       <div id={listId} className={styles.grid}>
         {visibleUsers.map((user) => (
           <CatalogUserCard
@@ -66,7 +79,19 @@ export function CatalogSection({
             onFavoriteToggle={() => onFavoriteToggle(user)}
           />
         ))}
+
+        {isExpanded && hasMore && isLoadingMore && (
+          <>
+            {Array.from({ length: SKELETON_COUNT }).map((_, index) => (
+              <CatalogCardSkeleton key={`skeleton-${index}`} />
+            ))}
+          </>
+        )}
       </div>
+
+      {isExpanded && hasMore && (
+        <div ref={sentinelRef} className={styles.loadMoreSentinel} aria-hidden="true" />
+      )}
     </section>
   )
 }
