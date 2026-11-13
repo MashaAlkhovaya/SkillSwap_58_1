@@ -1,5 +1,6 @@
-import { Link, useLocation } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ROUTES, SKILL_CATEGORIES } from '@/shared/lib/constants'
+import { getAuthReturnPath } from '@/shared/lib/authRedirect'
 import {
   TextInput,
   CloseIcon,
@@ -28,9 +29,13 @@ const CATEGORY_ICONS = {
 }
 
 export function Header() {
-  const { pathname } = useLocation()
+  const { pathname, state } = useLocation()
+  const navigate = useNavigate()
   const normalizedPathname = pathname.replace(/\/+$/, '') || '/'
   const isCompact = normalizedPathname === ROUTES.LOGIN || normalizedPathname === ROUTES.REGISTER
+  const handleClose = () => {
+    navigate(getAuthReturnPath(state), { replace: true })
+  }
 
   if (isCompact) {
     return (
@@ -39,7 +44,12 @@ export function Header() {
           <Logo />
         </div>
         <div className={styles.right}>
-          <Button variant="tertiary" trailingIcon={<CloseIcon />} className={styles.closeButton}>
+          <Button
+            variant="tertiary"
+            trailingIcon={<CloseIcon />}
+            className={styles.closeButton}
+            onClick={handleClose}
+          >
             Закрыть
           </Button>
         </div>

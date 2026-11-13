@@ -1,4 +1,5 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import { describe, expect, it } from 'vitest'
 import RegisterPage, { RegistrationStep } from './index'
 import userEvent from '@testing-library/user-event'
@@ -37,7 +38,7 @@ const expectSynchronizedStep = (currentStep: 1 | 2 | 3, totalSteps: number) => {
 
 describe('RegisterPage', () => {
   it('показывает текущий шаг регистрации и общее количество шагов', () => {
-    render(<RegisterPage currentStep={2} totalSteps={3} />)
+    render(<RegisterPage currentStep={2} totalSteps={3} />, { wrapper: MemoryRouter })
 
     expect(screen.getByRole('heading', { name: 'Шаг 2 из 3' })).toBeInTheDocument()
   })
@@ -50,7 +51,9 @@ describe('RegisterPage', () => {
     ] as const
 
     for (const [currentStep, title] of steps) {
-      const { unmount } = render(<RegisterPage currentStep={currentStep} totalSteps={3} />)
+      const { unmount } = render(<RegisterPage currentStep={currentStep} totalSteps={3} />, {
+        wrapper: MemoryRouter,
+      })
 
       expect(screen.getByRole('heading', { name: title })).toBeInTheDocument()
       unmount()
@@ -58,7 +61,7 @@ describe('RegisterPage', () => {
   })
 
   it('отображает индикатор для каждого шага регистрации', () => {
-    render(<RegisterPage currentStep={1} totalSteps={4} />)
+    render(<RegisterPage currentStep={1} totalSteps={4} />, { wrapper: MemoryRouter })
 
     const stepper = screen.getByRole('heading', { name: 'Шаг 1 из 4' }).parentElement
     expect(stepper).not.toBeNull()
@@ -71,7 +74,9 @@ describe('RegisterPage', () => {
     [Number.NaN, 1],
     [2.8, 2],
   ])('ограничивает текущий шаг допустимым диапазоном (%i → %i)', (currentStep, expectedStep) => {
-    render(<RegisterPage currentStep={currentStep as RegistrationStep} totalSteps={3} />)
+    render(<RegisterPage currentStep={currentStep as RegistrationStep} totalSteps={3} />, {
+      wrapper: MemoryRouter,
+    })
 
     expectSynchronizedStep(expectedStep as 1 | 2 | 3, 3)
   })
@@ -79,16 +84,17 @@ describe('RegisterPage', () => {
   it.each([1, 2, 3] as const)(
     'синхронно обновляет компоненты при изменении шага на %i в допустимом диапазоне',
     (currentStep) => {
-      const { rerender } = render(<RegisterPage currentStep={1} totalSteps={3} />)
+      const { rerender } = render(<RegisterPage currentStep={1} totalSteps={3} />, {
+        wrapper: MemoryRouter,
+      })
 
       rerender(<RegisterPage currentStep={currentStep as RegistrationStep} totalSteps={3} />)
-
       expectSynchronizedStep(currentStep, 3)
     },
   )
 
   it('переходит на следующий шаг после валидного заполнения текущего', async () => {
-    render(<RegisterPage currentStep={1} totalSteps={3} />)
+    render(<RegisterPage currentStep={1} totalSteps={3} />, { wrapper: MemoryRouter })
 
     const user = userEvent.setup()
 
@@ -99,7 +105,7 @@ describe('RegisterPage', () => {
   })
 
   it('возвращается к предыдущему шагу', () => {
-    render(<RegisterPage currentStep={3} totalSteps={3} />)
+    render(<RegisterPage currentStep={3} totalSteps={3} />, { wrapper: MemoryRouter })
 
     fireEvent.click(screen.getByRole('button', { name: 'Назад' }))
     expectSynchronizedStep(2, 3)
@@ -116,10 +122,11 @@ describe('RegisterPage', () => {
   ])(
     'синхронно обновляет компоненты, ограничивая шаг вне диапазона (%i → %i)',
     (currentStep, expectedStep) => {
-      const { rerender } = render(<RegisterPage currentStep={2} totalSteps={3} />)
+      const { rerender } = render(<RegisterPage currentStep={2} totalSteps={3} />, {
+        wrapper: MemoryRouter,
+      })
 
       rerender(<RegisterPage currentStep={currentStep as RegistrationStep} totalSteps={3} />)
-
       expectSynchronizedStep(expectedStep as 1 | 2 | 3, 3)
     },
   )
@@ -127,7 +134,7 @@ describe('RegisterPage', () => {
   it.each([0, -2, Number.NaN, 2.5])(
     'использует один согласованный шаг, когда общее количество шагов недопустимо (%s)',
     (totalSteps) => {
-      render(<RegisterPage currentStep={3} totalSteps={totalSteps} />)
+      render(<RegisterPage currentStep={3} totalSteps={totalSteps} />, { wrapper: MemoryRouter })
 
       expectSynchronizedStep(1, 1)
     },
