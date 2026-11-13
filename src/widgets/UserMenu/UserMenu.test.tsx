@@ -4,6 +4,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
 import { UserMenu } from './index'
+import notificationHistoryReducer from '@/features/notifications/model/notificationHistorySlice'
 import authReducer, { setAuthUser } from '@/features/auth/model/authSlice'
 import { LOCAL_STORAGE_KEYS, ROUTES } from '@/shared/lib/constants'
 import type { AuthUser } from '@/shared/types'
@@ -26,7 +27,7 @@ const user: AuthUser = {
 
 function renderUserMenu(authUser: AuthUser | null = null) {
   const store = configureStore({
-    reducer: { auth: authReducer },
+    reducer: { auth: authReducer, notificationHistory: notificationHistoryReducer },
     preloadedState: { auth: { user: authUser, profile: null } },
   })
 

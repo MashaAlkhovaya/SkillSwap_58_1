@@ -3,9 +3,10 @@ import type { AuthRedirectState } from '@/shared/lib/authRedirect'
 import { logout, selectAuthUser } from '@/features/auth/model/authSlice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { useTheme } from '@/features/theme-switcher'
-import { Avatar, Dropdown, Button, MoonIcon, BellIcon, HeartIcon, LogoutIcon } from '@/shared/ui'
+import { Avatar, Dropdown, Button, MoonIcon, HeartIcon, LogoutIcon } from '@/shared/ui'
 import { ROUTES } from '@/shared/lib/constants'
 import styles from './UserMenu.module.css'
+import { NotificationDropdown } from './NotificationDropdown'
 
 export function UserMenu() {
   const user = useAppSelector(selectAuthUser)
@@ -37,9 +38,7 @@ export function UserMenu() {
 
         {user && (
           <>
-            <button className={styles.iconBtn} aria-label="Уведомления" type="button">
-              <BellIcon className={styles.icon} />
-            </button>
+            <NotificationDropdown key={user.id} />
             <Link to={ROUTES.FAVORITES} className={styles.iconBtn} aria-label="Избранное">
               <HeartIcon className={styles.icon} />
             </Link>

@@ -3,6 +3,7 @@ import { lazy, Suspense } from 'react'
 import { ROUTES } from '@/shared/lib/constants'
 import { MainLayout } from '../Layouts/MainLayout'
 import { Skeleton } from '@/shared/ui'
+import { NotificationStack } from '@/widgets/NotificationStack'
 import { PrivateRoute } from '@/features/auth/ui/PrivateRoute'
 
 // Lazy-загрузка страниц — каждая страница грузится только при переходе на неё
@@ -44,6 +45,7 @@ export function AppRouter() {
           </Route>
         </Routes>
       </Suspense>
+      <NotificationStack />
     </BrowserRouter>
   )
 }
