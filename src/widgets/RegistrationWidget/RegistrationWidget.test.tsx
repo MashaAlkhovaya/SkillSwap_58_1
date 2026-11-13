@@ -1,8 +1,8 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render, screen, fireEvent, waitFor } from '@testing-library/react'
+import { MemoryRouter } from 'react-router-dom'
 import userEvent from '@testing-library/user-event'
 import '@testing-library/jest-dom/vitest'
-import { MemoryRouter } from 'react-router-dom'
 import { RegistrationWidget } from './RegistrationWidget'
 
 vi.mock('@/features/registration/model/useRegistrationSubmit', () => ({
@@ -29,6 +29,11 @@ describe('RegistrationWidget', () => {
 
       expect(screen.getByLabelText('Email')).toBeInTheDocument()
       expect(screen.getByLabelText('Пароль')).toBeInTheDocument()
+    })
+    it('ссылка «Войти» ведёт на страницу входа', () => {
+      render(<RegistrationWidget step={1} />, { wrapper: MemoryRouter })
+
+      expect(screen.getByRole('link', { name: 'Войти' })).toHaveAttribute('href', '/login')
     })
 
     it('вызывает onNext после заполнения валидных полей шага', async () => {

@@ -1,16 +1,23 @@
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useLocation, useNavigate } from 'react-router-dom'
+import type { AuthRedirectState } from '@/shared/lib/authRedirect'
 import { logout, selectAuthUser } from '@/features/auth/model/authSlice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { useTheme } from '@/features/theme-switcher'
-import { Avatar, Dropdown, Button, MoonIcon, BellIcon, HeartIcon, LogoutIcon } from '@/shared/ui'
+import { Avatar, Dropdown, Button, MoonIcon, HeartIcon, LogoutIcon } from '@/shared/ui'
 import { ROUTES } from '@/shared/lib/constants'
 import styles from './UserMenu.module.css'
+import { NotificationDropdown } from './NotificationDropdown'
 
 export function UserMenu() {
   const user = useAppSelector(selectAuthUser)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const location = useLocation()
   const { theme, toggleTheme } = useTheme()
+
+  const authRedirectState: AuthRedirectState = {
+    from: location.pathname + location.search,
+  }
 
   const handleLogout = async () => {
     await dispatch(logout())
@@ -31,9 +38,7 @@ export function UserMenu() {
 
         {user && (
           <>
-            <button className={styles.iconBtn} aria-label="Уведомления" type="button">
-              <BellIcon className={styles.icon} />
-            </button>
+            <NotificationDropdown key={user.id} />
             <Link to={ROUTES.FAVORITES} className={styles.iconBtn} aria-label="Избранное">
               <HeartIcon className={styles.icon} />
             </Link>
@@ -72,10 +77,18 @@ export function UserMenu() {
         </Dropdown>
       ) : (
         <div className={styles.authButtons}>
-          <Button variant="secondary" size="md" onClick={() => navigate(ROUTES.LOGIN)}>
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={() => navigate(ROUTES.LOGIN, { state: authRedirectState })}
+          >
             Войти
           </Button>
-          <Button variant="primary" size="md" onClick={() => navigate(ROUTES.REGISTER)}>
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => navigate(ROUTES.REGISTER, { state: authRedirectState })}
+          >
             Зарегистрироваться
           </Button>
         </div>

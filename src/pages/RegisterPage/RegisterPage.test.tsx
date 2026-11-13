@@ -54,11 +54,7 @@ const expectSynchronizedStep = (currentStep: 1 | 2 | 3, totalSteps: number) => {
 }
 
 const renderPage = (props: { currentStep: RegistrationStep; totalSteps: number }) =>
-  render(
-    <MemoryRouter>
-      <RegisterPage {...props} />
-    </MemoryRouter>,
-  )
+  render(<RegisterPage {...props} />, { wrapper: MemoryRouter })
 
 describe('RegisterPage', () => {
   it('показывает текущий шаг регистрации и общее количество шагов', () => {
@@ -75,7 +71,9 @@ describe('RegisterPage', () => {
     ] as const
 
     for (const [currentStep, title] of steps) {
-      const { unmount } = render(<RegisterPage currentStep={currentStep} totalSteps={3} />)
+      const { unmount } = render(<RegisterPage currentStep={currentStep} totalSteps={3} />, {
+        wrapper: MemoryRouter,
+      })
 
       expect(screen.getByRole('heading', { name: title })).toBeInTheDocument()
       unmount()
@@ -104,10 +102,9 @@ describe('RegisterPage', () => {
   it.each([1, 2, 3] as const)(
     'синхронно обновляет компоненты при изменении шага на %i в допустимом диапазоне',
     (currentStep) => {
-      const { rerender } = renderPage({ currentStep: 2, totalSteps: 3 })
+      const { rerender } = renderPage({ currentStep: 1, totalSteps: 3 })
 
       rerender(<RegisterPage currentStep={currentStep as RegistrationStep} totalSteps={3} />)
-
       expectSynchronizedStep(currentStep, 3)
     },
   )
@@ -144,7 +141,6 @@ describe('RegisterPage', () => {
       const { rerender } = renderPage({ currentStep: 2, totalSteps: 3 })
 
       rerender(<RegisterPage currentStep={currentStep as RegistrationStep} totalSteps={3} />)
-
       expectSynchronizedStep(expectedStep as 1 | 2 | 3, 3)
     },
   )

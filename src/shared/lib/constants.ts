@@ -14,6 +14,8 @@ export const ROUTES = {
   BLOG: '/blog',
   PRIVACY: '/privacy',
   TERMS: '/terms',
+  NOT_FOUND: '/404',
+  SERVER_ERROR: '/500',
 } as const
 
 export const SKILL_CATEGORIES = [

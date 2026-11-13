@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import clsx from 'clsx'
+import { Link, useLocation } from 'react-router-dom'
 import { Controller } from 'react-hook-form'
 import {
   RegistrationFormProvider,
@@ -91,6 +92,7 @@ function RegistrationWidgetForm({
   onBack,
   className: outerClassName,
 }: RegistrationWidgetProps) {
+  const location = useLocation()
   const className = clsx(styles.widget, {
     [styles['step-1']]: step === 1,
     [styles['step-2']]: step === 2,
@@ -250,9 +252,9 @@ function RegistrationWidgetForm({
 
           <div className={styles.footerLink}>
             Уже есть аккаунт?{' '}
-            <a href="#" className={styles.link}>
+            <Link to={ROUTES.LOGIN} state={location.state} replace className={styles.link}>
               Войти
-            </a>
+            </Link>
           </div>
         </>
       )}
