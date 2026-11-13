@@ -47,8 +47,11 @@ fetch('/api/auth/me')
 `POST /api/auth/register`, `multipart/form-data`:
 
 - `data`: текстовое поле с JSON формы из примера ниже;
-- `images`: необязательное поле, до 5 файлов, каждый отдельной частью с тем же именем поля.
-  Для регистрации без фото передайте только `data`.
+- `images`: необязательное поле, до 5 фотографий навыка, каждый файл отдельной частью с тем же именем;
+- `avatar`: необязательная фотография пользователя, один файл.
+
+Для регистрации без фото передайте только `data`. Аватар можно передать вместе
+с фотографиями навыка или без них, в том же запросе регистрации.
 
 ```json
 {
@@ -87,6 +90,7 @@ const form = new FormData()
 form.append('data', JSON.stringify(data))
 const files = images ?? [] // images: File[] | null | undefined
 files.forEach((file) => form.append('images', file))
+if (avatar) form.append('avatar', avatar) // avatar: File | null
 await fetch('/api/auth/register', { method: 'POST', body: form })
 ```
 
@@ -99,7 +103,8 @@ await fetch('/api/auth/register', { method: 'POST', body: form })
 `Content-Type` вручную не задаётся: браузер добавляет multipart boundary.
 
 Регистрация создаёт пользователя и навык `type: 'teach'`, связывает их через
-`authorId` и `canTeach.id`. Ответ `201`: `{ id, name, email, token }`.
+`authorId` и `canTeach.id`. Ответ `201`: `{ id, name, email, token }`;
+при загрузке аватара ответ также содержит `avatarUrl`.
 Ошибка формы или файлов — `400`, занятая почта — `409`.
 Все ошибки возвращаются как `{ message: string }`.
 
@@ -108,6 +113,11 @@ await fetch('/api/auth/register', { method: 'POST', body: form })
 Выбор изображения для обложки выполняет фронтенд. Ссылки начинаются с
 `/api/uploads/skills/` и доступны как статика, в том числе через Vite-прокси.
 Без загруженных изображений навык сохраняется с `imageUrls: []`.
+Аватар сохраняется в `server/data/uploads/avatars/<userId>/<uuid>.<extension>`,
+как при `PATCH /api/auth/me`; его URL `/api/uploads/avatars/...` записывается
+в `User.avatarUrl` и доступен через профиль и публичные списки пользователей.
+Проверки MIME-типа, сигнатуры и лимит 2 МБ совпадают с PATCH. Без аватара
+`avatarUrl` равен `null`. При последующей замене через PATCH прежний файл удаляется.
 При ошибке сохранения регистрации файлы удаляются, запись навыка откатывается.
 Две JSON-базы не обеспечивают транзакции при аварийном завершении процесса.
 

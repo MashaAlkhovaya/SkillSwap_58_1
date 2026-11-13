@@ -110,7 +110,14 @@
 
 .error {
   margin: 0;
-  color: var(--color-error, #c62828);
+  color: var(--color-error, #ef4444);
+  font-size: 12px;
+  line-height: 16px;
+}
+
+.success {
+  margin: 0;
+  color: var(--color-success, #22c55e);
   font-size: 12px;
   line-height: 16px;
 }
