@@ -107,4 +107,20 @@ describe('CatalogSection', () => {
     expect(screen.getAllByRole('button', { name: 'Подробнее' })).toHaveLength(3)
     expect(screen.queryByRole('button', { name: 'Смотреть все' })).not.toBeInTheDocument()
   })
+
+  it('показывает «Обмен предложен» только у карточки с предложенным навыком', () => {
+    render(
+      <CatalogSection
+        title="Каталог"
+        users={createUsers(3)}
+        favoriteIds={[]}
+        onDetails={() => {}}
+        onFavoriteToggle={() => {}}
+        proposedSkillIds={['skill-2']}
+      />,
+    )
+
+    expect(screen.getByRole('button', { name: 'Обмен предложен' })).toBeDisabled()
+    expect(screen.getAllByRole('button', { name: 'Подробнее' })).toHaveLength(2)
+  })
 })

@@ -14,6 +14,7 @@ interface CatalogSectionProps {
   onDetails: (user: User) => void
   onFavoriteToggle: (user: User) => void
   showExpandButton?: boolean
+  proposedSkillIds?: string[]
 }
 
 export function CatalogSection({
@@ -23,6 +24,7 @@ export function CatalogSection({
   onDetails,
   onFavoriteToggle,
   showExpandButton = true,
+  proposedSkillIds = [],
 }: CatalogSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const headingId = useId()
@@ -59,6 +61,7 @@ export function CatalogSection({
             key={user.id}
             user={user}
             isFavorite={favoriteIds.includes(user.id)}
+            isExchangeProposed={proposedSkillIds.includes(user.canTeach.id)}
             onDetails={() => onDetails(user)}
             onFavoriteToggle={() => onFavoriteToggle(user)}
           />
