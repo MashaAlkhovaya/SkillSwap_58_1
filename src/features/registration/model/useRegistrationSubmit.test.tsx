@@ -33,7 +33,7 @@ const validValues: RegistrationFormValues = {
   email: 'ivan@example.com',
   password: '12345678',
   name: 'Иван',
-  birthDate: '1990-01-01',
+  birthDate: '01.01.1990',
   gender: 'male',
   city: 'Москва',
   wantedCategory: 'music',

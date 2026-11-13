@@ -2,28 +2,31 @@ import { baseApi } from '@/shared/api'
 import type { AuthUser } from '@/shared/types'
 import type { RegistrationFormValues } from '../model/registrationSchema'
 
-const TEXT_FIELDS: Array<Exclude<keyof RegistrationFormValues, 'avatar' | 'teachImage'>> = [
-  'email',
-  'password',
-  'name',
-  'birthDate',
-  'gender',
-  'city',
-  'wantedCategory',
-  'wantedSubCategory',
-  'teachSkillName',
-  'teachCategory',
-  'teachSubCategory',
-  'teachDescription',
-]
-
 export const buildRegistrationFormData = (values: RegistrationFormValues): FormData => {
   const formData = new FormData()
+  const [day, month, year] = values.birthDate.split('.')
 
-  TEXT_FIELDS.forEach((field) => formData.append(field, values[field]))
+  formData.append(
+    'data',
+    JSON.stringify({
+      email: values.email,
+      password: values.password,
+      name: values.name,
+      birthDate: new Date(`${year}-${month}-${day}T00:00:00.000Z`).toISOString(),
+      gender: values.gender,
+      city: values.city,
+      wantsToLearn: [values.wantedSubCategory],
+      canTeach: {
+        title: values.teachSkillName,
+        category: values.teachCategory,
+        subCategory: values.teachSubCategory,
+        description: values.teachDescription,
+      },
+    }),
+  )
 
   if (values.avatar) formData.append('avatar', values.avatar)
-  if (values.teachImage) formData.append('teachImage', values.teachImage)
+  if (values.teachImage) formData.append('images', values.teachImage)
 
   return formData
 }
