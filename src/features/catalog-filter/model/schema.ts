@@ -10,4 +10,5 @@ export const filtersSchema: yup.ObjectSchema<FiltersState> = yup.object({
   skillIds: yup.array().of(yup.mixed<SubCategoryId>().defined()).default([]),
   gender: yup.string<Gender>().nullable().oneOf(['Мужской', 'Женский', null]).default(null),
   cities: yup.array().of(yup.string().defined()).default([]),
+  name: yup.string().nullable().default(null),
 })

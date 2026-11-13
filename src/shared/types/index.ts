@@ -69,4 +69,5 @@ export interface FiltersState {
   gender: Gender | null
   cities: string[]
   skillIds: SubCategoryId[]
+  name: string | null
 }

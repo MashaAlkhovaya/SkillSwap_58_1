@@ -9,6 +9,7 @@ export const getDefaultFilterValues = (): FiltersState => ({
   skillIds: [],
   gender: null,
   cities: [],
+  name: null,
 })
 
 const SET_VALUE_OPTIONS = { shouldValidate: true, shouldDirty: true } as const
