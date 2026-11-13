@@ -8,6 +8,9 @@ import { CatalogSection } from '@/widgets'
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
 import { selectProposedSkillIds } from '@/features/exchange'
+import { generatePath, useNavigate } from 'react-router-dom'
+import { ROUTES } from '@/shared/lib/constants'
+import type { User } from '@/shared/types'
 
 export default function CatalogPage() {
   const {
@@ -23,6 +26,8 @@ export default function CatalogPage() {
   } = useSelector((store: RootState) => store.users)
   const proposedSkillIds = useSelector(selectProposedSkillIds)
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
+  const openSkill = (user: User) => navigate(generatePath(ROUTES.SKILL, { id: user.canTeach.id }))
 
   useEffect(() => {
     dispatch(loadUsers({ page: 1, sort: 'popular' }))
@@ -44,7 +49,7 @@ export default function CatalogPage() {
             isLoadingMore={isPopularLoading}
             onLoadMore={() => dispatch(loadUsers({ page: pages.popular + 1, sort: 'popular' }))}
             favoriteIds={[]}
-            onDetails={() => undefined}
+            onDetails={openSkill}
             onFavoriteToggle={() => undefined}
             proposedSkillIds={proposedSkillIds}
           />
@@ -63,7 +68,7 @@ export default function CatalogPage() {
             isLoadingMore={isNewLoading}
             onLoadMore={() => dispatch(loadUsers({ page: pages.new + 1, sort: 'new' }))}
             favoriteIds={[]}
-            onDetails={() => undefined}
+            onDetails={openSkill}
             onFavoriteToggle={() => undefined}
             proposedSkillIds={proposedSkillIds}
           />
@@ -82,7 +87,7 @@ export default function CatalogPage() {
             isLoadingMore={isRecommendedLoading}
             onLoadMore={() => dispatch(loadUsers({ page: pages.random + 1, sort: 'random' }))}
             favoriteIds={[]}
-            onDetails={() => undefined}
+            onDetails={openSkill}
             onFavoriteToggle={() => undefined}
             proposedSkillIds={proposedSkillIds}
           />
