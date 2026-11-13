@@ -1,0 +1,115 @@
+import { render, screen, waitFor } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
+import { describe, it, expect, vi } from 'vitest'
+import { ActiveFilters } from './ActiveFilters'
+import { FiltersState, FilterMode } from '@/shared/types'
+import { CITIES, MODE_OPTIONS, SKILL_CATEGORIES } from '@/shared/lib/constants'
+
+const INITIAL_FILTERS: FiltersState = {
+  mode: 'all',
+  gender: null,
+  cities: [],
+  skillIds: [],
+}
+
+const REAL_CITY = CITIES[0]
+const REAL_SKILL_ID = SKILL_CATEGORIES[0].subcategories[0].id
+const REAL_SKILL_TITLE = SKILL_CATEGORIES[0].subcategories[0].title
+
+const REAL_MODE_VALUE = MODE_OPTIONS[1].value as FilterMode
+const REAL_MODE_LABEL = MODE_OPTIONS[1].label
+
+const REAL_GENDER = 'Мужской'
+
+describe('ActiveFilters', () => {
+  it('не рендерится, если фильтры пустые', () => {
+    const { container } = render(
+      <ActiveFilters filters={INITIAL_FILTERS} onRemoveFilter={vi.fn()} />,
+    )
+    expect(container).toBeEmptyDOMElement()
+  })
+
+  it('отображает чип для режима', () => {
+    render(
+      <ActiveFilters
+        filters={{ ...INITIAL_FILTERS, mode: REAL_MODE_VALUE }}
+        onRemoveFilter={vi.fn()}
+      />,
+    )
+    expect(screen.getByText(REAL_MODE_LABEL)).toBeInTheDocument()
+  })
+
+  it('отображает чипы для городов из констант', () => {
+    render(
+      <ActiveFilters
+        filters={{ ...INITIAL_FILTERS, cities: [REAL_CITY] }}
+        onRemoveFilter={vi.fn()}
+      />,
+    )
+    expect(screen.getByText(REAL_CITY)).toBeInTheDocument()
+  })
+
+  it('отображает чипы для навыков (по реальному названию из констант)', () => {
+    render(
+      <ActiveFilters
+        filters={{ ...INITIAL_FILTERS, skillIds: [REAL_SKILL_ID] }}
+        onRemoveFilter={vi.fn()}
+      />,
+    )
+    expect(screen.getByText(REAL_SKILL_TITLE)).toBeInTheDocument()
+  })
+
+  it('вызывает onRemoveFilter с правильными аргументами при клике на крестик города', async () => {
+    const user = userEvent.setup()
+    const handleRemove = vi.fn()
+
+    render(
+      <ActiveFilters
+        filters={{ ...INITIAL_FILTERS, cities: [REAL_CITY] }}
+        onRemoveFilter={handleRemove}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: new RegExp(REAL_CITY, 'i') }))
+
+    await waitFor(() => {
+      expect(handleRemove).toHaveBeenCalledWith('cities', REAL_CITY)
+    })
+  })
+
+  it('вызывает onRemoveFilter для режима при клике', async () => {
+    const user = userEvent.setup()
+    const handleRemove = vi.fn()
+
+    render(
+      <ActiveFilters
+        filters={{ ...INITIAL_FILTERS, mode: REAL_MODE_VALUE }}
+        onRemoveFilter={handleRemove}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: new RegExp(REAL_MODE_LABEL, 'i') }))
+
+    await waitFor(() => {
+      expect(handleRemove).toHaveBeenCalledWith('mode', 'all')
+    })
+  })
+
+  it('вызывает onRemoveFilter для пола при клике', async () => {
+    const user = userEvent.setup()
+    const handleRemove = vi.fn()
+
+    render(
+      <ActiveFilters
+        filters={{ ...INITIAL_FILTERS, gender: REAL_GENDER }}
+        onRemoveFilter={handleRemove}
+      />,
+    )
+
+    await user.click(screen.getByRole('button', { name: new RegExp(REAL_GENDER, 'i') }))
+
+    await waitFor(() => {
+      expect(handleRemove).toHaveBeenCalledWith('gender', null)
+    })
+  })
+})
