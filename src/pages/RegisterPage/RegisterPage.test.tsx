@@ -1,7 +1,25 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
+import { MemoryRouter } from 'react-router-dom'
 import RegisterPage, { RegistrationStep } from './index'
 import userEvent from '@testing-library/user-event'
+
+vi.mock('react-router-dom', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('react-router-dom')>()
+  return {
+    ...actual,
+    useNavigate: () => vi.fn(),
+  }
+})
+
+vi.mock('@/features/registration/model/useRegistrationSubmit', () => ({
+  useRegistrationSubmit: () => ({
+    registerUser: vi.fn().mockResolvedValue(true),
+    isSubmitting: false,
+    error: null,
+    clearError: vi.fn(),
+  }),
+}))
 
 const stepTitles = {
   1: 'Добро пожаловать в SkillSwap!',
@@ -35,9 +53,16 @@ const expectSynchronizedStep = (currentStep: 1 | 2 | 3, totalSteps: number) => {
   ).toBeInTheDocument()
 }
 
+const renderPage = (props: { currentStep: RegistrationStep; totalSteps: number }) =>
+  render(
+    <MemoryRouter>
+      <RegisterPage {...props} />
+    </MemoryRouter>,
+  )
+
 describe('RegisterPage', () => {
   it('показывает текущий шаг регистрации и общее количество шагов', () => {
-    render(<RegisterPage currentStep={2} totalSteps={3} />)
+    renderPage({ currentStep: 2, totalSteps: 3 })
 
     expect(screen.getByRole('heading', { name: 'Шаг 2 из 3' })).toBeInTheDocument()
   })
@@ -58,7 +83,7 @@ describe('RegisterPage', () => {
   })
 
   it('отображает индикатор для каждого шага регистрации', () => {
-    render(<RegisterPage currentStep={1} totalSteps={4} />)
+    renderPage({ currentStep: 1, totalSteps: 4 })
 
     const stepper = screen.getByRole('heading', { name: 'Шаг 1 из 4' }).parentElement
     expect(stepper).not.toBeNull()
@@ -71,7 +96,7 @@ describe('RegisterPage', () => {
     [Number.NaN, 1],
     [2.8, 2],
   ])('ограничивает текущий шаг допустимым диапазоном (%i → %i)', (currentStep, expectedStep) => {
-    render(<RegisterPage currentStep={currentStep as RegistrationStep} totalSteps={3} />)
+    renderPage({ currentStep: currentStep as RegistrationStep, totalSteps: 3 })
 
     expectSynchronizedStep(expectedStep as 1 | 2 | 3, 3)
   })
@@ -79,7 +104,7 @@ describe('RegisterPage', () => {
   it.each([1, 2, 3] as const)(
     'синхронно обновляет компоненты при изменении шага на %i в допустимом диапазоне',
     (currentStep) => {
-      const { rerender } = render(<RegisterPage currentStep={1} totalSteps={3} />)
+      const { rerender } = renderPage({ currentStep: 2, totalSteps: 3 })
 
       rerender(<RegisterPage currentStep={currentStep as RegistrationStep} totalSteps={3} />)
 
@@ -88,7 +113,7 @@ describe('RegisterPage', () => {
   )
 
   it('переходит на следующий шаг после валидного заполнения текущего', async () => {
-    render(<RegisterPage currentStep={1} totalSteps={3} />)
+    renderPage({ currentStep: 1, totalSteps: 3 })
 
     const user = userEvent.setup()
 
@@ -99,7 +124,7 @@ describe('RegisterPage', () => {
   })
 
   it('возвращается к предыдущему шагу', () => {
-    render(<RegisterPage currentStep={3} totalSteps={3} />)
+    renderPage({ currentStep: 3, totalSteps: 3 })
 
     fireEvent.click(screen.getByRole('button', { name: 'Назад' }))
     expectSynchronizedStep(2, 3)
@@ -116,7 +141,7 @@ describe('RegisterPage', () => {
   ])(
     'синхронно обновляет компоненты, ограничивая шаг вне диапазона (%i → %i)',
     (currentStep, expectedStep) => {
-      const { rerender } = render(<RegisterPage currentStep={2} totalSteps={3} />)
+      const { rerender } = renderPage({ currentStep: 2, totalSteps: 3 })
 
       rerender(<RegisterPage currentStep={currentStep as RegistrationStep} totalSteps={3} />)
 
@@ -127,7 +152,7 @@ describe('RegisterPage', () => {
   it.each([0, -2, Number.NaN, 2.5])(
     'использует один согласованный шаг, когда общее количество шагов недопустимо (%s)',
     (totalSteps) => {
-      render(<RegisterPage currentStep={3} totalSteps={totalSteps} />)
+      renderPage({ currentStep: 3, totalSteps })
 
       expectSynchronizedStep(1, 1)
     },

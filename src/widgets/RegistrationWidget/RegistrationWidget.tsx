@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect, useMemo } from 'react'
+import { useNavigate } from 'react-router-dom'
 import clsx from 'clsx'
 import { Controller } from 'react-hook-form'
 import {
@@ -6,13 +7,14 @@ import {
   useRegistrationForm,
   type RegistrationFormValues,
 } from '@/features/registration'
-import { ALLOWED_IMAGE_TYPES, CITIES, SKILL_CATEGORIES } from '@/shared/lib/constants'
-import { Button } from '@/shared/ui'
-import { TextInput } from '@/shared/ui'
-import { DateInput } from '@/shared/ui'
-import { FileInput } from '@/shared/ui'
-import { Select } from '@/shared/ui'
-import { AvatarPlaceholderIcon } from '@/shared/ui'
+import { useRegistrationSubmit } from '@/features/registration/model/useRegistrationSubmit'
+import { ALLOWED_IMAGE_TYPES, CITIES, SKILL_CATEGORIES, ROUTES } from '@/shared/lib/constants'
+import { Button, TextInput, DateInput, FileInput, Select, AvatarPlaceholderIcon } from '@/shared/ui'
+import { SkillInfoCard } from '@/widgets/SkillInfoCard'
+import { OfferConfirmationModal } from './OfferConfirmationModal'
+import type { Skill } from '@/shared/types'
+import type { CategoryId, SubCategoryId } from '@/shared/lib/constants'
+
 import styles from './RegistrationWidget.module.css'
 
 interface RegistrationWidgetProps {
@@ -20,7 +22,6 @@ interface RegistrationWidgetProps {
   onNext?: () => void
   onBack?: () => void
   className?: string
-  onSubmit?: (values: RegistrationFormValues) => void
 }
 
 const GoogleIcon = () => (
@@ -76,10 +77,10 @@ const CATEGORY_OPTIONS = SKILL_CATEGORIES.map((category) => ({
   label: category.title,
 }))
 
-export function RegistrationWidget({ onSubmit, ...widgetProps }: RegistrationWidgetProps) {
+export function RegistrationWidget({ ...widgetProps }: RegistrationWidgetProps) {
   return (
     <RegistrationFormProvider>
-      <RegistrationWidgetForm {...widgetProps} onSubmit={onSubmit} />
+      <RegistrationWidgetForm {...widgetProps} />
     </RegistrationFormProvider>
   )
 }
@@ -88,7 +89,6 @@ function RegistrationWidgetForm({
   step,
   onNext,
   onBack,
-  onSubmit,
   className: outerClassName,
 }: RegistrationWidgetProps) {
   const className = clsx(styles.widget, {
@@ -97,7 +97,12 @@ function RegistrationWidgetForm({
     [styles['step-3']]: step === 3,
   })
 
+  const navigate = useNavigate()
   const [isPasswordVisible, setIsPasswordVisible] = useState(false)
+  const [submittedValues, setSubmittedValues] = useState<RegistrationFormValues | null>(null)
+  const [isSuccess, setIsSuccess] = useState(false)
+
+  const { registerUser, isSubmitting, error, clearError } = useRegistrationSubmit()
 
   const form = useRegistrationForm()
   const {
@@ -117,20 +122,62 @@ function RegistrationWidgetForm({
     formState: { errors },
   } = form
 
+  const previewSkill = useMemo<Skill | null>(() => {
+    if (!submittedValues) return null
+    return {
+      id: 'registration-preview',
+      title: submittedValues.teachSkillName,
+      description: submittedValues.teachDescription,
+      type: 'teach',
+      category: submittedValues.teachCategory as CategoryId,
+      subCategory: submittedValues.teachSubCategory as SubCategoryId,
+      tags: [],
+      imageUrls: submittedValues.teachImage
+        ? [URL.createObjectURL(submittedValues.teachImage)]
+        : [],
+      authorId: '',
+      createdAt: new Date().toISOString(),
+    }
+  }, [submittedValues])
+
+  useEffect(() => {
+    return () => {
+      previewSkill?.imageUrls.forEach((url) => URL.revokeObjectURL(url))
+    }
+  }, [previewSkill])
+
   const continueStep = async () => {
     if (step === 3) {
       await handleSubmit((values) => {
-        console.log('Данные формы регистрации:', values)
-        onSubmit?.(values)
+        clearError()
+        setSubmittedValues(values) // валидация прошла — открываем модалку подтверждения
       })()
       return
     }
     await validateAndContinue(step as 1 | 2, onNext)
   }
 
+  // «Готово»: отправка на бекенд; при успехе — сообщение и переход на главную
+  const confirmRegistration = async () => {
+    if (!submittedValues || isSubmitting) return
+    const ok = await registerUser(submittedValues)
+    if (ok) {
+      setSubmittedValues(null)
+      setIsSuccess(true)
+      setTimeout(() => navigate(ROUTES.HOME), 1500)
+    }
+    // при ошибке submittedValues не сбрасываем — модалка остаётся открытой с текстом ошибки
+  }
+
+  // «Редактировать»: закрыть модалку без отправки, вернуться к заполненному шагу 3
+  const closeAndEdit = () => {
+    if (isSubmitting) return
+    setSubmittedValues(null)
+    clearError()
+  }
+
   return (
     <section className={clsx(className, outerClassName)}>
-      {/* --- ШАГ 1 --- */}
       {step === 1 && (
         <>
           <div className={styles.socialBlock}>
@@ -191,13 +238,19 @@ function RegistrationWidgetForm({
             </div>
           </div>
 
-          <Button variant="primary" size="md" className={styles.mainBtn} onClick={continueStep}>
+          <Button
+            variant="primary"
+            size="md"
+            className={styles.mainBtn}
+            onClick={continueStep}
+            disabled={isSubmitting}
+          >
             Далее
           </Button>
 
           <div className={styles.footerLink}>
             Уже есть аккаунт?{' '}
-            <a href="#login" className={styles.link}>
+            <a href="#" className={styles.link}>
               Войти
             </a>
           </div>
@@ -398,14 +451,39 @@ function RegistrationWidgetForm({
       {/* ---------- Навигация ---------- */}
       {step > 1 && (
         <div className={styles.navButtons}>
-          <Button type="button" variant="secondary" size="md" onClick={onBack}>
+          <Button
+            type="button"
+            variant="secondary"
+            size="md"
+            onClick={onBack}
+            disabled={isSubmitting}
+          >
             Назад
           </Button>
-          <Button variant="primary" size="md" type="button" onClick={continueStep}>
+          <Button
+            variant="primary"
+            size="md"
+            type="button"
+            onClick={continueStep}
+            disabled={isSubmitting}
+          >
             Продолжить
           </Button>
         </div>
       )}
+      {/* ---------- Сообщение об успехе ---------- */}
+      {step === 3 && isSuccess && <p className={styles.success}>Регистрация прошла успешно!</p>}
+
+      {/* ---------- Модалка подтверждения ---------- */}
+      <OfferConfirmationModal
+        isOpen={submittedValues !== null}
+        isLoading={isSubmitting}
+        error={error}
+        onClose={closeAndEdit}
+        onConfirm={confirmRegistration}
+      >
+        {previewSkill && <SkillInfoCard skill={previewSkill} />}
+      </OfferConfirmationModal>
     </section>
   )
 }
