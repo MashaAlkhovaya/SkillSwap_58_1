@@ -7,6 +7,7 @@ import { useAppDispatch } from '@/store/hooks'
 import { CatalogSection } from '@/widgets'
 import { useEffect } from 'react'
 import { useSelector } from 'react-redux'
+import { selectProposedSkillIds } from '@/features/exchange'
 
 export default function CatalogPage() {
   const {
@@ -20,6 +21,7 @@ export default function CatalogPage() {
     pages,
     hasMore,
   } = useSelector((store: RootState) => store.users)
+  const proposedSkillIds = useSelector(selectProposedSkillIds)
   const dispatch = useAppDispatch()
 
   useEffect(() => {
@@ -44,6 +46,7 @@ export default function CatalogPage() {
             favoriteIds={[]}
             onDetails={() => undefined}
             onFavoriteToggle={() => undefined}
+            proposedSkillIds={proposedSkillIds}
           />
         )}
       </section>
@@ -62,6 +65,7 @@ export default function CatalogPage() {
             favoriteIds={[]}
             onDetails={() => undefined}
             onFavoriteToggle={() => undefined}
+            proposedSkillIds={proposedSkillIds}
           />
         )}
       </section>
@@ -80,6 +84,7 @@ export default function CatalogPage() {
             favoriteIds={[]}
             onDetails={() => undefined}
             onFavoriteToggle={() => undefined}
+            proposedSkillIds={proposedSkillIds}
           />
         )}
       </section>
