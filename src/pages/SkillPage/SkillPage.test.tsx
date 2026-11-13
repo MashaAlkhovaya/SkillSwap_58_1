@@ -63,6 +63,22 @@ describe('Уведомления об обмене', () => {
     vi.unstubAllGlobals()
   })
 
+  it('сохраняет заявку и показывает модалку «Вы предложили обмен»', async () => {
+    const user = userEvent.setup()
+    renderExchange()
+
+    await screen.findByText('Алиса')
+    expect(store.getState().exchange.proposedSkillIds).not.toContain('drawing')
+    await user.click(screen.getByRole('button', { name: 'Предложить обмен' }))
+
+    expect(screen.getByText('Вы предложили обмен')).toBeInTheDocument()
+    expect(store.getState().exchange.proposedSkillIds).toContain('drawing')
+
+    await user.click(screen.getByRole('button', { name: 'Готово' }))
+
+    expect(screen.queryByText('Вы предложили обмен')).not.toBeInTheDocument()
+  })
+
   it('создаёт плашку и запись из карточки навыка, открывает владельца и очищает только просмотренные', async () => {
     const user = userEvent.setup()
     renderExchange()
