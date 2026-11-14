@@ -51,6 +51,16 @@ export interface SwapRequest {
   updatedAt: string
 }
 
+/** Заявка на обмен вместе с участниками и навыками обеих сторон. */
+export interface SwapRequestDetails extends SwapRequest {
+  fromUser: User
+  toUser: User
+  /** Навык получателя, на который предложен обмен. */
+  skill: Skill
+  /** Навык инициатора, который он предлагает взамен. */
+  offeredSkill: Skill
+}
+
 // ─── Auth ────────────────────────────────────────────────
 export interface AuthUser {
   id: string

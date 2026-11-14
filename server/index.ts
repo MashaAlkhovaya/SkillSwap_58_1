@@ -4,13 +4,14 @@ import { randomUUID } from 'node:crypto'
 import express, { type ErrorRequestHandler, type Request } from 'express'
 import multer from 'multer'
 import { ALLOWED_IMAGE_TYPES, MAX_FILE_SIZE, SKILL_CATEGORIES } from '@/shared/lib/constants'
-import type { AuthUser, Skill, User } from '@/shared/types'
+import type { AuthUser, Skill, SwapRequest, SwapRequestDetails, User } from '@/shared/types'
 import type {
   ApiError,
   AuthResponse,
   ListQuery,
   Paginated,
   StoredUser,
+  SwapRequestListQuery,
   UserListQuery,
 } from './types'
 import {
@@ -18,6 +19,9 @@ import {
   parseLogin,
   parseProfileUpdate,
   parseRegistration,
+  parseSwapRequestCreate,
+  parseSwapRequestFilters,
+  parseSwapRequestUpdate,
   parseUserFilters,
 } from './validation'
 
@@ -28,6 +32,8 @@ const SEED = path.join(__dirname, '..', 'public', 'db')
 type Comparator<T> = (a: T, b: T) => number
 const byId = <T extends { id: string }>(a: T, b: T) => a.id.localeCompare(b.id)
 const byDate = (a: Skill, b: Skill) => (a.createdAt + a.id).localeCompare(b.createdAt + b.id)
+const newestFirst = (a: SwapRequest, b: SwapRequest) =>
+  (b.createdAt + b.id).localeCompare(a.createdAt + a.id)
 
 /** FNV-1a: одинаковые сид и id дают одинаковый порядок. */
 function hash(str: string): number {
@@ -79,19 +85,22 @@ interface AppOptions {
 /** Отдельная база и задержка позволяют проверять API без изменения локальных данных. */
 export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOptions = {}) {
   fs.mkdirSync(dataDir, { recursive: true })
-  for (const name of ['users', 'skills']) {
+  for (const name of ['users', 'skills', 'swap-requests']) {
     const file = path.join(dataDir, `${name}.json`)
     if (!fs.existsSync(file)) fs.copyFileSync(path.join(SEED, `${name}.json`), file)
   }
   // Сиды доверенные: проверка JSON при запуске намеренно не выполняется.
   const users: StoredUser[] = JSON.parse(fs.readFileSync(path.join(dataDir, 'users.json'), 'utf-8'))
   const skills: Skill[] = JSON.parse(fs.readFileSync(path.join(dataDir, 'skills.json'), 'utf-8'))
+  const swapRequests: SwapRequest[] = JSON.parse(
+    fs.readFileSync(path.join(dataDir, 'swap-requests.json'), 'utf-8'),
+  )
   const likesReceived = new Map<string, number>()
   for (const user of users) {
     for (const id of user.likes) likesReceived.set(id, (likesReceived.get(id) || 0) + 1)
   }
   const publicUser = ({ password: _password, ...rest }: StoredUser): User => rest
-  const currentUser = (req: Request): StoredUser => {
+  const currentUser = (req: Pick<Request, 'headers'>): StoredUser => {
     const authorization = req.headers.authorization || ''
     const id = authorization.startsWith('Bearer token-')
       ? authorization.slice('Bearer token-'.length)
@@ -106,7 +115,26 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
     email: user.email,
     token: `token-${user.id}`,
   })
-  const save = (name: 'users' | 'skills', values: StoredUser[] | Skill[]) => {
+  /** Участники и навыки берутся из базы: у каждого пользователя есть навык canTeach. */
+  const swapDetails = (request: SwapRequest): SwapRequestDetails => {
+    const fromUser = users.find((item) => item.id === request.fromUserId) as StoredUser
+    const toUser = users.find((item) => item.id === request.toUserId) as StoredUser
+    return {
+      ...request,
+      fromUser: publicUser(fromUser),
+      toUser: publicUser(toUser),
+      skill: skills.find((item) => item.id === request.skillId) as Skill,
+      offeredSkill: skills.find((item) => item.id === fromUser.canTeach.id) as Skill,
+    }
+  }
+  const findOwnSwapRequest = (id: string, user: StoredUser) =>
+    swapRequests.find(
+      (item) => item.id === id && (item.fromUserId === user.id || item.toUserId === user.id),
+    )
+  const save = (
+    name: 'users' | 'skills' | 'swap-requests',
+    values: StoredUser[] | Skill[] | SwapRequest[],
+  ) => {
     const file = path.join(dataDir, `${name}.json`)
     const temporary = `${file}.tmp`
     try {
@@ -125,7 +153,7 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
 
   const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: MAX_FILE_SIZE, files: 5, fields: 1, fieldSize: 32 * 1024 },
+    limits: { fileSize: MAX_FILE_SIZE, files: 6, fields: 1, fieldSize: 32 * 1024 },
     fileFilter: (_req, file, callback) => {
       if (!ALLOWED_IMAGE_TYPES.some((type) => type === file.mimetype)) {
         callback(new HttpError(400, 'Разрешены только JPEG, PNG и WebP'))
@@ -238,7 +266,10 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
       }
       next()
     },
-    upload.array('images', 5),
+    upload.fields([
+      { name: 'images', maxCount: 5 },
+      { name: 'avatar', maxCount: 1 },
+    ]),
     (req, res) => {
       const body: unknown = req.body
       const raw = body && typeof body === 'object' && 'data' in body ? body.data : undefined
@@ -250,8 +281,11 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
         throw new HttpError(400, 'Некорректный JSON в поле data')
       }
       const data = parseRegistration(parsed)
-      const files = (req.files as Express.Multer.File[] | undefined) ?? []
+      const uploads = req.files as Record<string, Express.Multer.File[]> | undefined
+      const files = uploads?.images ?? []
+      const avatar = uploads?.avatar?.[0]
       const extensions = files.map(imageExtension)
+      const avatarExtension = avatar ? imageExtension(avatar) : undefined
       if (users.some((user) => user.email.trim().toLowerCase() === data.email)) {
         throw new HttpError(409, 'Этот email уже занят')
       }
@@ -260,6 +294,8 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
       const skillId = `skill-${randomUUID()}`
       const createdAt = new Date().toISOString()
       const folder = path.join(dataDir, 'uploads', 'skills', skillId)
+      const avatarFolder = path.join(dataDir, 'uploads', 'avatars', encodeURIComponent(userId))
+      const avatarName = avatarExtension ? `${randomUUID()}${avatarExtension}` : undefined
       const names = extensions.map((extension) => `${randomUUID()}${extension}`)
       const imageUrls = names.map((name) => `/api/uploads/skills/${skillId}/${name}`)
       const skill: Skill = {
@@ -282,7 +318,9 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
         wantsToLearn: data.wantsToLearn,
         canTeach: { id: skillId, category: skill.category, subCategory: skill.subCategory },
         createdAt,
-        avatarUrl: null,
+        avatarUrl: avatarName
+          ? `/api/uploads/avatars/${encodeURIComponent(userId)}/${avatarName}`
+          : null,
         bio: '',
         likes: [],
       }
@@ -291,6 +329,10 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
         files.forEach((file, index) =>
           fs.writeFileSync(path.join(folder, names[index]), file.buffer),
         )
+        if (avatar && avatarName) {
+          fs.mkdirSync(avatarFolder, { recursive: true })
+          fs.writeFileSync(path.join(avatarFolder, avatarName), avatar.buffer)
+        }
         save('skills', [...skills, skill])
         try {
           save('users', [...users, user])
@@ -301,11 +343,15 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
         }
       } catch (error) {
         fs.rmSync(folder, { recursive: true, force: true })
+        fs.rmSync(avatarFolder, { recursive: true, force: true })
         throw error
       }
       skills.push(skill)
       users.push(user)
-      res.status(201).json(authUser(user))
+      res.status(201).json({
+        ...authUser(user),
+        ...(avatarName ? { avatarUrl: user.avatarUrl } : {}),
+      })
     },
   )
   app.post<Record<string, never>, AuthResponse, unknown>('/api/auth/login', (req, res) => {
@@ -412,6 +458,127 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
       res.json(publicUser(updated))
     },
   )
+
+  app.post<Record<string, never>, SwapRequestDetails | ApiError, unknown>(
+    '/api/swap-requests',
+    (req, res) => {
+      const user = currentUser(req)
+      const { skillId } = parseSwapRequestCreate(req.body)
+      const skill = skills.find((item) => item.id === skillId)
+      // Навык приходит в теле, поэтому 400: на 404 фронт уводит на страницу «не найдено».
+      if (!skill) throw new HttpError(400, 'Навык не найден')
+      if (skill.authorId === user.id) {
+        throw new HttpError(400, 'Нельзя предложить обмен на свой навык')
+      }
+      const own = swapRequests.find(
+        (item) => item.fromUserId === user.id && item.skillId === skill.id,
+      )
+      if (own) {
+        throw new HttpError(
+          409,
+          own.status === 'rejected'
+            ? 'Заявка на этот навык отклонена: удалите её, чтобы предложить обмен снова'
+            : own.status === 'accepted'
+              ? 'Обмен на этот навык уже подтверждён'
+              : 'Вы уже предложили обмен на этот навык',
+        )
+      }
+      // Встречная заявка описывает тот же обмен: второй её экземпляр дал бы дубль.
+      const counter = swapRequests.find(
+        (item) =>
+          item.fromUserId === skill.authorId &&
+          item.toUserId === user.id &&
+          item.status !== 'rejected',
+      )
+      if (counter) {
+        throw new HttpError(
+          409,
+          counter.status === 'accepted'
+            ? 'Обмен с этим пользователем уже подтверждён'
+            : 'Пользователь уже предложил вам обмен: ответьте на его заявку',
+        )
+      }
+      const createdAt = new Date().toISOString()
+      const request: SwapRequest = {
+        id: `swap-${randomUUID()}`,
+        skillId: skill.id,
+        fromUserId: user.id,
+        toUserId: skill.authorId,
+        status: 'pending',
+        createdAt,
+        updatedAt: createdAt,
+      }
+      save('swap-requests', [...swapRequests, request])
+      swapRequests.push(request)
+      res.status(201).json(swapDetails(request))
+    },
+  )
+  app.get<
+    Record<string, never>,
+    Paginated<SwapRequestDetails> | ApiError,
+    never,
+    SwapRequestListQuery
+  >('/api/swap-requests', (req, res) => {
+    const user = currentUser(req)
+    const { role, status } = parseSwapRequestFilters(req.query)
+    const list = swapRequests.filter((item) => {
+      const outgoing = item.fromUserId === user.id
+      // Отклонённую заявку видит только инициатор: у получателя она пропадает.
+      const incoming = item.toUserId === user.id && item.status !== 'rejected'
+      const matchesRole =
+        role === 'incoming' ? incoming : role === 'outgoing' ? outgoing : incoming || outgoing
+      return matchesRole && (status === undefined || item.status === status)
+    })
+    const { items, ...meta } = paginate(req.query, list.sort(newestFirst))
+    res.json({ items: items.map(swapDetails), ...meta })
+  })
+  app.patch<{ id: string }, SwapRequestDetails | ApiError, unknown>(
+    '/api/swap-requests/:id',
+    (req, res) => {
+      const user = currentUser(req)
+      const { status } = parseSwapRequestUpdate(req.body)
+      const request = findOwnSwapRequest(req.params.id, user)
+      // Заявки нет, если инициатор её отозвал. 409, а не 404: на 404 фронт уводит на «не найдено».
+      if (!request) throw new HttpError(409, 'Заявка отозвана')
+      if (request.toUserId !== user.id) {
+        throw new HttpError(403, 'Принять или отклонить заявку может только получатель')
+      }
+      // Повторное нажатие той же кнопки возвращает заявку без изменений.
+      if (request.status === status) {
+        res.json(swapDetails(request))
+        return
+      }
+      if (request.status !== 'pending') throw new HttpError(409, 'Заявка уже обработана')
+      const updated = { ...request, status, updatedAt: new Date().toISOString() }
+      save(
+        'swap-requests',
+        swapRequests.map((item) => (item.id === request.id ? updated : item)),
+      )
+      swapRequests[swapRequests.indexOf(request)] = updated
+      res.json(swapDetails(updated))
+    },
+  )
+  app.delete<{ id: string }, ApiError>('/api/swap-requests/:id', (req, res) => {
+    const user = currentUser(req)
+    const request = findOwnSwapRequest(req.params.id, user)
+    // Как у лайков: повторное удаление не ошибка и не уводит фронт на страницу 404.
+    if (!request) {
+      res.status(204).end()
+      return
+    }
+    if (request.fromUserId !== user.id) {
+      throw new HttpError(403, 'Удалить заявку может только её автор')
+    }
+    if (request.status === 'accepted') {
+      throw new HttpError(409, 'Подтверждённый обмен нельзя удалить')
+    }
+    save(
+      'swap-requests',
+      swapRequests.filter((item) => item.id !== request.id),
+    )
+    swapRequests.splice(swapRequests.indexOf(request), 1)
+    res.status(204).end()
+  })
   app.use((req: Request, res: express.Response<ApiError>) => {
     res.status(404).json({ message: `Ручки ${req.method} ${req.path} нет` })
   })
@@ -431,7 +598,7 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
           ? 'Размер изображения превышает 2 МБ'
           : req.method === 'PATCH' && req.path === '/api/auth/me'
             ? 'Допустимы поле data и один файл avatar'
-            : 'Допустимы поле data и до 5 файлов images'
+            : 'Допустимы поле data, до 5 файлов images и один файл avatar'
       res.status(400).json({ message })
       return
     }
