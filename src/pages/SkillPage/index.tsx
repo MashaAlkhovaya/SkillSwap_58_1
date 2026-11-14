@@ -1,4 +1,5 @@
 import { useNavigate, useParams } from 'react-router-dom'
+import { useState } from 'react'
 import { skipToken } from '@reduxjs/toolkit/query'
 import { useGetSkillByIdQuery } from '@/entities/skill/model/api/skillApi'
 import { useGetUserByIdQuery } from '@/entities/user/model/api/userApi'
@@ -8,12 +9,14 @@ import { ROUTES } from '@/shared/lib/constants'
 import { Avatar, Button, Card } from '@/shared/ui'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { SkillInfoCard } from '@/widgets/SkillInfoCard'
+import { ExchangeModal, proposeExchange } from '@/features/exchange'
 import styles from './SkillPage.module.css'
 
 export const SkillPage = () => {
   const { id } = useParams<{ id: string }>()
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
+  const [isModalOpen, setIsModalOpen] = useState(false)
   const user = useAppSelector(selectAuthUser)
   const offeredSkillIds = useAppSelector(selectOfferedSkillIds)
   const { currentData: skill, isFetching, isError } = useGetSkillByIdQuery(id ?? skipToken)
@@ -45,6 +48,8 @@ export const SkillPage = () => {
         exchangeSkillId: skill.id,
       }),
     )
+    dispatch(proposeExchange(skill.id))
+    setIsModalOpen(true)
   }
 
   return (
@@ -71,6 +76,7 @@ export const SkillPage = () => {
           )
         }
       />
+      <ExchangeModal isOpen={isModalOpen} onClose={() => setIsModalOpen(false)} />
     </div>
   )
 }

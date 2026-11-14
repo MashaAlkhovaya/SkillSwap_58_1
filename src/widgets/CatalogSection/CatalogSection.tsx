@@ -16,6 +16,7 @@ interface CatalogSectionProps {
   onDetails: (user: User) => void
   onFavoriteToggle: (user: User) => void
   showExpandButton?: boolean
+  proposedSkillIds?: string[]
   hasMore?: boolean
   isLoadingMore?: boolean
   onLoadMore?: () => void
@@ -28,6 +29,7 @@ export function CatalogSection({
   onDetails,
   onFavoriteToggle,
   showExpandButton = true,
+  proposedSkillIds = [],
   hasMore = false,
   isLoadingMore = false,
   onLoadMore,
@@ -72,6 +74,7 @@ export function CatalogSection({
             key={user.id}
             user={user}
             isFavorite={favoriteIds.includes(user.id)}
+            isExchangeProposed={proposedSkillIds.includes(user.canTeach.id)}
             onDetails={() => onDetails(user)}
             onFavoriteToggle={() => onFavoriteToggle(user)}
           />

@@ -35,6 +35,7 @@ export {
   UserCircleIcon,
   UserIcon,
   LogoutIcon,
+  ClockIcon,
 } from './icons'
 export type { BellIconProps, HeartIconProps, IconProps } from './icons'
 export { Stepper } from './Stepper'
