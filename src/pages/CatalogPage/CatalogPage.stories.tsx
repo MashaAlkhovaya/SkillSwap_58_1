@@ -27,8 +27,14 @@ const createUsers = (prefix: string, count: number): User[] =>
   }))
 
 const usersState = {
+  favoriteUsers: [],
   pages: { popular: 1, new: 1, random: 1 },
   hasMore: { popular: false, new: false, random: false },
+  isFavoritesLoading: false,
+  favoritesPage: 0,
+  favoritesHasMore: false,
+  favoritesError: null,
+  favoritesIdsKey: '',
   isExpanded: false,
 }
 
