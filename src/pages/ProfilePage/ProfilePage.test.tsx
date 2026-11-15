@@ -5,6 +5,7 @@ import { act, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import authReducer from '@/features/auth/model/authSlice'
+import notificationsReducer from '@/features/notifications/model/notificationsSlice'
 import type { AuthUser } from '@/shared/types'
 import { baseApi } from '@/shared/api'
 import { LOCAL_STORAGE_KEYS } from '@/shared/lib/constants'
@@ -36,6 +37,7 @@ function renderPage() {
   const store = configureStore({
     reducer: {
       auth: authReducer,
+      notifications: notificationsReducer,
       [baseApi.reducerPath]: baseApi.reducer,
     },
     preloadedState: {
@@ -120,6 +122,9 @@ describe('ProfilePage', () => {
       email: 'anna@example.com',
       token: 'token-user-01',
     })
+    expect(store.getState().notifications.items).toEqual([
+      expect.objectContaining({ type: 'success', message: 'Профиль сохранён' }),
+    ])
   })
 
   it('показывает ошибку API и не меняет сессию', async () => {
@@ -139,6 +144,9 @@ describe('ProfilePage', () => {
     await user.click(screen.getByRole('button', { name: 'Сохранить' }))
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Этот email уже занят')
+    expect(store.getState().notifications.items).toEqual([
+      expect.objectContaining({ type: 'error', message: 'Этот email уже занят' }),
+    ])
     expect(store.getState().auth.user).toEqual(authUser)
     expect(localStorage.getItem(LOCAL_STORAGE_KEYS.AUTH_USER)).toBe(JSON.stringify(authUser))
   })

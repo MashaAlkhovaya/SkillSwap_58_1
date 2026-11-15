@@ -3,6 +3,7 @@ import { authApi, useGetAuthMeQuery, useUpdateProfileMutation } from '@/features
 import { getAuthUser, saveServerAuthUser } from '@/features/auth/model/authUtils'
 import { selectAuthUser, setAuthUser } from '@/features/auth/model/authSlice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { useNotify } from '@/features/notifications'
 import { ProfileForm, type ProfileFormValues } from '@/widgets/ProfileForm'
 import { ProfileSidebar } from '@/widgets/ProfileSidebar'
 import { apiErrorMessage, nextAuthUser, toProfileDefaults } from './profileUser'
@@ -15,6 +16,7 @@ export default function ProfilePage() {
   const { data: profile, isError, error: loadError } = useGetAuthMeQuery()
   const [updateProfile, { isLoading: isUpdating }] = useUpdateProfileMutation()
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const notify = useNotify()
 
   const handleSubmit = async (values: ProfileFormValues) => {
     const result = toProfileUpdate(values)
@@ -32,8 +34,11 @@ export default function ProfilePage() {
         saveServerAuthUser(next)
         dispatch(setAuthUser(next))
       }
+      notify.success('Профиль сохранён')
     } catch (error) {
-      setSubmitError(apiErrorMessage(error))
+      const message = apiErrorMessage(error)
+      setSubmitError(message)
+      notify.error(message)
     }
   }
 
