@@ -68,6 +68,7 @@ describe('useCatalogFilters', () => {
         gender: 'Женский',
         cities: [newCity],
         skillIds: [newSkill],
+        name: '',
       })
     })
 
