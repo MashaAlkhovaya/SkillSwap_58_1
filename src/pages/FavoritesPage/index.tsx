@@ -2,7 +2,6 @@ import { useGetAuthMeQuery } from '@/features/auth/api/authApi'
 import { clearFavoriteUsers, loadFavoriteUsers } from '@/entities/user/model/usersSlice'
 import type { RootState } from '@/store'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { selectProposedSkillIds } from '@/features/exchange'
 import { ROUTES } from '@/shared/lib/constants'
 import { Button, Card, Skeleton } from '@/shared/ui'
 import type { User } from '@/shared/types'
@@ -17,7 +16,6 @@ export default function FavoritesPage() {
   const navigate = useNavigate()
   const openSkill = (user: User) => navigate(generatePath(ROUTES.SKILL, { id: user.canTeach.id }))
   const dispatch = useAppDispatch()
-  const proposedSkillIds = useAppSelector(selectProposedSkillIds)
   const { favoriteUsers, isFavoritesLoading, favoritesError, favoritesPage, favoritesHasMore } =
     useAppSelector((state: RootState) => state.users)
   const { data: currentUser, error: profileError } = useGetAuthMeQuery()
@@ -47,11 +45,7 @@ export default function FavoritesPage() {
       ) : errorMessage ? (
         <ErrorWidget type={500} />
       ) : favoriteUsers.length === 0 ? (
-        <Link
-          to={ROUTES.HOME}
-          // className={clsx(styles.item, isActive && styles.itemActive)}
-          // aria-current={isActive ? 'page' : undefined}
-        >
+        <Link to={ROUTES.HOME}>
           <Button>Вернуться в каталог</Button>
         </Link>
       ) : (
@@ -64,7 +58,6 @@ export default function FavoritesPage() {
           favoriteIds={likedUserIds}
           onDetails={openSkill}
           onFavoriteToggle={() => undefined}
-          proposedSkillIds={proposedSkillIds}
         />
       )}
     </main>
