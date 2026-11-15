@@ -4,11 +4,12 @@ import type { RootState } from '@/store'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { selectProposedSkillIds } from '@/features/exchange'
 import { ROUTES } from '@/shared/lib/constants'
-import { Card, Skeleton } from '@/shared/ui'
+import { Button, Card, Skeleton } from '@/shared/ui'
 import type { User } from '@/shared/types'
 import { CatalogSection } from '@/widgets'
 import { useCallback, useEffect } from 'react'
-import { generatePath, useNavigate } from 'react-router-dom'
+import { generatePath, Link, useNavigate } from 'react-router-dom'
+import { ErrorWidget } from '@/widgets/ErrorWidget'
 
 const EMPTY_IDS: string[] = []
 
@@ -44,9 +45,15 @@ export default function FavoritesPage() {
       {!currentUser && !profileError ? null : isFavoritesLoading && favoriteUsers.length === 0 ? (
         <CatalogPreloader />
       ) : errorMessage ? (
-        <h2>Ошибка: {errorMessage}</h2>
+        <ErrorWidget type={500} />
       ) : favoriteUsers.length === 0 ? (
-        <p>В избранном пока нет пользователей</p>
+        <Link
+          to={ROUTES.HOME}
+          // className={clsx(styles.item, isActive && styles.itemActive)}
+          // aria-current={isActive ? 'page' : undefined}
+        >
+          <Button>Вернуться в каталог</Button>
+        </Link>
       ) : (
         <CatalogSection
           title="Избранное"
