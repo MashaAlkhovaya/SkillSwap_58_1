@@ -175,12 +175,8 @@ describe('useRegistrationSubmit', () => {
     expect(result.current.error).toBe('Email уже зарегистрирован')
   })
 
-  it('5xx: показывает запасное сообщение', async () => {
-    server.use(
-      http.post(REGISTER_URL, () =>
-        HttpResponse.json({ message: 'Internal Server Error' }, { status: 500 }),
-      ),
-    )
+  it('5xx без message: показывает запасное сообщение', async () => {
+    server.use(http.post(REGISTER_URL, () => HttpResponse.json({}, { status: 500 })))
 
     const { result } = renderHook(() => useRegistrationSubmit(), {
       wrapper: createWrapper(),

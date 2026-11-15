@@ -1,11 +1,11 @@
 import { Button, ClockIcon } from '@/shared/ui'
-
 interface ExchangeButtonProps {
   isProposed: boolean
+  isLoading?: boolean
   onClick: () => void
 }
 
-export function ExchangeButton({ isProposed, onClick }: ExchangeButtonProps) {
+export function ExchangeButton({ isProposed, isLoading = false, onClick }: ExchangeButtonProps) {
   if (isProposed) {
     return (
       <Button variant="secondary" icon={<ClockIcon />} disabled>
@@ -15,7 +15,7 @@ export function ExchangeButton({ isProposed, onClick }: ExchangeButtonProps) {
   }
 
   return (
-    <Button variant="primary" onClick={onClick}>
+    <Button variant="primary" onClick={onClick} disabled={isLoading} aria-busy={isLoading}>
       Предложить обмен
     </Button>
   )

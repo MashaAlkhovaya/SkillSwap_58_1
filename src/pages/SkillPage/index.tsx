@@ -4,12 +4,12 @@ import { skipToken } from '@reduxjs/toolkit/query'
 import { useGetSkillByIdQuery } from '@/entities/skill/model/api/skillApi'
 import { useGetUserByIdQuery } from '@/entities/user/model/api/userApi'
 import { selectAuthUser } from '@/features/auth/model/authSlice'
-import { addNotification, selectOfferedSkillIds } from '@/features/notifications'
+import { addNotification } from '@/features/notifications'
 import { ROUTES } from '@/shared/lib/constants'
-import { Avatar, Button, Card } from '@/shared/ui'
+import { Avatar, Card } from '@/shared/ui'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { SkillInfoCard } from '@/widgets/SkillInfoCard'
-import { ExchangeModal, proposeExchange } from '@/features/exchange'
+import { ExchangeModal, ExchangeButton, useSkillExchange } from '@/features/exchange'
 import styles from './SkillPage.module.css'
 
 export const SkillPage = () => {
@@ -18,26 +18,33 @@ export const SkillPage = () => {
   const dispatch = useAppDispatch()
   const [isModalOpen, setIsModalOpen] = useState(false)
   const user = useAppSelector(selectAuthUser)
-  const offeredSkillIds = useAppSelector(selectOfferedSkillIds)
   const { currentData: skill, isFetching, isError } = useGetSkillByIdQuery(id ?? skipToken)
   const { currentData: owner, isError: ownerError } = useGetUserByIdQuery(
     skill?.authorId ?? skipToken,
   )
 
+  const { isProposed, isLoading, error: exchangeError, propose } = useSkillExchange(skill?.id)
+
   if (isFetching && !skill) return <div>Загрузка...</div>
   if (isError || !skill) return <div>Ошибка загрузки навыка</div>
 
-  const exchangeOffered = offeredSkillIds.includes(skill.id)
+  const isGuest = !user
+  const isOwnSkill = skill.authorId === user?.id
 
-  function offerExchange() {
-    if (!skill || exchangeOffered) return
+  async function offerExchange() {
+    if (!skill) return
 
-    if (!user) {
+    if (isGuest) {
       navigate(ROUTES.LOGIN, { state: { returnToSkillId: skill.id } })
       return
     }
 
-    if (!owner || owner.id === user.id) return
+    if (isProposed || isLoading) return
+    if (!owner || owner.id === user?.id) return
+
+    const isCreated = await propose()
+    // Ошибка 400/409: текст сервера уже в exchangeError, кнопка не меняется
+    if (!isCreated) return
 
     dispatch(
       addNotification({
@@ -48,7 +55,6 @@ export const SkillPage = () => {
         exchangeSkillId: skill.id,
       }),
     )
-    dispatch(proposeExchange(skill.id))
     setIsModalOpen(true)
   }
 
@@ -66,11 +72,14 @@ export const SkillPage = () => {
       <SkillInfoCard
         skill={skill}
         controls={
-          skill.authorId !== user?.id && (
+          !isOwnSkill && (
             <>
-              <Button disabled={exchangeOffered || (!!user && !owner)} onClick={offerExchange}>
-                {exchangeOffered ? 'Обмен предложен' : 'Предложить обмен'}
-              </Button>
+              <ExchangeButton
+                isProposed={isProposed}
+                isLoading={isLoading}
+                onClick={offerExchange}
+              />
+              {exchangeError && <p role="alert">{exchangeError}</p>}
               {user && ownerError && <p role="alert">Не удалось загрузить владельца навыка</p>}
             </>
           )
