@@ -5,6 +5,7 @@ import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
 import { UserMenu } from './index'
 import notificationHistoryReducer from '@/features/notifications/model/notificationHistorySlice'
+import notificationsReducer from '@/features/notifications/model/notificationsSlice'
 import authReducer, { setAuthUser } from '@/features/auth/model/authSlice'
 import { LOCAL_STORAGE_KEYS, ROUTES } from '@/shared/lib/constants'
 import type { AuthUser } from '@/shared/types'
@@ -27,7 +28,11 @@ const user: AuthUser = {
 
 function renderUserMenu(authUser: AuthUser | null = null) {
   const store = configureStore({
-    reducer: { auth: authReducer, notificationHistory: notificationHistoryReducer },
+    reducer: {
+      auth: authReducer,
+      notifications: notificationsReducer,
+      notificationHistory: notificationHistoryReducer,
+    },
     preloadedState: { auth: { user: authUser, profile: null } },
   })
 
@@ -86,6 +91,9 @@ describe('UserMenu', () => {
     expect(store.getState().auth.user).toBeNull()
     expect(localStorage.getItem(LOCAL_STORAGE_KEYS.AUTH_USER)).toBeNull()
     expect(screen.getByText('Войти')).toBeInTheDocument()
+    expect(store.getState().notifications.items).toEqual([
+      expect.objectContaining({ type: 'success', message: 'Выход выполнен' }),
+    ])
   })
 
   it('переключает тему по клику на луну', () => {
