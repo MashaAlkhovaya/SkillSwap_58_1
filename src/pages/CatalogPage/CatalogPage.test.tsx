@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { User } from '@/shared/types'
 import CatalogPage from './index'
@@ -62,7 +63,7 @@ const defaultUsersState: UsersState = {
   errors: {},
 }
 
-function renderCatalogPage(usersState: UsersState = defaultUsersState) {
+function renderCatalogPage(usersState: UsersState = defaultUsersState, initialEntry = '/') {
   const store = configureStore({
     reducer: { users: (state = usersState) => state },
   })
@@ -71,7 +72,9 @@ function renderCatalogPage(usersState: UsersState = defaultUsersState) {
     store,
     ...render(
       <Provider store={store}>
-        <CatalogPage />
+        <MemoryRouter initialEntries={[initialEntry]}>
+          <CatalogPage />
+        </MemoryRouter>
       </Provider>,
     ),
   }
@@ -174,5 +177,52 @@ describe('CatalogPage', () => {
     await user.click(within(popularSection).getByRole('button', { name: 'Смотреть все' }))
 
     expect(loadUsersMock).toHaveBeenCalledWith({ page: 3, sort: 'popular' })
+  })
+
+  it('передаёт name из URL при загрузке следующих страниц', async () => {
+    const user = userEvent.setup()
+    const users = createUsers(4)
+
+    class MockIntersectionObserver {
+      readonly root = null
+      readonly rootMargin = ''
+      readonly scrollMargin = ''
+      readonly thresholds = []
+
+      constructor(private callback: IntersectionObserverCallback) {}
+
+      observe(target: Element) {
+        this.callback(
+          [{ isIntersecting: true, target } as IntersectionObserverEntry],
+          this as unknown as IntersectionObserver,
+        )
+      }
+
+      unobserve() {}
+      disconnect() {}
+      takeRecords() {
+        return []
+      }
+    }
+
+    vi.stubGlobal('IntersectionObserver', MockIntersectionObserver)
+
+    renderCatalogPage(
+      {
+        ...defaultUsersState,
+        popularUsers: users,
+        pages: { popular: 2, new: 0, random: 0 },
+      },
+      '/?name=Музыка%20и%20звук',
+    )
+
+    const popularSection = screen.getByRole('region', { name: 'Популярное' })
+    await user.click(within(popularSection).getByRole('button', { name: 'Смотреть все' }))
+
+    expect(loadUsersMock).toHaveBeenCalledWith({
+      page: 3,
+      sort: 'popular',
+      name: 'Музыка и звук',
+    })
   })
 })

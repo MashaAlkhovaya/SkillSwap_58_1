@@ -1,34 +1,31 @@
 import { act, fireEvent, render, screen } from '@testing-library/react'
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { MemoryRouter, useLocation } from 'react-router-dom'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { SkillSearcher } from './SkillSearcher'
 
-const { dispatchMock, loadUsersMock } = vi.hoisted(() => ({
-  dispatchMock: vi.fn(),
-  loadUsersMock: vi.fn((payload: unknown) => ({ type: 'users/load', payload })),
-}))
+function LocationOutput() {
+  const location = useLocation()
+  return <output data-testid="search">{location.search}</output>
+}
 
-vi.mock('@/store/hooks', () => ({
-  useAppDispatch: () => dispatchMock,
-}))
-
-vi.mock('@/entities/user/model/usersSlice', () => ({
-  loadUsers: loadUsersMock,
-}))
+function renderSearcher(initialEntry = '/') {
+  return render(
+    <MemoryRouter initialEntries={[initialEntry]}>
+      <SkillSearcher />
+      <LocationOutput />
+    </MemoryRouter>,
+  )
+}
 
 describe('SkillSearcher', () => {
-  beforeEach(() => {
-    vi.useFakeTimers()
-    dispatchMock.mockClear()
-    loadUsersMock.mockClear()
-  })
-
   afterEach(() => {
-    vi.runOnlyPendingTimers()
     vi.useRealTimers()
   })
 
-  it('откладывает поиск до истечения debounce и передаёт строку в name', async () => {
-    render(<SkillSearcher />)
+  it('откладывает ввод параметра и записывает строку без начальных и конечных пробелов в параметр name', async () => {
+    vi.useFakeTimers()
+    renderSearcher()
+
     fireEvent.change(screen.getByPlaceholderText('Искать навык'), {
       target: { value: '  Музыка и звук  ' },
     })
@@ -36,26 +33,23 @@ describe('SkillSearcher', () => {
     await act(async () => {
       await vi.advanceTimersByTimeAsync(999)
     })
-    expect(dispatchMock).not.toHaveBeenCalled()
+    expect(screen.getByTestId('search').textContent).toBe('')
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(1)
     })
 
-    expect(loadUsersMock).toHaveBeenCalledWith({
-      page: 1,
-      sort: 'popular',
-      type: 'all',
-      name: 'Музыка и звук',
-    })
-    expect(dispatchMock).toHaveBeenCalledWith(loadUsersMock.mock.results[0].value)
+    expect(new URLSearchParams(screen.getByTestId('search').textContent ?? '').get('name')).toBe(
+      'Музыка и звук',
+    )
   })
 
-  it('ищет только по последнему значению, если ввод меняется в течение debounce', async () => {
-    render(<SkillSearcher />)
+  it('записывает только последнее значение, если ввод меняется во время debounce', async () => {
+    vi.useFakeTimers()
+    renderSearcher()
     const input = screen.getByPlaceholderText('Искать навык')
-    fireEvent.change(input, { target: { value: 'муз' } })
 
+    fireEvent.change(input, { target: { value: 'муз' } })
     await act(async () => {
       await vi.advanceTimersByTimeAsync(500)
     })
@@ -65,46 +59,25 @@ describe('SkillSearcher', () => {
       await vi.advanceTimersByTimeAsync(1000)
     })
 
-    expect(loadUsersMock).toHaveBeenCalledTimes(1)
-    expect(loadUsersMock).toHaveBeenCalledWith({
-      page: 1,
-      sort: 'popular',
-      type: 'all',
-      name: 'музыка',
-    })
+    expect(new URLSearchParams(screen.getByTestId('search').textContent ?? '').get('name')).toBe(
+      'музыка',
+    )
   })
 
-  it('при очистке поля сбрасывает поиск запросом без name', async () => {
-    render(<SkillSearcher />)
+  it('инициализирует поле из URL и удаляет name из URL при очистке', async () => {
+    vi.useFakeTimers()
+    renderSearcher('/?name=Гитара')
     const input = screen.getByPlaceholderText('Искать навык') as HTMLInputElement
 
-    fireEvent.change(input, { target: { value: 'Гитара' } })
     expect(input.value).toBe('Гитара')
-
-    await act(async () => {
-      await vi.advanceTimersByTimeAsync(1000)
-    })
-
-    expect(loadUsersMock).toHaveBeenLastCalledWith({
-      page: 1,
-      sort: 'popular',
-      type: 'all',
-      name: 'Гитара',
-    })
-
     fireEvent.change(input, { target: { value: '' } })
-    expect(input.value).toBe('')
 
     await act(async () => {
       await vi.advanceTimersByTimeAsync(1000)
     })
 
-    expect(loadUsersMock).toHaveBeenLastCalledWith({
-      page: 1,
-      sort: 'popular',
-      type: 'all',
-      name: '',
-    })
-    expect(dispatchMock).toHaveBeenCalledTimes(2)
+    expect(new URLSearchParams(screen.getByTestId('search').textContent ?? '').has('name')).toBe(
+      false,
+    )
   })
 })
