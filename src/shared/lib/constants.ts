@@ -129,6 +129,7 @@ export const INITIAL_FILTERS_STATE: FiltersState = {
   gender: null,
   cities: [],
   skillIds: [],
+  name: null,
 }
 
 export const MODE_OPTIONS = [

@@ -3,7 +3,7 @@ import styles from './SkillSearcher.module.css'
 import { useDebounce } from '@/shared/hooks/useDebounce'
 import { loadUsers } from '@/entities/user/model/usersSlice'
 import { useAppDispatch } from '@/store/hooks'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FiltersState } from '@/shared/types'
 import { INITIAL_FILTERS_STATE } from '@/shared/lib/constants'
 
@@ -11,12 +11,16 @@ export function SkillSearcher() {
   const [filters, setFilters] = useState<FiltersState>(INITIAL_FILTERS_STATE)
   const debouncedName = useDebounce(filters.name ?? '', 1000)
   const dispatch = useAppDispatch()
+  const previousDebouncedName = useRef('')
 
   useEffect(() => {
     if (debouncedName.trim()) {
       dispatch(loadUsers({ page: 1, sort: 'popular', type: 'all', name: debouncedName.trim() })) //пока нет отдельного типа поиска для подходящих предложений, использую "popular"
-      return
+    } else if (previousDebouncedName.current.trim()) {
+      dispatch(loadUsers({ page: 1, sort: 'popular', type: 'all', name: '' }))
     }
+
+    previousDebouncedName.current = debouncedName
   }, [debouncedName, dispatch])
 
   return (
