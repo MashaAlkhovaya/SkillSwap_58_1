@@ -17,6 +17,7 @@ interface UsersState {
   favoritesHasMore: boolean
   favoritesError: string | null
   favoritesIdsKey: string
+  favoritesRequestId?: string | null
   errors: Partial<Record<UserSort, string>>
   isExpanded: boolean
 }
@@ -38,6 +39,7 @@ const initialState: UsersState = {
   favoritesHasMore: false,
   favoritesError: null,
   favoritesIdsKey: '',
+  favoritesRequestId: null,
   errors: {},
   isExpanded: false,
 }
@@ -91,6 +93,7 @@ export const usersSlice = createSlice({
       state.favoritesHasMore = false
       state.favoritesError = null
       state.favoritesIdsKey = ''
+      state.favoritesRequestId = null
     },
   },
   selectors: {
@@ -142,17 +145,32 @@ export const usersSlice = createSlice({
         state.isFavoritesLoading = true
         state.favoritesError = null
         state.favoritesIdsKey = action.meta.arg.ids.join('\u0000')
+        state.favoritesRequestId = action.meta.requestId
       })
       .addCase(loadFavoriteUsers.fulfilled, (state, action) => {
+        if (
+          state.favoritesRequestId !== action.meta.requestId ||
+          state.favoritesIdsKey !== action.meta.arg.ids.join('\u0000')
+        ) {
+          return
+        }
         const { users, hasMore, page } = action.payload
         state.favoriteUsers = page === 1 ? users : [...state.favoriteUsers, ...users]
         state.favoritesPage = page
         state.favoritesHasMore = hasMore
         state.isFavoritesLoading = false
+        state.favoritesRequestId = null
       })
       .addCase(loadFavoriteUsers.rejected, (state, action) => {
+        if (
+          state.favoritesRequestId !== action.meta.requestId ||
+          state.favoritesIdsKey !== action.meta.arg.ids.join('\u0000')
+        ) {
+          return
+        }
         state.isFavoritesLoading = false
         state.favoritesError = action.error.message || 'Ошибка загрузки избранных пользователей'
+        state.favoritesRequestId = null
       })
   },
 })
