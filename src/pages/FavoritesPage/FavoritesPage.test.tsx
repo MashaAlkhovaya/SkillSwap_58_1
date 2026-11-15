@@ -59,11 +59,11 @@ const createUser = (id: string): User => ({
   wantsToLearn: ['acting'],
 })
 
-function renderFavoritesPage() {
+function renderFavoritesPage(initialEntry = '/') {
   const store = configureStore({ reducer: { users: usersReducer, auth: authReducer } })
   const view = render(
     <Provider store={store}>
-      <MemoryRouter>
+      <MemoryRouter initialEntries={[initialEntry]}>
         <FavoritesPage />
       </MemoryRouter>
     </Provider>,
@@ -89,6 +89,23 @@ describe('FavoritesPage', () => {
     await waitFor(() => {
       expect(fetchUsersByIdsMock).toHaveBeenCalledWith(['user-02', 'user-03'], 1, 12)
     })
+  })
+
+  it('передаёт поисковый запрос в выборку избранного и сохраняет фильтр при загрузке следующей страницы', async () => {
+    const user = userEvent.setup()
+    queryMock.mockReturnValue({ data: { ...createUser('current'), likes: ['user-02'] } } as never)
+    fetchUsersByIdsMock
+      .mockResolvedValueOnce({ users: [createUser('user-02')], hasMore: true })
+      .mockResolvedValueOnce({ users: [createUser('user-03')], hasMore: false })
+
+    renderFavoritesPage('/?name=%20%D0%93%D0%B8%D1%82%D0%B0%D1%80%D0%B0%20')
+
+    await screen.findByText('Пользователь user-02')
+    expect(fetchUsersByIdsMock).toHaveBeenNthCalledWith(1, ['user-02'], 1, 12, 'Гитара')
+    await user.click(screen.getByRole('button', { name: 'Загрузить ещё' }))
+
+    expect(await screen.findByText('Пользователь user-03')).toBeVisible()
+    expect(fetchUsersByIdsMock).toHaveBeenNthCalledWith(2, ['user-02'], 2, 12, 'Гитара')
   })
 
   it('показывает пустое состояние и не делает запрос каталога при пустом likes', async () => {
