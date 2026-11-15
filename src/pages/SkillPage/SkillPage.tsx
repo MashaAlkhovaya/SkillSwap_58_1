@@ -1,10 +1,10 @@
-import type { User } from '@/shared/types'
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { fetchSkillById } from '@/api/skills'
 import type { Skill } from '@/shared/types'
 import { SkillInfoCard } from '@/widgets/SkillInfoCard'
 import { SimilarSkills } from '@/widgets/SimilarSkills'
+import { useSimilarSkills } from '@/entities/skill/model/useSimilarSkills'
 import styles from './SkillPage.module.css'
 
 export const SkillPage = () => {
@@ -12,8 +12,8 @@ export const SkillPage = () => {
   const navigate = useNavigate()
 
   const [skill, setSkill] = useState<Skill | null>(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [isError, setIsError] = useState(false)
+  const [isLoading, setIsLoading] = useState<boolean>(true)
+  const [isError, setIsError] = useState<boolean>(false)
 
   useEffect(() => {
     if (!id) return
@@ -29,7 +29,7 @@ export const SkillPage = () => {
           setIsError(true)
         }
       } catch (error: unknown) {
-        console.error(error)
+        console.error('Ошибка при загрузке навыка:', error)
         setIsError(true)
       } finally {
         setIsLoading(false)
@@ -38,6 +38,12 @@ export const SkillPage = () => {
 
     loadSkill()
   }, [id])
+
+  const {
+    data: similarSkills,
+    isLoading: isSimilarLoading,
+    error: similarError,
+  } = useSimilarSkills(skill)
 
   if (isLoading) {
     return (
@@ -52,7 +58,9 @@ export const SkillPage = () => {
       <div className={styles.errorContainer}>
         <h2>404</h2>
         <p>Навык не найден или был удален</p>
-        <button onClick={() => navigate('/')}>Вернуться на главную</button>
+        <button onClick={() => navigate('/')} className={styles.backButton}>
+          Вернуться на главную
+        </button>
       </div>
     )
   }
@@ -61,13 +69,7 @@ export const SkillPage = () => {
     <main className={styles.page}>
       <SkillInfoCard skill={skill} />
 
-      {/* Временная заглушка для похожих навыков */}
-      <SimilarSkills
-        users={[] as User[]}
-        favoriteIds={[]}
-        onDetails={() => {}}
-        onFavoriteToggle={() => {}}
-      />
+      <SimilarSkills skills={similarSkills} isLoading={isSimilarLoading} error={similarError} />
     </main>
   )
 }
