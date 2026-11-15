@@ -2,7 +2,12 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { fn } from 'storybook/test'
 import { FilterMode, FiltersState } from '@/shared/types'
 import { ActiveFilters } from './ActiveFilters'
-import { CITIES, MODE_OPTIONS, SKILL_CATEGORIES } from '@/shared/lib/constants'
+import {
+  CITIES,
+  INITIAL_FILTERS_STATE,
+  MODE_OPTIONS,
+  SKILL_CATEGORIES,
+} from '@/shared/lib/constants'
 import { useState } from 'react'
 
 const REAL_CITY_1 = CITIES[0]
@@ -52,10 +57,8 @@ export const OnlyMode: Story = {
   render: (args) => <InteractiveActiveFilters {...args} />,
   args: {
     filters: {
+      ...INITIAL_FILTERS_STATE,
       mode: REAL_MODE,
-      gender: null,
-      cities: [],
-      skillIds: [],
     },
     onRemoveFilter: fn(),
   },
@@ -65,6 +68,7 @@ export const FullSet: Story = {
   render: (args) => <InteractiveActiveFilters {...args} />,
   args: {
     filters: {
+      ...INITIAL_FILTERS_STATE,
       mode: REAL_MODE,
       gender: 'Мужской',
       cities: [REAL_CITY_1],
@@ -77,10 +81,7 @@ export const FullSet: Story = {
 export const Empty: Story = {
   args: {
     filters: {
-      mode: 'all',
-      gender: null,
-      cities: [],
-      skillIds: [],
+      ...INITIAL_FILTERS_STATE,
     },
     onRemoveFilter: fn(),
   },
@@ -90,6 +91,7 @@ export const ManyChips: Story = {
   render: (args) => <InteractiveActiveFilters {...args} />,
   args: {
     filters: {
+      ...INITIAL_FILTERS_STATE,
       mode: REAL_MODE,
       gender: 'Женский',
       cities: [...CITIES],

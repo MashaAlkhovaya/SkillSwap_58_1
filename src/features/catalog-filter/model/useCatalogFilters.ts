@@ -33,8 +33,9 @@ export const useCatalogFilters = () => {
     const skillIds = searchParams
       .getAll('skillId')
       .filter((skillId) => VALID_SKILLS.has(skillId as SubCategoryId)) as SubCategoryId[]
+    const name = searchParams.get('name')
 
-    return { mode, gender, cities, skillIds }
+    return { mode, gender, cities, skillIds, name }
   }, [searchParams])
 
   const setFilters: React.Dispatch<React.SetStateAction<FiltersState>> = useCallback(
@@ -48,6 +49,9 @@ export const useCatalogFilters = () => {
       }
       if (nextFilters.gender) {
         params.set('gender', nextFilters.gender)
+      }
+      if (nextFilters.name) {
+        params.set('name', nextFilters.name)
       }
 
       nextFilters.cities.forEach((city) => params.append('city', city))
