@@ -1,13 +1,12 @@
-// TODO: реализовать страницу CatalogPage
-
 import { loadUsers } from '@/entities/user/model/usersSlice'
 import { Card, Skeleton } from '@/shared/ui'
 import { RootState } from '@/store'
 import { useAppDispatch } from '@/store/hooks'
 import { CatalogSection } from '@/widgets'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useSelector } from 'react-redux'
-import { selectProposedSkillIds } from '@/features/exchange'
+import { useSearchParams } from 'react-router-dom'
+
 import { generatePath, useNavigate } from 'react-router-dom'
 import { ROUTES } from '@/shared/lib/constants'
 import type { User } from '@/shared/types'
@@ -24,16 +23,19 @@ export default function CatalogPage() {
     pages,
     hasMore,
   } = useSelector((store: RootState) => store.users)
-  const proposedSkillIds = useSelector(selectProposedSkillIds)
   const dispatch = useAppDispatch()
+  const [searchParams] = useSearchParams()
+  const name = searchParams.get('name')?.trim() ?? ''
+  const nameFilter = useMemo(() => (name ? { name } : {}), [name])
+
   const navigate = useNavigate()
   const openSkill = (user: User) => navigate(generatePath(ROUTES.SKILL, { id: user.canTeach.id }))
 
   useEffect(() => {
-    dispatch(loadUsers({ page: 1, sort: 'popular' }))
-    dispatch(loadUsers({ page: 1, sort: 'new' }))
-    dispatch(loadUsers({ page: 1, sort: 'random' }))
-  }, [dispatch])
+    dispatch(loadUsers({ page: 1, sort: 'popular', ...nameFilter }))
+    dispatch(loadUsers({ page: 1, sort: 'new', ...nameFilter }))
+    dispatch(loadUsers({ page: 1, sort: 'random', ...nameFilter }))
+  }, [dispatch, nameFilter])
   return (
     <div style={{ display: 'grid', gap: '40px' }}>
       <section>
@@ -47,11 +49,12 @@ export default function CatalogPage() {
             users={popularUsers}
             hasMore={hasMore.popular}
             isLoadingMore={isPopularLoading}
-            onLoadMore={() => dispatch(loadUsers({ page: pages.popular + 1, sort: 'popular' }))}
+            onLoadMore={() =>
+              dispatch(loadUsers({ page: pages.popular + 1, sort: 'popular', ...nameFilter }))
+            }
             favoriteIds={[]}
             onDetails={openSkill}
             onFavoriteToggle={() => undefined}
-            proposedSkillIds={proposedSkillIds}
           />
         )}
       </section>
@@ -66,11 +69,12 @@ export default function CatalogPage() {
             users={newUsers}
             hasMore={hasMore.new}
             isLoadingMore={isNewLoading}
-            onLoadMore={() => dispatch(loadUsers({ page: pages.new + 1, sort: 'new' }))}
+            onLoadMore={() =>
+              dispatch(loadUsers({ page: pages.new + 1, sort: 'new', ...nameFilter }))
+            }
             favoriteIds={[]}
             onDetails={openSkill}
             onFavoriteToggle={() => undefined}
-            proposedSkillIds={proposedSkillIds}
           />
         )}
       </section>
@@ -85,11 +89,12 @@ export default function CatalogPage() {
             users={recommendedUsers}
             hasMore={hasMore.random}
             isLoadingMore={isRecommendedLoading}
-            onLoadMore={() => dispatch(loadUsers({ page: pages.random + 1, sort: 'random' }))}
+            onLoadMore={() =>
+              dispatch(loadUsers({ page: pages.random + 1, sort: 'random', ...nameFilter }))
+            }
             favoriteIds={[]}
             onDetails={openSkill}
             onFavoriteToggle={() => undefined}
-            proposedSkillIds={proposedSkillIds}
           />
         )}
       </section>

@@ -3,8 +3,9 @@ import type { Meta, StoryObj } from '@storybook/react-vite'
 import { Provider } from 'react-redux'
 import type { User } from '@/shared/types'
 import usersReducer from '@/entities/user/model/usersSlice'
+import authReducer from '@/features/auth/model/authSlice'
+import { baseApi } from '@/shared/api'
 import CatalogPage from './index'
-import exchangeReducer from '@/features/exchange/model/exchangeSlice'
 
 const createUsers = (prefix: string, count: number): User[] =>
   Array.from({ length: count }, (_, index) => ({
@@ -76,7 +77,8 @@ function CatalogPageStory({
     },
   }
   const store = configureStore({
-    reducer: { users: usersReducer, exchange: exchangeReducer },
+    reducer: { users: usersReducer, auth: authReducer, [baseApi.reducerPath]: baseApi.reducer },
+    middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(baseApi.middleware),
     preloadedState: { users: state },
   })
 

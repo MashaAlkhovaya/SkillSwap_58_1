@@ -2,6 +2,7 @@ import { useId, useState } from 'react'
 import { Title } from '@/shared/ui'
 import type { User } from '@/shared/types'
 import { CatalogUserCard } from '@/widgets/CatalogUserCard'
+import { useOutgoingPendingSkillIds } from '@/features/exchange'
 import styles from './CatalogSection.module.css'
 import { useInfiniteScroll } from '../../shared/hooks/useInfiniteScroll'
 import { CatalogCardSkeleton } from './CatalogCardSkeleton'
@@ -16,7 +17,6 @@ interface CatalogSectionProps {
   onDetails: (user: User) => void
   onFavoriteToggle: (user: User) => void
   showExpandButton?: boolean
-  proposedSkillIds?: string[]
   hasMore?: boolean
   isLoadingMore?: boolean
   onLoadMore?: () => void
@@ -29,7 +29,6 @@ export function CatalogSection({
   onDetails,
   onFavoriteToggle,
   showExpandButton = true,
-  proposedSkillIds = [],
   hasMore = false,
   isLoadingMore = false,
   onLoadMore,
@@ -37,6 +36,7 @@ export function CatalogSection({
   const [isExpanded, setIsExpanded] = useState(false)
   const headingId = useId()
   const listId = useId()
+  const outgoingPendingSkillIds = useOutgoingPendingSkillIds()
 
   const visibleCount = isExpanded ? users.length : COLLAPSED_COUNT
   const visibleUsers = users.slice(0, visibleCount)
@@ -74,7 +74,7 @@ export function CatalogSection({
             key={user.id}
             user={user}
             isFavorite={favoriteIds.includes(user.id)}
-            isExchangeProposed={proposedSkillIds.includes(user.canTeach.id)}
+            isExchangeProposed={outgoingPendingSkillIds.includes(user.canTeach.id)}
             onDetails={() => onDetails(user)}
             onFavoriteToggle={() => onFavoriteToggle(user)}
           />

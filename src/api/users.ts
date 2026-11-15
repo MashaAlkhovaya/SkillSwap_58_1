@@ -14,12 +14,16 @@ export async function fetchUsers(
   page = 1,
   limit = 10,
   sort = 'random',
+  type = 'all',
+  name: string = '',
 ): Promise<{ users: User[]; hasMore: boolean }> {
   const params = new URLSearchParams({
     page: String(page),
     limit: String(limit),
-    delay: sort === 'new' ? '5000' : '100',
-    sort: sort,
+    type,
+    ...(name ? { name } : {}),
+    delay: '100',
+    sort,
   })
   const response = await fetch(`${BASE_URL}/users?${params}`)
   if (!response.ok) throw new Error('Failed to fetch users')

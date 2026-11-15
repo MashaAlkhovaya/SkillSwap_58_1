@@ -46,9 +46,15 @@ const initialState: UsersState = {
 
 export const loadUsers = createAsyncThunk(
   'users/load',
-  async (params: { page?: number; limit?: number; sort: UserSort }) => {
-    const { page = 1, limit = 9, sort } = params
-    const data = await fetchUsers(page, limit, sort)
+  async (params: {
+    page?: number
+    limit?: number
+    sort: UserSort
+    type?: string
+    name?: string
+  }) => {
+    const { page = 1, limit = 9, sort, type = 'all', name = '' } = params
+    const data = await fetchUsers(page, limit, sort, type, name.trim())
     return { users: data.users, hasMore: data.hasMore, sort, page }
   },
   {
@@ -60,7 +66,7 @@ export const loadUsers = createAsyncThunk(
           : sort === 'new'
             ? state.isNewLoading
             : state.isRecommendedLoading
-      return !isLoading && state.hasMore[sort] && page === state.pages[sort] + 1
+      return !isLoading && (page === 1 || (state.hasMore[sort] && page === state.pages[sort] + 1))
     },
   },
 )
