@@ -5,8 +5,9 @@ import { Card, Skeleton } from '@/shared/ui'
 import { RootState } from '@/store'
 import { useAppDispatch } from '@/store/hooks'
 import { CatalogSection } from '@/widgets'
-import { useEffect } from 'react'
+import { useEffect, useMemo } from 'react'
 import { useSelector } from 'react-redux'
+import { useSearchParams } from 'react-router-dom'
 
 export default function CatalogPage() {
   const {
@@ -21,12 +22,15 @@ export default function CatalogPage() {
     hasMore,
   } = useSelector((store: RootState) => store.users)
   const dispatch = useAppDispatch()
+  const [searchParams] = useSearchParams()
+  const name = searchParams.get('name')?.trim() ?? ''
+  const nameFilter = useMemo(() => (name ? { name } : {}), [name])
 
   useEffect(() => {
-    dispatch(loadUsers({ page: 1, sort: 'popular' }))
-    dispatch(loadUsers({ page: 1, sort: 'new' }))
-    dispatch(loadUsers({ page: 1, sort: 'random' }))
-  }, [dispatch])
+    dispatch(loadUsers({ page: 1, sort: 'popular', ...nameFilter }))
+    dispatch(loadUsers({ page: 1, sort: 'new', ...nameFilter }))
+    dispatch(loadUsers({ page: 1, sort: 'random', ...nameFilter }))
+  }, [dispatch, nameFilter])
   return (
     <div style={{ display: 'grid', gap: '40px' }}>
       <section>
@@ -40,7 +44,9 @@ export default function CatalogPage() {
             users={popularUsers}
             hasMore={hasMore.popular}
             isLoadingMore={isPopularLoading}
-            onLoadMore={() => dispatch(loadUsers({ page: pages.popular + 1, sort: 'popular' }))}
+            onLoadMore={() =>
+              dispatch(loadUsers({ page: pages.popular + 1, sort: 'popular', ...nameFilter }))
+            }
             favoriteIds={[]}
             onDetails={() => undefined}
             onFavoriteToggle={() => undefined}
@@ -58,7 +64,9 @@ export default function CatalogPage() {
             users={newUsers}
             hasMore={hasMore.new}
             isLoadingMore={isNewLoading}
-            onLoadMore={() => dispatch(loadUsers({ page: pages.new + 1, sort: 'new' }))}
+            onLoadMore={() =>
+              dispatch(loadUsers({ page: pages.new + 1, sort: 'new', ...nameFilter }))
+            }
             favoriteIds={[]}
             onDetails={() => undefined}
             onFavoriteToggle={() => undefined}
@@ -76,7 +84,9 @@ export default function CatalogPage() {
             users={recommendedUsers}
             hasMore={hasMore.random}
             isLoadingMore={isRecommendedLoading}
-            onLoadMore={() => dispatch(loadUsers({ page: pages.random + 1, sort: 'random' }))}
+            onLoadMore={() =>
+              dispatch(loadUsers({ page: pages.random + 1, sort: 'random', ...nameFilter }))
+            }
             favoriteIds={[]}
             onDetails={() => undefined}
             onFavoriteToggle={() => undefined}
