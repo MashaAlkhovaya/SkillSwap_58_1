@@ -8,6 +8,7 @@ import {
   BriefcaseIcon,
   ChevronDownIcon,
   ChevronRightIcon,
+  ClockIcon,
   GalleryEditIcon,
   GlobalIcon,
   HeartIcon,
@@ -49,6 +50,7 @@ const icons: Array<[string, ComponentType<IconProps>]> = [
   ['More', MoreIcon],
   ['UserCircle', UserCircleIcon],
   ['Add', AddIcon],
+  ['Clock', ClockIcon],
 ]
 
 function Gallery() {

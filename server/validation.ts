@@ -4,7 +4,13 @@ import {
   type CategoryId,
   type SubCategoryId,
 } from '@/shared/lib/constants'
-import type { LoginRequest, ProfileUpdate, RegisterRequest, UserListQuery } from './types'
+import type {
+  LoginRequest,
+  ProfileUpdate,
+  RegisterRequest,
+  SwapRequestListQuery,
+  UserListQuery,
+} from './types'
 
 export class HttpError extends Error {
   constructor(
@@ -67,6 +73,32 @@ export function parseUserFilters(query: UserListQuery) {
     type: choice(query.type ?? 'all', ['learn', 'teach', 'all'] as const, 'type'),
     subCategoryIds: ids.map((id) => choice(id, allowedIds, 'subCategoryId[]')),
   }
+}
+
+export function parseSwapRequestFilters(query: SwapRequestListQuery) {
+  return {
+    role: choice(query.role ?? 'all', ['incoming', 'outgoing', 'all'] as const, 'role'),
+    status:
+      query.status === undefined
+        ? undefined
+        : choice(query.status, ['pending', 'accepted', 'rejected'] as const, 'status'),
+  }
+}
+
+export function parseSwapRequestCreate(value: unknown): { skillId: string } {
+  const data = record(value)
+  if (Object.keys(data).some((key) => key !== 'skillId')) {
+    throw new HttpError(400, 'Допустимо только поле skillId')
+  }
+  return { skillId: text(data.skillId, 'skillId') }
+}
+
+export function parseSwapRequestUpdate(value: unknown): { status: 'accepted' | 'rejected' } {
+  const data = record(value)
+  if (Object.keys(data).some((key) => key !== 'status')) {
+    throw new HttpError(400, 'Допустимо только поле status')
+  }
+  return { status: choice(data.status, ['accepted', 'rejected'] as const, 'status') }
 }
 
 export function parseLogin(value: unknown): LoginRequest {

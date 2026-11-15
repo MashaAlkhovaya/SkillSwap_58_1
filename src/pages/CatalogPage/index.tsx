@@ -9,6 +9,11 @@ import { useEffect, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
 
+import { selectProposedSkillIds } from '@/features/exchange'
+import { generatePath, useNavigate } from 'react-router-dom'
+import { ROUTES } from '@/shared/lib/constants'
+import type { User } from '@/shared/types'
+
 export default function CatalogPage() {
   const {
     newUsers,
@@ -21,10 +26,14 @@ export default function CatalogPage() {
     pages,
     hasMore,
   } = useSelector((store: RootState) => store.users)
+  const proposedSkillIds = useSelector(selectProposedSkillIds)
   const dispatch = useAppDispatch()
   const [searchParams] = useSearchParams()
   const name = searchParams.get('name')?.trim() ?? ''
   const nameFilter = useMemo(() => (name ? { name } : {}), [name])
+
+  const navigate = useNavigate()
+  const openSkill = (user: User) => navigate(generatePath(ROUTES.SKILL, { id: user.canTeach.id }))
 
   useEffect(() => {
     dispatch(loadUsers({ page: 1, sort: 'popular', ...nameFilter }))
@@ -48,8 +57,9 @@ export default function CatalogPage() {
               dispatch(loadUsers({ page: pages.popular + 1, sort: 'popular', ...nameFilter }))
             }
             favoriteIds={[]}
-            onDetails={() => undefined}
+            onDetails={openSkill}
             onFavoriteToggle={() => undefined}
+            proposedSkillIds={proposedSkillIds}
           />
         )}
       </section>
@@ -68,8 +78,9 @@ export default function CatalogPage() {
               dispatch(loadUsers({ page: pages.new + 1, sort: 'new', ...nameFilter }))
             }
             favoriteIds={[]}
-            onDetails={() => undefined}
+            onDetails={openSkill}
             onFavoriteToggle={() => undefined}
+            proposedSkillIds={proposedSkillIds}
           />
         )}
       </section>
@@ -88,8 +99,9 @@ export default function CatalogPage() {
               dispatch(loadUsers({ page: pages.random + 1, sort: 'random', ...nameFilter }))
             }
             favoriteIds={[]}
-            onDetails={() => undefined}
+            onDetails={openSkill}
             onFavoriteToggle={() => undefined}
+            proposedSkillIds={proposedSkillIds}
           />
         )}
       </section>

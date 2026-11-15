@@ -40,6 +40,11 @@ export interface ListQuery {
   q?: string
 }
 
+export interface SwapRequestListQuery extends Pick<ListQuery, 'page' | 'limit'> {
+  role?: string
+  status?: string
+}
+
 export interface UserListQuery extends ListQuery {
   gender?: string
   city?: string

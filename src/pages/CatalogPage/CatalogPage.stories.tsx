@@ -4,6 +4,7 @@ import { Provider } from 'react-redux'
 import type { User } from '@/shared/types'
 import usersReducer from '@/entities/user/model/usersSlice'
 import CatalogPage from './index'
+import exchangeReducer from '@/features/exchange/model/exchangeSlice'
 
 const createUsers = (prefix: string, count: number): User[] =>
   Array.from({ length: count }, (_, index) => ({
@@ -69,7 +70,7 @@ function CatalogPageStory({
     },
   }
   const store = configureStore({
-    reducer: { users: usersReducer },
+    reducer: { users: usersReducer, exchange: exchangeReducer },
     preloadedState: { users: state },
   })
 

@@ -35,6 +35,7 @@ export {
   UserCircleIcon,
   UserIcon,
   LogoutIcon,
+  ClockIcon,
 } from './icons'
 export type { BellIconProps, HeartIconProps, IconProps } from './icons'
 export { Stepper } from './Stepper'
@@ -49,4 +50,5 @@ export { DateInput } from './DateInput'
 export { TextInput } from './TextInput'
 export { Select } from './Select'
 export { Skeleton } from './Skeleton'
+export { FilterChip } from './FilterChip'
 export { Notification } from './Notification'

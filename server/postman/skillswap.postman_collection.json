@@ -2,7 +2,7 @@
   "info": {
     "_postman_id": "b0c1d2e3-4f56-4789-a0b1-c2d3e4f5a6b7",
     "name": "SkillSwap mock API",
-    "description": "# SkillSwap mock API\n\nЛокальный учебный Express-сервер. Начните с папки **Справочник API**: здесь основные запросы и сохранённые примеры успешных ответов и ошибок. Остальные папки — последовательные проверки API; их порядок важен для переменных сценариев.\n\n## Быстрый старт\n\nИз корня репозитория:\n\n```bash\nnpm --prefix server ci\nnpm --prefix server run dev\n```\n\n`baseUrl = http://localhost:4000/api`. Для Vite-прокси: `http://localhost:5173/api` при запущенном `npm run dev`. Каждый участник запускает сервер у себя. Сохранённые Examples читаются без сервера; отправка запросов требует запущенного API. Публикация документации не публикует сервер.\n\n## Общие правила\n\n- Данные — JSON. Ошибки — `{ message: string }`.\n- Списки — `{ items, page, limit, total, hasMore }`, по умолчанию 10 элементов.\n- Токен нужен для профиля и постановки/снятия лайков. Каталог и фильтр `ids[]` доступны без авторизации.\n- Задержка по умолчанию 1000 мс. Параметр `delay` задаёт 1000–5000 мс. Неизвестные параметры игнорируются; `fail` не имитирует ошибку.\n- Изображения доступны по `/api/uploads/skills/...` и `/api/uploads/avatars/...` без искусственной задержки.\n- Запрос регистрации меняет базу и сохраняет файлы. Не повторяйте его автоматически после сетевой ошибки: проверьте вход с той же почтой.\n- Все учётные данные в файле — демонстрационные. Это локальный мок, а не система реальной авторизации.\n\n## Переменные и сценарии\n\n`demoEmail` и `demoPassword` — тестовый пользователь из public/db. `authToken` заполняется успешным входом. `newEmail`, `newUserId`, `newToken`, `newSkillId`, `skillImagePath` создаются сценариями регистрации. `referenceEmail` — отдельная почта для регистрации из справочника, генерируется локально перед запросом и не мешает тестовым сценариям. Вычисляемые переменные вручную заполнять не нужно.\n\nРабочая папка Postman Desktop — корень репозитория. Файлы — `server/postman/fixtures/`. В Runner запускайте папки целиком по порядку. Прогон регистрации создаёт пользователя, навык и файлы; повторный прогон использует новую почту. Папка «Редактирование профиля» запускается после «Авторизация», меняет созданного пользователя и проверяет замену аватарки, вход и сохранность навыка.\n\n## Примеры и хранение\n\nExamples сняты с работающего сервера на временной базе из сидов. UUID, время создания и тестовая почта могут отличаться при повторном запуске; токены примеров демонстрационные. Примеры ошибок содержат соответствующий неуспешный запрос.\n\nИсходник документации — `server/postman/skillswap.postman_collection.json`, инструкция запуска — `server/README.md`. При изменении API обновляйте коллекцию в том же PR. После импорта изменения файла в Git сами по себе не синхронизируются с Postman. Перед экспортом очистите значения токенов и переменных прогона. Сброс собственной базы: остановите сервер, выполните `npm --prefix server run reset`, затем запустите снова; это также удалит загруженные изображения.\n\nPATCH /auth/me поддерживает частичное изменение email, name, birthDate, gender, city, bio; avatar передаётся файлом в multipart/form-data. Описание контракта и примеры находятся в «Справочник API». Регистрация и PATCH меняют базу; весь Runner запускайте на своей локальной или временной базе.\n\n\nЛайки хранятся в существующем `User.likes`. `PUT /auth/me/likes/:targetUserId` ставит лайк, `DELETE` снимает его. `/users` поддерживает `ids[]` для получения избранных по ID из профиля и `name` для поиска по названию навыка без учёта регистра. Папка «Лайки и поиск» самодостаточна и после успешного прогона восстанавливает исходный массив лайков.",
+    "description": "# SkillSwap mock API\n\nЛокальный учебный Express-сервер. Начните с папки **Справочник API**: здесь основные запросы и сохранённые примеры успешных ответов и ошибок. Остальные папки — последовательные проверки API; их порядок важен для переменных сценариев.\n\n## Быстрый старт\n\nИз корня репозитория:\n\n```bash\nnpm --prefix server ci\nnpm --prefix server run dev\n```\n\n`baseUrl = http://localhost:4000/api`. Для Vite-прокси: `http://localhost:5173/api` при запущенном `npm run dev`. Каждый участник запускает сервер у себя. Сохранённые Examples читаются без сервера; отправка запросов требует запущенного API. Публикация документации не публикует сервер.\n\n## Общие правила\n\n- Данные — JSON. Ошибки — `{ message: string }`.\n- Списки — `{ items, page, limit, total, hasMore }`, по умолчанию 10 элементов.\n- Токен нужен для профиля, постановки/снятия лайков и заявок на обмен. Каталог и фильтр `ids[]` доступны без авторизации.\n- Задержка по умолчанию 1000 мс. Параметр `delay` задаёт 1000–5000 мс. Неизвестные параметры игнорируются; `fail` не имитирует ошибку.\n- Изображения доступны по `/api/uploads/skills/...` и `/api/uploads/avatars/...` без искусственной задержки.\n- Запрос регистрации меняет базу и сохраняет файлы. Не повторяйте его автоматически после сетевой ошибки: проверьте вход с той же почтой.\n- Все учётные данные в файле — демонстрационные. Это локальный мок, а не система реальной авторизации.\n\n## Переменные и сценарии\n\n`demoEmail` и `demoPassword` — тестовый пользователь из public/db. `authToken` заполняется успешным входом. `newEmail`, `newUserId`, `newToken`, `newSkillId`, `skillImagePath` создаются сценариями регистрации. `referenceEmail` — отдельная почта для регистрации из справочника, генерируется локально перед запросом и не мешает тестовым сценариям. Вычисляемые переменные вручную заполнять не нужно.\n\nРабочая папка Postman Desktop — корень репозитория. Файлы — `server/postman/fixtures/`. В Runner запускайте папки целиком по порядку. Прогон регистрации создаёт пользователя, навык и файлы; повторный прогон использует новую почту. Папка «Редактирование профиля» запускается после «Авторизация», меняет созданного пользователя и проверяет замену аватарки, вход и сохранность навыка.\n\n## Примеры и хранение\n\nExamples сняты с работающего сервера на временной базе из сидов. UUID, время создания и тестовая почта могут отличаться при повторном запуске; токены примеров демонстрационные. Примеры ошибок содержат соответствующий неуспешный запрос.\n\nИсходник документации — `server/postman/skillswap.postman_collection.json`, инструкция запуска — `server/README.md`. При изменении API обновляйте коллекцию в том же PR. После импорта изменения файла в Git сами по себе не синхронизируются с Postman. Перед экспортом очистите значения токенов и переменных прогона. Сброс собственной базы: остановите сервер, выполните `npm --prefix server run reset`, затем запустите снова; это также удалит загруженные изображения.\n\nPATCH /auth/me поддерживает частичное изменение email, name, birthDate, gender, city, bio; avatar передаётся файлом в multipart/form-data. Описание контракта и примеры находятся в «Справочник API». Регистрация и PATCH меняют базу; весь Runner запускайте на своей локальной или временной базе.\n\n\nЛайки хранятся в существующем `User.likes`. `PUT /auth/me/likes/:targetUserId` ставит лайк, `DELETE` снимает его. `/users` поддерживает `ids[]` для получения избранных по ID из профиля и `name` для поиска по названию навыка без учёта регистра. Папка «Лайки и поиск» самодостаточна и после успешного прогона восстанавливает исходный массив лайков.\n\nЗаявки на обмен — ресурс `/swap-requests`: `POST` предлагает обмен на чужой навык, `GET` возвращает входящие и исходящие заявки владельца токена, `PATCH` с `{ status }` принимает или отклоняет заявку получателем, `DELETE` удаляет отклонённую или отзывает ожидающую заявку инициатором. `swapReferenceId` и `swapRecipientToken` заполняет справочник, переменные `swap*` — папка «Обмены». Папка самодостаточна: регистрирует двух тестовых пользователей и проходит весь жизненный цикл заявки, не меняя демо-данные.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -100,12 +100,57 @@
       "key": "likesSearchName",
       "value": "",
       "type": "string"
+    },
+    {
+      "key": "swapReferenceId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "swapRecipientToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "swapFromToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "swapFromId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "swapFromSkillId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "swapToToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "swapToId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "swapToSkillId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "swapId",
+      "value": "",
+      "type": "string"
     }
   ],
   "item": [
     {
       "name": "Справочник API",
-      "description": "Основные операции для интеграции фронтенда. Раскройте Examples под запросом: сохранены реальные ответы сервера, включая ошибки. Для профиля сначала выполните «Вход». Регистрация создаёт пользователя, навык и пять файлов. Подробные тестовые сценарии находятся в следующих папках. Запросы «Изменить профиль» принимают JSON или multipart с avatar; нужны токен и локальный сервер. Для лайков доступны PUT и DELETE; состояние хранится в likes профиля.",
+      "description": "Основные операции для интеграции фронтенда. Раскройте Examples под запросом: сохранены реальные ответы сервера, включая ошибки. Для профиля сначала выполните «Вход». Регистрация создаёт пользователя, навык и пять файлов. Подробные тестовые сценарии находятся в следующих папках. Запросы «Изменить профиль» принимают JSON или multipart с avatar; нужны токен и локальный сервер. Для лайков доступны PUT и DELETE; состояние хранится в likes профиля. Заявки на обмен: список, предложение, ответ получателя и удаление. При отправке по порядку справочник создаёт заявку, отклоняет её от имени получателя и удаляет, поэтому прогон не оставляет данных.",
       "item": [
         {
           "name": "Вход",
@@ -1584,6 +1629,838 @@
               ],
               "cookie": [],
               "body": "{\n  \"message\": \"Пользователь не найден\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Заявки на обмен",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests?role=incoming&status=pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests"],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "incoming",
+                  "description": "incoming — входящие, outgoing — исходящие, all — обе (по умолчанию)."
+                },
+                {
+                  "key": "status",
+                  "value": "pending",
+                  "description": "pending, accepted или rejected; без параметра — любой."
+                },
+                {
+                  "key": "page",
+                  "value": "1",
+                  "description": "Номер страницы, по умолчанию 1.",
+                  "disabled": true
+                },
+                {
+                  "key": "limit",
+                  "value": "10",
+                  "description": "Размер страницы, по умолчанию 10, от 1 до 100.",
+                  "disabled": true
+                }
+              ]
+            },
+            "description": "**Авторизация:** `Authorization: Bearer <token>`. Возвращает заявки на обмен владельца токена, новые первыми, списком `{ items, page, limit, total, hasMore }`. Каждый элемент — `SwapRequest` (`id, skillId, fromUserId, toUserId, status, createdAt, updatedAt`) и связанные данные: `fromUser` и `toUser` — публичные профили, как в `/users`; `skill` — навык получателя, на который предложен обмен; `offeredSkill` — навык инициатора (`fromUser.canTeach`). **Параметры:** `role` — `incoming`, `outgoing` или `all` (по умолчанию); `status` — `pending`, `accepted` или `rejected`; `page` и `limit` — как у остальных списков. Отклонённые заявки видит только инициатор, у получателя они пропадают. Счётчик новых предложений — `total` из `?role=incoming&status=pending&limit=1`. **Ошибки:** `400` — неизвестное или повторённое значение `role` или `status`; `401` — нет действительного токена."
+          },
+          "response": [
+            {
+              "name": "200 — входящие предложения",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/swap-requests?role=incoming&status=pending",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["swap-requests"],
+                  "query": [
+                    {
+                      "key": "role",
+                      "value": "incoming",
+                      "description": "incoming — входящие, outgoing — исходящие, all — обе (по умолчанию)."
+                    },
+                    {
+                      "key": "status",
+                      "value": "pending",
+                      "description": "pending, accepted или rejected; без параметра — любой."
+                    },
+                    {
+                      "key": "page",
+                      "value": "1",
+                      "description": "Номер страницы, по умолчанию 1.",
+                      "disabled": true
+                    },
+                    {
+                      "key": "limit",
+                      "value": "10",
+                      "description": "Размер страницы, по умолчанию 10, от 1 до 100.",
+                      "disabled": true
+                    }
+                  ]
+                },
+                "description": "**Авторизация:** `Authorization: Bearer <token>`. Возвращает заявки на обмен владельца токена, новые первыми, списком `{ items, page, limit, total, hasMore }`. Каждый элемент — `SwapRequest` (`id, skillId, fromUserId, toUserId, status, createdAt, updatedAt`) и связанные данные: `fromUser` и `toUser` — публичные профили, как в `/users`; `skill` — навык получателя, на который предложен обмен; `offeredSkill` — навык инициатора (`fromUser.canTeach`). **Параметры:** `role` — `incoming`, `outgoing` или `all` (по умолчанию); `status` — `pending`, `accepted` или `rejected`; `page` и `limit` — как у остальных списков. Отклонённые заявки видит только инициатор, у получателя они пропадают. Счётчик новых предложений — `total` из `?role=incoming&status=pending&limit=1`. **Ошибки:** `400` — неизвестное или повторённое значение `role` или `status`; `401` — нет действительного токена."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"items\": [\n    {\n      \"id\": \"swap-01\",\n      \"skillId\": \"skill-01\",\n      \"fromUserId\": \"user-05\",\n      \"toUserId\": \"user-01\",\n      \"status\": \"pending\",\n      \"createdAt\": \"2025-06-02T09:00:00.000Z\",\n      \"updatedAt\": \"2025-06-02T09:00:00.000Z\",\n      \"fromUser\": {\n        \"id\": \"user-05\",\n        \"name\": \"Мария\",\n        \"email\": \"maria.volkova@example.com\",\n        \"avatarUrl\": \"/db/avatars/figma/maria.jpg\",\n        \"createdAt\": \"2025-02-01T15:15:00.000Z\",\n        \"birthDate\": \"1997-09-19T00:00:00.000Z\",\n        \"gender\": \"female\",\n        \"city\": \"Новосибирск\",\n        \"bio\": \"Внимательная к деталям и ценю красоту в повседневных мелочах. Иногда нахожу повод устроить тихий вечер даже в очень занятом дне.\",\n        \"likes\": [\n          \"user-06\",\n          \"user-07\",\n          \"user-08\",\n          \"user-09\",\n          \"user-10\"\n        ],\n        \"canTeach\": {\n          \"id\": \"skill-05\",\n          \"category\": \"art\",\n          \"subCategory\": \"illustration\"\n        },\n        \"wantsToLearn\": [\n          \"japanese\",\n          \"personal-brand\"\n        ]\n      },\n      \"toUser\": {\n        \"id\": \"user-01\",\n        \"name\": \"Анна\",\n        \"email\": \"anna.smirnova@example.com\",\n        \"avatarUrl\": \"/db/avatars/figma/anna.jpg\",\n        \"createdAt\": \"2025-01-16T11:15:00.000Z\",\n        \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n        \"gender\": \"female\",\n        \"city\": \"Санкт-Петербург\",\n        \"bio\": \"Доброжелательная и любознательная, ценю искреннее общение и тёплые встречи с близкими.\",\n        \"likes\": [\n          \"user-02\"\n        ],\n        \"canTeach\": {\n          \"id\": \"skill-01\",\n          \"category\": \"art\",\n          \"subCategory\": \"music-sound\"\n        },\n        \"wantsToLearn\": [\n          \"acting\",\n          \"german\",\n          \"team-management\"\n        ]\n      },\n      \"skill\": {\n        \"id\": \"skill-01\",\n        \"title\": \"Игра на барабанах\",\n        \"description\": \"Покажу базовые ритмы, работу с палочками и помогу разучить простую партию.\",\n        \"type\": \"teach\",\n        \"category\": \"art\",\n        \"tags\": [\n          \"барабаны\",\n          \"ритм\",\n          \"музыка\"\n        ],\n        \"authorId\": \"user-01\",\n        \"createdAt\": \"2025-01-15T10:15:00.000Z\",\n        \"subCategory\": \"music-sound\",\n        \"imageUrls\": []\n      },\n      \"offeredSkill\": {\n        \"id\": \"skill-05\",\n        \"title\": \"Акварельная живопись\",\n        \"description\": \"Расскажу о смешивании красок, базовых заливках и создании небольших пейзажей.\",\n        \"type\": \"teach\",\n        \"category\": \"art\",\n        \"tags\": [\n          \"акварель\",\n          \"рисование\",\n          \"живопись\"\n        ],\n        \"authorId\": \"user-05\",\n        \"createdAt\": \"2025-01-27T10:15:00.000Z\",\n        \"subCategory\": \"illustration\",\n        \"imageUrls\": []\n      }\n    }\n  ],\n  \"page\": 1,\n  \"limit\": 10,\n  \"total\": 1,\n  \"hasMore\": false\n}"
+            },
+            {
+              "name": "400 — неизвестный role",
+              "originalRequest": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/swap-requests?role=mine",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["swap-requests"],
+                  "query": [
+                    {
+                      "key": "role",
+                      "value": "mine"
+                    }
+                  ]
+                },
+                "description": "**Авторизация:** `Authorization: Bearer <token>`. Возвращает заявки на обмен владельца токена, новые первыми, списком `{ items, page, limit, total, hasMore }`. Каждый элемент — `SwapRequest` (`id, skillId, fromUserId, toUserId, status, createdAt, updatedAt`) и связанные данные: `fromUser` и `toUser` — публичные профили, как в `/users`; `skill` — навык получателя, на который предложен обмен; `offeredSkill` — навык инициатора (`fromUser.canTeach`). **Параметры:** `role` — `incoming`, `outgoing` или `all` (по умолчанию); `status` — `pending`, `accepted` или `rejected`; `page` и `limit` — как у остальных списков. Отклонённые заявки видит только инициатор, у получателя они пропадают. Счётчик новых предложений — `total` из `?role=incoming&status=pending&limit=1`. **Ошибки:** `400` — неизвестное или повторённое значение `role` или `status`; `401` — нет действительного токена."
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Недопустимое значение role\"\n}"
+            },
+            {
+              "name": "401 — без токена",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "{{baseUrl}}/swap-requests",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["swap-requests"],
+                  "query": []
+                },
+                "description": "**Авторизация:** `Authorization: Bearer <token>`. Возвращает заявки на обмен владельца токена, новые первыми, списком `{ items, page, limit, total, hasMore }`. Каждый элемент — `SwapRequest` (`id, skillId, fromUserId, toUserId, status, createdAt, updatedAt`) и связанные данные: `fromUser` и `toUser` — публичные профили, как в `/users`; `skill` — навык получателя, на который предложен обмен; `offeredSkill` — навык инициатора (`fromUser.canTeach`). **Параметры:** `role` — `incoming`, `outgoing` или `all` (по умолчанию); `status` — `pending`, `accepted` или `rejected`; `page` и `limit` — как у остальных списков. Отклонённые заявки видит только инициатор, у получателя они пропадают. Счётчик новых предложений — `total` из `?role=incoming&status=pending&limit=1`. **Ошибки:** `400` — неизвестное или повторённое значение `role` или `status`; `401` — нет действительного токена."
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Нужна авторизация\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Предложить обмен",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"skillId\": \"skill-03\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "**Авторизация:** `Authorization: Bearer <token>`. **Тело:** `{ skillId }` — ID чужого навыка. Инициатор берётся из токена, получатель — автор навыка (`skill.authorId`). Обмениваются навыки `canTeach` обоих пользователей, тип навыка не проверяется. **Успех:** `201`, заявка `pending` в формате списка. **Ошибки:** `400` — лишние поля, навык не найден, свой навык; `401` — нет токена; `409` — заявка на этот навык уже есть (отклонённую сначала удаляют) или получатель уже предложил встречный обмен, который ожидает ответа или подтверждён. Ненайденный навык возвращает `400`, а не `404`: он приходит в теле, а фронт по `404` уводит на страницу «не найдено». ID созданной заявки сохраняется в `swapReferenceId`."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 201) pm.collectionVariables.set('swapReferenceId', pm.response.json().id)"
+                ]
+              }
+            }
+          ],
+          "response": [
+            {
+              "name": "201 — заявка создана",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/swap-requests",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["swap-requests"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"skillId\": \"skill-03\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "**Авторизация:** `Authorization: Bearer <token>`. **Тело:** `{ skillId }` — ID чужого навыка. Инициатор берётся из токена, получатель — автор навыка (`skill.authorId`). Обмениваются навыки `canTeach` обоих пользователей, тип навыка не проверяется. **Успех:** `201`, заявка `pending` в формате списка. **Ошибки:** `400` — лишние поля, навык не найден, свой навык; `401` — нет токена; `409` — заявка на этот навык уже есть (отклонённую сначала удаляют) или получатель уже предложил встречный обмен, который ожидает ответа или подтверждён. Ненайденный навык возвращает `400`, а не `404`: он приходит в теле, а фронт по `404` уводит на страницу «не найдено». ID созданной заявки сохраняется в `swapReferenceId`."
+              },
+              "status": "Created",
+              "code": 201,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"swap-88deba66-802e-4a57-b0dd-750b54ad5842\",\n  \"skillId\": \"skill-03\",\n  \"fromUserId\": \"user-01\",\n  \"toUserId\": \"user-03\",\n  \"status\": \"pending\",\n  \"createdAt\": \"2026-11-14T07:15:10.841Z\",\n  \"updatedAt\": \"2026-11-14T07:15:10.841Z\",\n  \"fromUser\": {\n    \"id\": \"user-01\",\n    \"name\": \"Анна\",\n    \"email\": \"anna.smirnova@example.com\",\n    \"avatarUrl\": \"/db/avatars/figma/anna.jpg\",\n    \"createdAt\": \"2025-01-16T11:15:00.000Z\",\n    \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n    \"gender\": \"female\",\n    \"city\": \"Санкт-Петербург\",\n    \"bio\": \"Доброжелательная и любознательная, ценю искреннее общение и тёплые встречи с близкими.\",\n    \"likes\": [\n      \"user-02\"\n    ],\n    \"canTeach\": {\n      \"id\": \"skill-01\",\n      \"category\": \"art\",\n      \"subCategory\": \"music-sound\"\n    },\n    \"wantsToLearn\": [\n      \"acting\",\n      \"german\",\n      \"team-management\"\n    ]\n  },\n  \"toUser\": {\n    \"id\": \"user-03\",\n    \"name\": \"Екатерина\",\n    \"email\": \"ekaterina.petrova@example.com\",\n    \"avatarUrl\": \"/db/avatars/figma/ekaterina.jpg\",\n    \"createdAt\": \"2025-01-24T13:15:00.000Z\",\n    \"birthDate\": \"1993-11-22T00:00:00.000Z\",\n    \"gender\": \"female\",\n    \"city\": \"Казань\",\n    \"bio\": \"Ценю душевные разговоры, семейные традиции и возможность узнавать людей с разными взглядами.\",\n    \"likes\": [\n      \"user-04\",\n      \"user-05\",\n      \"user-06\"\n    ],\n    \"canTeach\": {\n      \"id\": \"skill-03\",\n      \"category\": \"languages\",\n      \"subCategory\": \"english\"\n    },\n    \"wantsToLearn\": [\n      \"german\",\n      \"home-finances\",\n      \"teaching-skills\"\n    ]\n  },\n  \"skill\": {\n    \"id\": \"skill-03\",\n    \"title\": \"Разговорный английский\",\n    \"description\": \"Практика повседневного английского в дружеском формате с разбором ошибок.\",\n    \"type\": \"teach\",\n    \"category\": \"languages\",\n    \"tags\": [\n      \"английский\",\n      \"разговорная практика\"\n    ],\n    \"authorId\": \"user-03\",\n    \"createdAt\": \"2025-01-21T10:15:00.000Z\",\n    \"subCategory\": \"english\",\n    \"imageUrls\": []\n  },\n  \"offeredSkill\": {\n    \"id\": \"skill-01\",\n    \"title\": \"Игра на барабанах\",\n    \"description\": \"Покажу базовые ритмы, работу с палочками и помогу разучить простую партию.\",\n    \"type\": \"teach\",\n    \"category\": \"art\",\n    \"tags\": [\n      \"барабаны\",\n      \"ритм\",\n      \"музыка\"\n    ],\n    \"authorId\": \"user-01\",\n    \"createdAt\": \"2025-01-15T10:15:00.000Z\",\n    \"subCategory\": \"music-sound\",\n    \"imageUrls\": []\n  }\n}"
+            },
+            {
+              "name": "400 — свой навык",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/swap-requests",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["swap-requests"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"skillId\": \"skill-01\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "**Авторизация:** `Authorization: Bearer <token>`. **Тело:** `{ skillId }` — ID чужого навыка. Инициатор берётся из токена, получатель — автор навыка (`skill.authorId`). Обмениваются навыки `canTeach` обоих пользователей, тип навыка не проверяется. **Успех:** `201`, заявка `pending` в формате списка. **Ошибки:** `400` — лишние поля, навык не найден, свой навык; `401` — нет токена; `409` — заявка на этот навык уже есть (отклонённую сначала удаляют) или получатель уже предложил встречный обмен, который ожидает ответа или подтверждён. Ненайденный навык возвращает `400`, а не `404`: он приходит в теле, а фронт по `404` уводит на страницу «не найдено». ID созданной заявки сохраняется в `swapReferenceId`."
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Нельзя предложить обмен на свой навык\"\n}"
+            },
+            {
+              "name": "401 — без токена",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/swap-requests",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["swap-requests"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"skillId\": \"skill-03\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "**Авторизация:** `Authorization: Bearer <token>`. **Тело:** `{ skillId }` — ID чужого навыка. Инициатор берётся из токена, получатель — автор навыка (`skill.authorId`). Обмениваются навыки `canTeach` обоих пользователей, тип навыка не проверяется. **Успех:** `201`, заявка `pending` в формате списка. **Ошибки:** `400` — лишние поля, навык не найден, свой навык; `401` — нет токена; `409` — заявка на этот навык уже есть (отклонённую сначала удаляют) или получатель уже предложил встречный обмен, который ожидает ответа или подтверждён. Ненайденный навык возвращает `400`, а не `404`: он приходит в теле, а фронт по `404` уводит на страницу «не найдено». ID созданной заявки сохраняется в `swapReferenceId`."
+              },
+              "status": "Unauthorized",
+              "code": 401,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Нужна авторизация\"\n}"
+            },
+            {
+              "name": "409 — заявка уже есть",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/swap-requests",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["swap-requests"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"skillId\": \"skill-03\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "**Авторизация:** `Authorization: Bearer <token>`. **Тело:** `{ skillId }` — ID чужого навыка. Инициатор берётся из токена, получатель — автор навыка (`skill.authorId`). Обмениваются навыки `canTeach` обоих пользователей, тип навыка не проверяется. **Успех:** `201`, заявка `pending` в формате списка. **Ошибки:** `400` — лишние поля, навык не найден, свой навык; `401` — нет токена; `409` — заявка на этот навык уже есть (отклонённую сначала удаляют) или получатель уже предложил встречный обмен, который ожидает ответа или подтверждён. Ненайденный навык возвращает `400`, а не `404`: он приходит в теле, а фронт по `404` уводит на страницу «не найдено». ID созданной заявки сохраняется в `swapReferenceId`."
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Вы уже предложили обмен на этот навык\"\n}"
+            },
+            {
+              "name": "409 — встречная заявка",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{swapRecipientToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/swap-requests",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["swap-requests"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"skillId\": \"skill-01\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "**Авторизация:** `Authorization: Bearer <token>`. **Тело:** `{ skillId }` — ID чужого навыка. Инициатор берётся из токена, получатель — автор навыка (`skill.authorId`). Обмениваются навыки `canTeach` обоих пользователей, тип навыка не проверяется. **Успех:** `201`, заявка `pending` в формате списка. **Ошибки:** `400` — лишние поля, навык не найден, свой навык; `401` — нет токена; `409` — заявка на этот навык уже есть (отклонённую сначала удаляют) или получатель уже предложил встречный обмен, который ожидает ответа или подтверждён. Ненайденный навык возвращает `400`, а не `404`: он приходит в теле, а фронт по `404` уводит на страницу «не найдено». ID созданной заявки сохраняется в `swapReferenceId`."
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Пользователь уже предложил вам обмен: ответьте на его заявку\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Вход получателя заявки",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "login"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"ekaterina.petrova@example.com\",\n  \"password\": \"{{demoPassword}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "Вход автора навыка `skill-03` (Екатерина) — получателя заявки из «Предложить обмен». Токен сохраняется в `swapRecipientToken` для запроса «Ответить на заявку»."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "if (pm.response.code === 200) pm.collectionVariables.set('swapRecipientToken', pm.response.json().token)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ответить на заявку",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapRecipientToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests/{{swapReferenceId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests", "{{swapReferenceId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"rejected\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "description": "**Авторизация:** токен получателя заявки. **Тело:** `{ status }` — `accepted`, чтобы принять обмен, или `rejected`, чтобы отклонить. Ответить можно только на заявку `pending`; повторный запрос с текущим статусом возвращает `200` без изменений. После принятия обмен подтверждён для обоих участников, после отклонения заявка видна только инициатору. **Успех:** `200`, обновлённая заявка. **Ошибки:** `400` — неверное тело или статус; `401` — нет токена; `403` — отвечает инициатор; `409` — заявка уже обработана или отозвана («Заявка отозвана»: её нет либо пользователь в ней не участвует; не `404`, чтобы фронт не уводил на страницу «не найдено»). В справочнике запрос отклоняет заявку из «Предложить обмен», чтобы «Удалить заявку» её убрала и прогон не оставлял данных; пример принятия — в Examples."
+          },
+          "response": [
+            {
+              "name": "200 — заявка принята",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{swapRecipientToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/swap-requests/{{swapReferenceId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["swap-requests", "{{swapReferenceId}}"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"accepted\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "**Авторизация:** токен получателя заявки. **Тело:** `{ status }` — `accepted`, чтобы принять обмен, или `rejected`, чтобы отклонить. Ответить можно только на заявку `pending`; повторный запрос с текущим статусом возвращает `200` без изменений. После принятия обмен подтверждён для обоих участников, после отклонения заявка видна только инициатору. **Успех:** `200`, обновлённая заявка. **Ошибки:** `400` — неверное тело или статус; `401` — нет токена; `403` — отвечает инициатор; `409` — заявка уже обработана или отозвана («Заявка отозвана»: её нет либо пользователь в ней не участвует; не `404`, чтобы фронт не уводил на страницу «не найдено»). В справочнике запрос отклоняет заявку из «Предложить обмен», чтобы «Удалить заявку» её убрала и прогон не оставлял данных; пример принятия — в Examples."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"swap-899b348a-cbae-4a65-b1fe-2b85f4a281db\",\n  \"skillId\": \"skill-03\",\n  \"fromUserId\": \"user-01\",\n  \"toUserId\": \"user-03\",\n  \"status\": \"accepted\",\n  \"createdAt\": \"2026-11-14T07:15:10.886Z\",\n  \"updatedAt\": \"2026-11-14T07:15:10.889Z\",\n  \"fromUser\": {\n    \"id\": \"user-01\",\n    \"name\": \"Анна\",\n    \"email\": \"anna.smirnova@example.com\",\n    \"avatarUrl\": \"/db/avatars/figma/anna.jpg\",\n    \"createdAt\": \"2025-01-16T11:15:00.000Z\",\n    \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n    \"gender\": \"female\",\n    \"city\": \"Санкт-Петербург\",\n    \"bio\": \"Доброжелательная и любознательная, ценю искреннее общение и тёплые встречи с близкими.\",\n    \"likes\": [\n      \"user-02\"\n    ],\n    \"canTeach\": {\n      \"id\": \"skill-01\",\n      \"category\": \"art\",\n      \"subCategory\": \"music-sound\"\n    },\n    \"wantsToLearn\": [\n      \"acting\",\n      \"german\",\n      \"team-management\"\n    ]\n  },\n  \"toUser\": {\n    \"id\": \"user-03\",\n    \"name\": \"Екатерина\",\n    \"email\": \"ekaterina.petrova@example.com\",\n    \"avatarUrl\": \"/db/avatars/figma/ekaterina.jpg\",\n    \"createdAt\": \"2025-01-24T13:15:00.000Z\",\n    \"birthDate\": \"1993-11-22T00:00:00.000Z\",\n    \"gender\": \"female\",\n    \"city\": \"Казань\",\n    \"bio\": \"Ценю душевные разговоры, семейные традиции и возможность узнавать людей с разными взглядами.\",\n    \"likes\": [\n      \"user-04\",\n      \"user-05\",\n      \"user-06\"\n    ],\n    \"canTeach\": {\n      \"id\": \"skill-03\",\n      \"category\": \"languages\",\n      \"subCategory\": \"english\"\n    },\n    \"wantsToLearn\": [\n      \"german\",\n      \"home-finances\",\n      \"teaching-skills\"\n    ]\n  },\n  \"skill\": {\n    \"id\": \"skill-03\",\n    \"title\": \"Разговорный английский\",\n    \"description\": \"Практика повседневного английского в дружеском формате с разбором ошибок.\",\n    \"type\": \"teach\",\n    \"category\": \"languages\",\n    \"tags\": [\n      \"английский\",\n      \"разговорная практика\"\n    ],\n    \"authorId\": \"user-03\",\n    \"createdAt\": \"2025-01-21T10:15:00.000Z\",\n    \"subCategory\": \"english\",\n    \"imageUrls\": []\n  },\n  \"offeredSkill\": {\n    \"id\": \"skill-01\",\n    \"title\": \"Игра на барабанах\",\n    \"description\": \"Покажу базовые ритмы, работу с палочками и помогу разучить простую партию.\",\n    \"type\": \"teach\",\n    \"category\": \"art\",\n    \"tags\": [\n      \"барабаны\",\n      \"ритм\",\n      \"музыка\"\n    ],\n    \"authorId\": \"user-01\",\n    \"createdAt\": \"2025-01-15T10:15:00.000Z\",\n    \"subCategory\": \"music-sound\",\n    \"imageUrls\": []\n  }\n}"
+            },
+            {
+              "name": "200 — заявка отклонена",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{swapRecipientToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/swap-requests/{{swapReferenceId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["swap-requests", "{{swapReferenceId}}"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"rejected\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "**Авторизация:** токен получателя заявки. **Тело:** `{ status }` — `accepted`, чтобы принять обмен, или `rejected`, чтобы отклонить. Ответить можно только на заявку `pending`; повторный запрос с текущим статусом возвращает `200` без изменений. После принятия обмен подтверждён для обоих участников, после отклонения заявка видна только инициатору. **Успех:** `200`, обновлённая заявка. **Ошибки:** `400` — неверное тело или статус; `401` — нет токена; `403` — отвечает инициатор; `409` — заявка уже обработана или отозвана («Заявка отозвана»: её нет либо пользователь в ней не участвует; не `404`, чтобы фронт не уводил на страницу «не найдено»). В справочнике запрос отклоняет заявку из «Предложить обмен», чтобы «Удалить заявку» её убрала и прогон не оставлял данных; пример принятия — в Examples."
+              },
+              "status": "OK",
+              "code": 200,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"id\": \"swap-88deba66-802e-4a57-b0dd-750b54ad5842\",\n  \"skillId\": \"skill-03\",\n  \"fromUserId\": \"user-01\",\n  \"toUserId\": \"user-03\",\n  \"status\": \"rejected\",\n  \"createdAt\": \"2026-11-14T07:15:10.841Z\",\n  \"updatedAt\": \"2026-11-14T07:15:10.870Z\",\n  \"fromUser\": {\n    \"id\": \"user-01\",\n    \"name\": \"Анна\",\n    \"email\": \"anna.smirnova@example.com\",\n    \"avatarUrl\": \"/db/avatars/figma/anna.jpg\",\n    \"createdAt\": \"2025-01-16T11:15:00.000Z\",\n    \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n    \"gender\": \"female\",\n    \"city\": \"Санкт-Петербург\",\n    \"bio\": \"Доброжелательная и любознательная, ценю искреннее общение и тёплые встречи с близкими.\",\n    \"likes\": [\n      \"user-02\"\n    ],\n    \"canTeach\": {\n      \"id\": \"skill-01\",\n      \"category\": \"art\",\n      \"subCategory\": \"music-sound\"\n    },\n    \"wantsToLearn\": [\n      \"acting\",\n      \"german\",\n      \"team-management\"\n    ]\n  },\n  \"toUser\": {\n    \"id\": \"user-03\",\n    \"name\": \"Екатерина\",\n    \"email\": \"ekaterina.petrova@example.com\",\n    \"avatarUrl\": \"/db/avatars/figma/ekaterina.jpg\",\n    \"createdAt\": \"2025-01-24T13:15:00.000Z\",\n    \"birthDate\": \"1993-11-22T00:00:00.000Z\",\n    \"gender\": \"female\",\n    \"city\": \"Казань\",\n    \"bio\": \"Ценю душевные разговоры, семейные традиции и возможность узнавать людей с разными взглядами.\",\n    \"likes\": [\n      \"user-04\",\n      \"user-05\",\n      \"user-06\"\n    ],\n    \"canTeach\": {\n      \"id\": \"skill-03\",\n      \"category\": \"languages\",\n      \"subCategory\": \"english\"\n    },\n    \"wantsToLearn\": [\n      \"german\",\n      \"home-finances\",\n      \"teaching-skills\"\n    ]\n  },\n  \"skill\": {\n    \"id\": \"skill-03\",\n    \"title\": \"Разговорный английский\",\n    \"description\": \"Практика повседневного английского в дружеском формате с разбором ошибок.\",\n    \"type\": \"teach\",\n    \"category\": \"languages\",\n    \"tags\": [\n      \"английский\",\n      \"разговорная практика\"\n    ],\n    \"authorId\": \"user-03\",\n    \"createdAt\": \"2025-01-21T10:15:00.000Z\",\n    \"subCategory\": \"english\",\n    \"imageUrls\": []\n  },\n  \"offeredSkill\": {\n    \"id\": \"skill-01\",\n    \"title\": \"Игра на барабанах\",\n    \"description\": \"Покажу базовые ритмы, работу с палочками и помогу разучить простую партию.\",\n    \"type\": \"teach\",\n    \"category\": \"art\",\n    \"tags\": [\n      \"барабаны\",\n      \"ритм\",\n      \"музыка\"\n    ],\n    \"authorId\": \"user-01\",\n    \"createdAt\": \"2025-01-15T10:15:00.000Z\",\n    \"subCategory\": \"music-sound\",\n    \"imageUrls\": []\n  }\n}"
+            },
+            {
+              "name": "400 — неверный статус",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{swapRecipientToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/swap-requests/{{swapReferenceId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["swap-requests", "{{swapReferenceId}}"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"done\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "**Авторизация:** токен получателя заявки. **Тело:** `{ status }` — `accepted`, чтобы принять обмен, или `rejected`, чтобы отклонить. Ответить можно только на заявку `pending`; повторный запрос с текущим статусом возвращает `200` без изменений. После принятия обмен подтверждён для обоих участников, после отклонения заявка видна только инициатору. **Успех:** `200`, обновлённая заявка. **Ошибки:** `400` — неверное тело или статус; `401` — нет токена; `403` — отвечает инициатор; `409` — заявка уже обработана или отозвана («Заявка отозвана»: её нет либо пользователь в ней не участвует; не `404`, чтобы фронт не уводил на страницу «не найдено»). В справочнике запрос отклоняет заявку из «Предложить обмен», чтобы «Удалить заявку» её убрала и прогон не оставлял данных; пример принятия — в Examples."
+              },
+              "status": "Bad Request",
+              "code": 400,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Недопустимое значение status\"\n}"
+            },
+            {
+              "name": "403 — отвечает инициатор",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/swap-requests/{{swapReferenceId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["swap-requests", "{{swapReferenceId}}"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"accepted\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "**Авторизация:** токен получателя заявки. **Тело:** `{ status }` — `accepted`, чтобы принять обмен, или `rejected`, чтобы отклонить. Ответить можно только на заявку `pending`; повторный запрос с текущим статусом возвращает `200` без изменений. После принятия обмен подтверждён для обоих участников, после отклонения заявка видна только инициатору. **Успех:** `200`, обновлённая заявка. **Ошибки:** `400` — неверное тело или статус; `401` — нет токена; `403` — отвечает инициатор; `409` — заявка уже обработана или отозвана («Заявка отозвана»: её нет либо пользователь в ней не участвует; не `404`, чтобы фронт не уводил на страницу «не найдено»). В справочнике запрос отклоняет заявку из «Предложить обмен», чтобы «Удалить заявку» её убрала и прогон не оставлял данных; пример принятия — в Examples."
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Принять или отклонить заявку может только получатель\"\n}"
+            },
+            {
+              "name": "409 — заявка отозвана",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{swapRecipientToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/swap-requests/swap-missing",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["swap-requests", "swap-missing"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"accepted\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "**Авторизация:** токен получателя заявки. **Тело:** `{ status }` — `accepted`, чтобы принять обмен, или `rejected`, чтобы отклонить. Ответить можно только на заявку `pending`; повторный запрос с текущим статусом возвращает `200` без изменений. После принятия обмен подтверждён для обоих участников, после отклонения заявка видна только инициатору. **Успех:** `200`, обновлённая заявка. **Ошибки:** `400` — неверное тело или статус; `401` — нет токена; `403` — отвечает инициатор; `409` — заявка уже обработана или отозвана («Заявка отозвана»: её нет либо пользователь в ней не участвует; не `404`, чтобы фронт не уводил на страницу «не найдено»). В справочнике запрос отклоняет заявку из «Предложить обмен», чтобы «Удалить заявку» её убрала и прогон не оставлял данных; пример принятия — в Examples."
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Заявка отозвана\"\n}"
+            },
+            {
+              "name": "409 — заявка уже обработана",
+              "originalRequest": {
+                "method": "PATCH",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{swapRecipientToken}}"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/swap-requests/{{swapReferenceId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["swap-requests", "{{swapReferenceId}}"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"status\": \"accepted\"\n}",
+                  "options": {
+                    "raw": {
+                      "language": "json"
+                    }
+                  }
+                },
+                "description": "**Авторизация:** токен получателя заявки. **Тело:** `{ status }` — `accepted`, чтобы принять обмен, или `rejected`, чтобы отклонить. Ответить можно только на заявку `pending`; повторный запрос с текущим статусом возвращает `200` без изменений. После принятия обмен подтверждён для обоих участников, после отклонения заявка видна только инициатору. **Успех:** `200`, обновлённая заявка. **Ошибки:** `400` — неверное тело или статус; `401` — нет токена; `403` — отвечает инициатор; `409` — заявка уже обработана или отозвана («Заявка отозвана»: её нет либо пользователь в ней не участвует; не `404`, чтобы фронт не уводил на страницу «не найдено»). В справочнике запрос отклоняет заявку из «Предложить обмен», чтобы «Удалить заявку» её убрала и прогон не оставлял данных; пример принятия — в Examples."
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Заявка уже обработана\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Удалить заявку",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests/{{swapReferenceId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests", "{{swapReferenceId}}"]
+            },
+            "description": "**Авторизация:** токен инициатора заявки. Тело не требуется. Удаляет отклонённую заявку или отзывает ожидающую. Подтверждённый обмен удалить нельзя. **Успех:** `204` без тела; повторное удаление, как и удаление чужой или несуществующей заявки, тоже возвращает `204` и ничего не меняет. **Ошибки:** `401` — нет токена; `403` — удаляет получатель; `409` — обмен подтверждён."
+          },
+          "response": [
+            {
+              "name": "204 — заявка удалена",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/swap-requests/{{swapReferenceId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["swap-requests", "{{swapReferenceId}}"]
+                },
+                "description": "**Авторизация:** токен инициатора заявки. Тело не требуется. Удаляет отклонённую заявку или отзывает ожидающую. Подтверждённый обмен удалить нельзя. **Успех:** `204` без тела; повторное удаление, как и удаление чужой или несуществующей заявки, тоже возвращает `204` и ничего не меняет. **Ошибки:** `401` — нет токена; `403` — удаляет получатель; `409` — обмен подтверждён."
+              },
+              "status": "No Content",
+              "code": 204,
+              "_postman_previewlanguage": "text",
+              "header": [],
+              "cookie": [],
+              "body": ""
+            },
+            {
+              "name": "403 — удаляет получатель",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{swapRecipientToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/swap-requests/{{swapReferenceId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["swap-requests", "{{swapReferenceId}}"]
+                },
+                "description": "**Авторизация:** токен инициатора заявки. Тело не требуется. Удаляет отклонённую заявку или отзывает ожидающую. Подтверждённый обмен удалить нельзя. **Успех:** `204` без тела; повторное удаление, как и удаление чужой или несуществующей заявки, тоже возвращает `204` и ничего не меняет. **Ошибки:** `401` — нет токена; `403` — удаляет получатель; `409` — обмен подтверждён."
+              },
+              "status": "Forbidden",
+              "code": 403,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Удалить заявку может только её автор\"\n}"
+            },
+            {
+              "name": "409 — обмен подтверждён",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/swap-requests/{{swapReferenceId}}",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["swap-requests", "{{swapReferenceId}}"]
+                },
+                "description": "**Авторизация:** токен инициатора заявки. Тело не требуется. Удаляет отклонённую заявку или отзывает ожидающую. Подтверждённый обмен удалить нельзя. **Успех:** `204` без тела; повторное удаление, как и удаление чужой или несуществующей заявки, тоже возвращает `204` и ничего не меняет. **Ошибки:** `401` — нет токена; `403` — удаляет получатель; `409` — обмен подтверждён."
+              },
+              "status": "Conflict",
+              "code": 409,
+              "_postman_previewlanguage": "json",
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "cookie": [],
+              "body": "{\n  \"message\": \"Подтверждённый обмен нельзя удалить\"\n}"
             }
           ]
         }
@@ -4991,6 +5868,1334 @@
                   "",
                   "pm.test('PUT разрешён', () => pm.expect(pm.response.headers.get('Access-Control-Allow-Methods').split(', ')).to.include('PUT'))"
                 ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Обмены",
+      "description": "Самодостаточный сценарий заявок на обмен. Регистрирует инициатора и получателя, проверяет создание, правила навыков, списки по ролям, отклонение, удаление, отзыв и принятие заявки, а также ошибки. Демо-пользователь и сиды не меняются; в базе остаются два тестовых пользователя с подтверждённым обменом.",
+      "item": [
+        {
+          "name": "Регистрация инициатора",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{swapFromEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Инициатор обмена\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Рисование скетчей\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу основам\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.set('swapFromEmail', `swap.from.${Date.now()}.${Math.random().toString(16).slice(2)}@example.com`)"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201', () => pm.response.to.have.status(201))",
+                  "",
+                  "pm.collectionVariables.set('swapFromToken', pm.response.json().token)",
+                  "pm.collectionVariables.set('swapFromId', pm.response.json().id)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Регистрация получателя",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "register"]
+            },
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "data",
+                  "value": "{\n  \"email\": \"{{swapToEmail}}\",\n  \"password\": \"SkillSwapMock2025!\",\n  \"name\": \"Получатель обмена\",\n  \"birthDate\": \"1995-02-08T00:00:00.000Z\",\n  \"gender\": \"female\",\n  \"city\": \"Москва\",\n  \"wantsToLearn\": [\n    \"english\"\n  ],\n  \"canTeach\": {\n    \"title\": \"Рисование портретов\",\n    \"category\": \"art\",\n    \"subCategory\": \"illustration\",\n    \"description\": \"Научу основам\"\n  }\n}",
+                  "type": "text",
+                  "contentType": "application/json"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.set('swapToEmail', `swap.to.${Date.now()}.${Math.random().toString(16).slice(2)}@example.com`)"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201', () => pm.response.to.have.status(201))",
+                  "",
+                  "pm.collectionVariables.set('swapToToken', pm.response.json().token)",
+                  "pm.collectionVariables.set('swapToId', pm.response.json().id)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Навык инициатора",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapFromToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "pm.collectionVariables.set('swapFromSkillId', pm.response.json().canTeach.id)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Навык получателя",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapToToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["auth", "me"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "pm.collectionVariables.set('swapToSkillId', pm.response.json().canTeach.id)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Предложить обмен без токена — 401",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"skillId\": \"{{swapToSkillId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('401', () => pm.response.to.have.status(401))"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Свой навык — 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapFromToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"skillId\": \"{{swapFromSkillId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('400', () => pm.response.to.have.status(400))",
+                  "pm.test('сообщение об ошибке', () => pm.expect(pm.response.json().message).to.include('свой навык'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Лишнее поле — 400",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapFromToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"skillId\": \"{{swapToSkillId}}\",\n  \"toUserId\": \"{{swapToId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('400', () => pm.response.to.have.status(400))"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Предложить обмен — 201",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapFromToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"skillId\": \"{{swapToSkillId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201', () => pm.response.to.have.status(201))",
+                  "",
+                  "const swap = pm.response.json()",
+                  "pm.test('заявка ожидает ответа', () => pm.expect(swap.status).to.eql('pending'))",
+                  "pm.collectionVariables.set('swapId', swap.id)",
+                  "pm.test('участники из токена и навыка', () => {",
+                  "  pm.expect(swap.fromUserId).to.eql(pm.collectionVariables.get('swapFromId'))",
+                  "  pm.expect(swap.toUserId).to.eql(pm.collectionVariables.get('swapToId'))",
+                  "})",
+                  "pm.test('навыки обеих сторон', () => {",
+                  "  pm.expect(swap.skill.id).to.eql(pm.collectionVariables.get('swapToSkillId'))",
+                  "  pm.expect(swap.offeredSkill.id).to.eql(pm.collectionVariables.get('swapFromSkillId'))",
+                  "})",
+                  "pm.test('пароли не передаются', () => {",
+                  "  pm.expect(swap.fromUser).not.to.have.property('password')",
+                  "  pm.expect(swap.toUser).not.to.have.property('password')",
+                  "})"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Повторное предложение — 409",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapFromToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"skillId\": \"{{swapToSkillId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409', () => pm.response.to.have.status(409))",
+                  "pm.test('сообщение об ошибке', () => pm.expect(pm.response.json().message).to.include('уже предложили'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Встречное предложение — 409",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapToToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"skillId\": \"{{swapFromSkillId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409', () => pm.response.to.have.status(409))",
+                  "pm.test('сообщение об ошибке', () => pm.expect(pm.response.json().message).to.include('ответьте на его заявку'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Входящие получателя",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapToToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests?role=incoming&status=pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests"],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "incoming"
+                },
+                {
+                  "key": "status",
+                  "value": "pending"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "const ids = pm.response.json().items.map((item) => item.id)",
+                  "pm.test('заявка во входящих', () => pm.expect(ids).to.include(pm.collectionVariables.get('swapId')))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Исходящие инициатора",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapFromToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests?role=outgoing&status=pending",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests"],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "outgoing"
+                },
+                {
+                  "key": "status",
+                  "value": "pending"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "const ids = pm.response.json().items.map((item) => item.id)",
+                  "pm.test('заявка в исходящих', () => pm.expect(ids).to.include(pm.collectionVariables.get('swapId')))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Неизвестный role — 400",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapFromToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests?role=mine",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests"],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "mine"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('400', () => pm.response.to.have.status(400))"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Инициатор не может ответить — 403",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapFromToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests/{{swapId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests", "{{swapId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"accepted\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('403', () => pm.response.to.have.status(403))"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Неверный статус — 400",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapToToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests/{{swapId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests", "{{swapId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"pending\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('400', () => pm.response.to.have.status(400))"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Отклонить — 200",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapToToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests/{{swapId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests", "{{swapId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"rejected\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "pm.test('статус rejected', () => pm.expect(pm.response.json().status).to.eql('rejected'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Повторное отклонение — 200",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapToToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests/{{swapId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests", "{{swapId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"rejected\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "pm.test('статус rejected', () => pm.expect(pm.response.json().status).to.eql('rejected'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Принять отклонённую — 409",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapToToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests/{{swapId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests", "{{swapId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"accepted\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409', () => pm.response.to.have.status(409))",
+                  "pm.test('сообщение об ошибке', () => pm.expect(pm.response.json().message).to.include('уже обработана'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Отклонённая скрыта у получателя",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapToToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "const ids = pm.response.json().items.map((item) => item.id)",
+                  "pm.test('заявки нет у получателя', () => pm.expect(ids).not.to.include(pm.collectionVariables.get('swapId')))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Отклонённая видна инициатору",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapFromToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests?role=outgoing&status=rejected",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests"],
+              "query": [
+                {
+                  "key": "role",
+                  "value": "outgoing"
+                },
+                {
+                  "key": "status",
+                  "value": "rejected"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "const ids = pm.response.json().items.map((item) => item.id)",
+                  "pm.test('заявка отклонена', () => pm.expect(ids).to.include(pm.collectionVariables.get('swapId')))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Предложить снова до удаления — 409",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapFromToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"skillId\": \"{{swapToSkillId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409', () => pm.response.to.have.status(409))",
+                  "pm.test('сообщение об ошибке', () => pm.expect(pm.response.json().message).to.include('удалите её'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Получатель не удаляет — 403",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapToToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests/{{swapId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests", "{{swapId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('403', () => pm.response.to.have.status(403))"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Удалить отклонённую — 204",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapFromToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests/{{swapId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests", "{{swapId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('204', () => pm.response.to.have.status(204))"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Повторное удаление — 204",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapFromToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests/{{swapId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests", "{{swapId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('204', () => pm.response.to.have.status(204))"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Предложить снова — 201",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapFromToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"skillId\": \"{{swapToSkillId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201', () => pm.response.to.have.status(201))",
+                  "",
+                  "const swap = pm.response.json()",
+                  "pm.test('заявка ожидает ответа', () => pm.expect(swap.status).to.eql('pending'))",
+                  "pm.collectionVariables.set('swapId', swap.id)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Отозвать ожидающую — 204",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapFromToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests/{{swapId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests", "{{swapId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('204', () => pm.response.to.have.status(204))"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ответ на отозванную — 409",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapToToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests/{{swapId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests", "{{swapId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"accepted\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409', () => pm.response.to.have.status(409))",
+                  "pm.test('заявка отозвана', () => pm.expect(pm.response.json().message).to.eql('Заявка отозвана'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Предложить ещё раз — 201",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapFromToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"skillId\": \"{{swapToSkillId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201', () => pm.response.to.have.status(201))",
+                  "",
+                  "const swap = pm.response.json()",
+                  "pm.test('заявка ожидает ответа', () => pm.expect(swap.status).to.eql('pending'))",
+                  "pm.collectionVariables.set('swapId', swap.id)"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Принять — 200",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapToToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests/{{swapId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests", "{{swapId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"accepted\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "pm.test('статус accepted', () => pm.expect(pm.response.json().status).to.eql('accepted'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Повторное принятие — 200",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapToToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests/{{swapId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests", "{{swapId}}"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"accepted\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "pm.test('статус accepted', () => pm.expect(pm.response.json().status).to.eql('accepted'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Подтверждённый обмен у инициатора",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapFromToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests?status=accepted",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "accepted"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "const ids = pm.response.json().items.map((item) => item.id)",
+                  "pm.test('обмен подтверждён', () => pm.expect(ids).to.include(pm.collectionVariables.get('swapId')))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Подтверждённый обмен у получателя",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapToToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests?status=accepted",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests"],
+              "query": [
+                {
+                  "key": "status",
+                  "value": "accepted"
+                }
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "",
+                  "const ids = pm.response.json().items.map((item) => item.id)",
+                  "pm.test('обмен подтверждён', () => pm.expect(ids).to.include(pm.collectionVariables.get('swapId')))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Удалить подтверждённый — 409",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapFromToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests/{{swapId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests", "{{swapId}}"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('409', () => pm.response.to.have.status(409))"]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Встречное после принятия — 409",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{swapToToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests"]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"skillId\": \"{{swapFromSkillId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('409', () => pm.response.to.have.status(409))",
+                  "pm.test('сообщение об ошибке', () => pm.expect(pm.response.json().message).to.include('уже подтверждён'))"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Список без токена — 401",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/swap-requests",
+              "host": ["{{baseUrl}}"],
+              "path": ["swap-requests"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": ["pm.test('401', () => pm.response.to.have.status(401))"]
               }
             }
           ]

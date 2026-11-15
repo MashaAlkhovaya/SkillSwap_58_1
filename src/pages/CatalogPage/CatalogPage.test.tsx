@@ -6,6 +6,7 @@ import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { User } from '@/shared/types'
 import CatalogPage from './index'
+import exchangeReducer from '@/features/exchange/model/exchangeSlice'
 
 const { loadUsersMock } = vi.hoisted(() => ({
   loadUsersMock: vi.fn((params: { page?: number; sort: string }) => ({
@@ -65,7 +66,7 @@ const defaultUsersState: UsersState = {
 
 function renderCatalogPage(usersState: UsersState = defaultUsersState, initialEntry = '/') {
   const store = configureStore({
-    reducer: { users: (state = usersState) => state },
+    reducer: { users: (state = usersState) => state, exchange: exchangeReducer },
   })
 
   return {
