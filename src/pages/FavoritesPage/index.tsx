@@ -7,13 +7,15 @@ import { Button, Card, Skeleton } from '@/shared/ui'
 import type { User } from '@/shared/types'
 import { CatalogSection } from '@/widgets'
 import { useCallback, useEffect } from 'react'
-import { generatePath, Link, useNavigate } from 'react-router-dom'
+import { generatePath, Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { ErrorWidget } from '@/widgets/ErrorWidget'
 
 const EMPTY_IDS: string[] = []
 
 export default function FavoritesPage() {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const name = searchParams.get('name')?.trim() ?? ''
   const openSkill = (user: User) => navigate(generatePath(ROUTES.SKILL, { id: user.canTeach.id }))
   const dispatch = useAppDispatch()
   const { favoriteUsers, isFavoritesLoading, favoritesError, favoritesPage, favoritesHasMore } =
@@ -23,8 +25,8 @@ export default function FavoritesPage() {
 
   const loadFavorites = useCallback(
     (nextPage: number) =>
-      dispatch(loadFavoriteUsers({ ids: likedUserIds, page: nextPage, limit: 12 })),
-    [dispatch, likedUserIds],
+      dispatch(loadFavoriteUsers({ ids: likedUserIds, page: nextPage, limit: 12, name })),
+    [dispatch, likedUserIds, name],
   )
 
   useEffect(() => {
@@ -44,6 +46,8 @@ export default function FavoritesPage() {
         <CatalogPreloader />
       ) : errorMessage ? (
         <ErrorWidget type={500} />
+      ) : favoriteUsers.length === 0 && likedUserIds.length > 0 && name ? (
+        <p>По запросу «{name}» ничего не найдено</p>
       ) : favoriteUsers.length === 0 ? (
         <Link to={ROUTES.HOME}>
           <Button>Вернуться в каталог</Button>

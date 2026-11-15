@@ -35,10 +35,15 @@ export async function fetchUsersByIds(
   ids: string[],
   page = 1,
   limit = 12,
+  name: string = '',
 ): Promise<{ users: User[]; hasMore: boolean }> {
   if (ids.length === 0) return { users: [], hasMore: false }
 
-  const params = new URLSearchParams({ page: String(page), limit: String(limit) })
+  const params = new URLSearchParams({
+    page: String(page),
+    limit: String(limit),
+    ...(name ? { name } : {}),
+  })
   ids.forEach((id) => params.append('ids[]', id))
 
   const response = await fetch(`${BASE_URL}/users?${params}`)

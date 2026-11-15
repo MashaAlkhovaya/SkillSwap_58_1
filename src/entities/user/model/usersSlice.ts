@@ -73,17 +73,31 @@ export const loadUsers = createAsyncThunk(
 
 export const loadFavoriteUsers = createAsyncThunk(
   'users/loadFavoriteUsers',
-  async ({ ids, page = 1, limit = 12 }: { ids: string[]; page?: number; limit?: number }) => {
-    const data = await fetchUsersByIds(ids, page, limit)
+  async ({
+    ids,
+    page = 1,
+    limit = 12,
+    name = '',
+  }: {
+    ids: string[]
+    page?: number
+    limit?: number
+    name?: string
+  }) => {
+    const trimmedName = name.trim()
+    const data = trimmedName
+      ? await fetchUsersByIds(ids, page, limit, trimmedName)
+      : await fetchUsersByIds(ids, page, limit)
     return { ...data, page }
   },
   {
-    condition: ({ ids, page = 1 }, { getState }) => {
+    condition: ({ ids, page = 1, name = '' }, { getState }) => {
       const state = (getState() as { users: UsersState }).users
       const idsKey = ids.join('\u0000')
+      const searchKey = `${idsKey}\u0001${name.trim()}`
       if (ids.length === 0) return false
-      if (state.isFavoritesLoading && state.favoritesIdsKey === idsKey) return false
-      return page === 1 || (state.favoritesIdsKey === idsKey && state.favoritesHasMore)
+      if (state.isFavoritesLoading && state.favoritesIdsKey === searchKey) return false
+      return page === 1 || (state.favoritesIdsKey === searchKey && state.favoritesHasMore)
     },
   },
 )
@@ -148,15 +162,22 @@ export const usersSlice = createSlice({
       })
     builder
       .addCase(loadFavoriteUsers.pending, (state, action) => {
+        const searchKey = `${action.meta.arg.ids.join('\u0000')}\u0001${action.meta.arg.name?.trim() ?? ''}`
+        if (state.favoritesIdsKey !== searchKey) {
+          state.favoriteUsers = []
+          state.favoritesPage = 0
+          state.favoritesHasMore = false
+        }
         state.isFavoritesLoading = true
         state.favoritesError = null
-        state.favoritesIdsKey = action.meta.arg.ids.join('\u0000')
+        state.favoritesIdsKey = searchKey
         state.favoritesRequestId = action.meta.requestId
       })
       .addCase(loadFavoriteUsers.fulfilled, (state, action) => {
         if (
           state.favoritesRequestId !== action.meta.requestId ||
-          state.favoritesIdsKey !== action.meta.arg.ids.join('\u0000')
+          state.favoritesIdsKey !==
+            `${action.meta.arg.ids.join('\u0000')}\u0001${action.meta.arg.name?.trim() ?? ''}`
         ) {
           return
         }
@@ -170,7 +191,8 @@ export const usersSlice = createSlice({
       .addCase(loadFavoriteUsers.rejected, (state, action) => {
         if (
           state.favoritesRequestId !== action.meta.requestId ||
-          state.favoritesIdsKey !== action.meta.arg.ids.join('\u0000')
+          state.favoritesIdsKey !==
+            `${action.meta.arg.ids.join('\u0000')}\u0001${action.meta.arg.name?.trim() ?? ''}`
         ) {
           return
         }
