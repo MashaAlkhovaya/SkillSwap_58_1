@@ -5,6 +5,7 @@ import { Link, MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import LoginPage from '@/pages/LoginPage'
 import { setAuthUser, logout, selectAuthUser } from '@/features/auth/model/authSlice'
+import { removeNotification } from '@/features/notifications'
 import { store } from '@/store'
 import { NotificationStack } from '@/widgets/NotificationStack'
 import { UserMenu } from '@/widgets/UserMenu'
@@ -115,6 +116,9 @@ describe('Уведомления об обмене', () => {
   afterEach(async () => {
     cleanup()
     await store.dispatch(logout())
+    store.getState().notifications.items.forEach(({ id }) => {
+      store.dispatch(removeNotification(id))
+    })
     vi.unstubAllGlobals()
   })
 
@@ -191,9 +195,17 @@ describe('Уведомления об обмене', () => {
     await screen.findByText('Алиса')
     await user.click(screen.getByRole('button', { name: 'Предложить обмен' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Пользователь уже предложил вам обмен: ответьте на его заявку',
-    )
+    const toast = await screen.findByLabelText('Уведомления', { selector: 'div' })
+    expect(
+      within(toast).getByText('Пользователь уже предложил вам обмен: ответьте на его заявку'),
+    ).toBeVisible()
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(store.getState().notifications.items).toEqual([
+      expect.objectContaining({ type: 'error', title: 'Ошибка' }),
+    ])
+    expect(store.getState().notifications.items[0]).not.toHaveProperty('exchangeSkillId')
+    expect(store.getState().notificationHistory.items).toEqual([])
+
     expect(screen.getByRole('button', { name: 'Предложить обмен' })).toBeEnabled()
     expect(screen.queryByText('Вы предложили обмен')).not.toBeInTheDocument()
   })
@@ -207,9 +219,24 @@ describe('Уведомления об обмене', () => {
     await screen.findByText('Алиса')
     await user.click(screen.getByRole('button', { name: 'Предложить обмен' }))
 
-    expect(await screen.findByRole('alert')).toHaveTextContent(
-      'Не удалось отправить заявку на обмен. Попробуйте ещё раз.',
-    )
+    const toast = await screen.findByLabelText('Уведомления', { selector: 'div' })
+    expect(
+      within(toast).getByText('Не удалось отправить заявку на обмен. Попробуйте ещё раз.'),
+    ).toBeVisible()
+  })
+
+  it('после выхода показывает тост, который остаётся видимым после перехода в каталог', async () => {
+    const user = userEvent.setup()
+    renderExchange()
+
+    await screen.findByText('Алиса')
+    await user.click(screen.getByLabelText('Меню пользователя'))
+    await user.click(screen.getByText('Выйти из аккаунта'))
+
+    expect(await screen.findByRole('heading', { name: 'Каталог' })).toBeVisible()
+    const toast = screen.getByLabelText('Уведомления', { selector: 'div' })
+    expect(within(toast).getByText('Выход выполнен')).toBeVisible()
+    expect(store.getState().notifications.items).toHaveLength(1)
   })
 
   it('кнопка отражает заявки текущего аккаунта после смены пользователя', async () => {
