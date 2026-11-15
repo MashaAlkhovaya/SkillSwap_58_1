@@ -12,6 +12,7 @@ import { logout, setAuthUser, setProfile } from './authSlice'
 import { getAuthUser, saveServerAuthUser, saveUserProfile } from './authUtils'
 import { useNavigate } from 'react-router'
 import { ROUTES } from '@/shared/lib/constants'
+import { useNotify } from '@/features/notifications'
 
 const authFormSchema = yup.object({
   email: yup.string().trim().required('Введите email'),
@@ -62,6 +63,12 @@ export function useAuthForm(returnTo: string = ROUTES.HOME) {
   const [login] = useLoginMutation()
   const [error, setError] = useState<string | null>(null)
   const navigate = useNavigate()
+  const notify = useNotify()
+
+  function showError(message: string) {
+    setError(message)
+    notify.error(message)
+  }
 
   const {
     register,
@@ -101,6 +108,7 @@ export function useAuthForm(returnTo: string = ROUTES.HOME) {
         ) {
           saveUserProfile(profile)
           dispatch(setProfile(profile))
+          notify.success('Вы вошли в аккаунт')
           navigate(returnTo, { replace: true })
         }
       } catch (profileError) {
@@ -119,14 +127,14 @@ export function useAuthForm(returnTo: string = ROUTES.HOME) {
           profileError.status === 401
         ) {
           await dispatch(logout())
-          setError('Сессия недействительна. Войдите ещё раз.')
+          showError('Сессия недействительна. Войдите ещё раз.')
           return
         }
 
-        setError('Вы вошли, но не удалось загрузить профиль. Попробуйте обновить страницу.')
+        showError('Вы вошли, но не удалось загрузить профиль. Попробуйте обновить страницу.')
       }
     } catch (requestError) {
-      setError(getLoginError(requestError))
+      showError(getLoginError(requestError))
     }
   })
 
