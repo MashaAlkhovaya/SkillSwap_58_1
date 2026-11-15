@@ -2,9 +2,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { ROUTES, SKILL_CATEGORIES } from '@/shared/lib/constants'
 import { getAuthReturnPath } from '@/shared/lib/authRedirect'
 import {
-  TextInput,
   CloseIcon,
-  SearchIcon,
   ChevronDown,
   Dropdown,
   Button,
@@ -15,9 +13,12 @@ import {
   BookIcon,
   HomeIcon,
   LifestyleIcon,
+  SkillInput,
 } from '@/shared/ui'
 import styles from './Header.module.css'
 import { UserMenu } from '@/widgets/UserMenu'
+import { useEffect, useState } from 'react'
+import { useCatalogFilters } from '@/features/catalog-filter'
 
 const CATEGORY_ICONS = {
   business: BriefcaseIcon,
@@ -33,6 +34,30 @@ export function Header() {
   const navigate = useNavigate()
   const normalizedPathname = pathname.replace(/\/+$/, '') || '/'
   const isCompact = normalizedPathname === ROUTES.LOGIN || normalizedPathname === ROUTES.REGISTER
+
+  const { filters, setFilters } = useCatalogFilters()
+  const [localSearch, setLocalSearch] = useState(filters.search || '')
+
+  useEffect(() => {
+    setLocalSearch(filters.search || '')
+  }, [filters.search])
+
+  const handleSearchChange = (value: string) => {
+    setLocalSearch(value)
+
+    const searchValue = value.trim() === '' ? null : value
+
+    if (pathname !== ROUTES.HOME) {
+      if (searchValue) {
+        navigate(`${ROUTES.HOME}?q=${encodeURIComponent(searchValue)}`)
+      } else {
+        navigate(ROUTES.HOME)
+      }
+    } else {
+      setFilters((prev) => ({ ...prev, search: searchValue }))
+    }
+  }
+
   const handleClose = () => {
     navigate(getAuthReturnPath(state), { replace: true })
   }
@@ -97,12 +122,7 @@ export function Header() {
         </Dropdown>
       </div>
       <div className={styles.center}>
-        {/* TODO: заменить на виджет поиска по навыкам */}
-        <TextInput
-          className={styles.searchInput}
-          placeholder="Искать навык"
-          leftContent={<SearchIcon size={20} color="var(--color-text-secondary)" />}
-        />
+        <SkillInput value={localSearch} onChange={handleSearchChange} />
       </div>
       <div className={styles.right}>
         <UserMenu />

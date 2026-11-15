@@ -1,4 +1,4 @@
-import { User } from '@/shared/types/index.ts'
+import { FiltersState, User } from '@/shared/types/index.ts'
 import { fetchUsers } from '@/api/users.ts'
 import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
 
@@ -30,11 +30,18 @@ const initialState: UsersState = {
   isExpanded: false,
 }
 
+interface LoadUsersArgs {
+  page?: number
+  limit?: number
+  sort: UserSort
+  filters?: FiltersState
+}
+
 export const loadUsers = createAsyncThunk(
   'users/load',
-  async (params: { page?: number; limit?: number; sort: UserSort }) => {
-    const { page = 1, limit = 9, sort } = params
-    const data = await fetchUsers(page, limit, sort)
+  async (params: LoadUsersArgs) => {
+    const { page = 1, limit = 9, sort, filters } = params
+    const data = await fetchUsers(page, limit, sort, filters)
     return { users: data.users, hasMore: data.hasMore, sort, page }
   },
   {
@@ -46,7 +53,10 @@ export const loadUsers = createAsyncThunk(
           : sort === 'new'
             ? state.isNewLoading
             : state.isRecommendedLoading
-      return !isLoading && state.hasMore[sort] && page === state.pages[sort] + 1
+      const isFirstPage = page === 1
+      const isNextPage = page === state.pages[sort] + 1
+
+      return !isLoading && (isFirstPage || (state.hasMore[sort] && isNextPage))
     },
   },
 )
@@ -73,6 +83,9 @@ export const usersSlice = createSlice({
       if (sort === 'new') state.isNewLoading = true
       if (sort === 'random') state.isRecommendedLoading = true
       delete state.errors[sort]
+      if (action.meta.arg.page === 1) {
+        state.hasMore[sort] = true
+      }
     })
     builder.addCase(loadUsers.fulfilled, (state, action) => {
       const { users, hasMore, sort, page } = action.payload
