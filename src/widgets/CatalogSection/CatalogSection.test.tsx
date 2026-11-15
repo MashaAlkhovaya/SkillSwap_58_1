@@ -4,6 +4,14 @@ import { describe, expect, it, vi } from 'vitest'
 import type { User } from '@/shared/types'
 import { CatalogSection } from './CatalogSection'
 
+const { useOutgoingPendingSkillIdsMock } = vi.hoisted(() => ({
+  useOutgoingPendingSkillIdsMock: vi.fn<() => string[]>(() => []),
+}))
+
+vi.mock('@/features/exchange', () => ({
+  useOutgoingPendingSkillIds: useOutgoingPendingSkillIdsMock,
+}))
+
 function createUsers(count: number): User[] {
   return Array.from({ length: count }, (_, index) => ({
     id: `user-${index + 1}`,
@@ -26,6 +34,10 @@ function createUsers(count: number): User[] {
 }
 
 describe('CatalogSection', () => {
+  beforeEach(() => {
+    useOutgoingPendingSkillIdsMock.mockReturnValue([])
+  })
+
   it('показывает 3 карточки, раскрывает все загруженные и сворачивает обратно', async () => {
     const user = userEvent.setup()
 
@@ -109,6 +121,8 @@ describe('CatalogSection', () => {
   })
 
   it('показывает «Обмен предложен» только у карточки с предложенным навыком', () => {
+    useOutgoingPendingSkillIdsMock.mockReturnValue(['skill-2'])
+
     render(
       <CatalogSection
         title="Каталог"
@@ -116,7 +130,6 @@ describe('CatalogSection', () => {
         favoriteIds={[]}
         onDetails={() => {}}
         onFavoriteToggle={() => {}}
-        proposedSkillIds={['skill-2']}
       />,
     )
 
