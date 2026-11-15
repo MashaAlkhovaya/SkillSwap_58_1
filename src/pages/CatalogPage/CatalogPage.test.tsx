@@ -6,17 +6,21 @@ import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { User } from '@/shared/types'
 import CatalogPage from './index'
-import exchangeReducer from '@/features/exchange/model/exchangeSlice'
 
-const { loadUsersMock } = vi.hoisted(() => ({
+const { loadUsersMock, useOutgoingPendingSkillIdsMock } = vi.hoisted(() => ({
   loadUsersMock: vi.fn((params: { page?: number; sort: string }) => ({
     type: 'users/load',
     payload: params,
   })),
+  useOutgoingPendingSkillIdsMock: vi.fn<() => string[]>(() => []),
 }))
 
 vi.mock('@/entities/user/model/usersSlice', () => ({
   loadUsers: loadUsersMock,
+}))
+
+vi.mock('@/features/exchange', () => ({
+  useOutgoingPendingSkillIds: useOutgoingPendingSkillIdsMock,
 }))
 
 function createUsers(count: number): User[] {
@@ -66,7 +70,7 @@ const defaultUsersState: UsersState = {
 
 function renderCatalogPage(usersState: UsersState = defaultUsersState, initialEntry = '/') {
   const store = configureStore({
-    reducer: { users: (state = usersState) => state, exchange: exchangeReducer },
+    reducer: { users: (state = usersState) => state },
   })
 
   return {
@@ -88,6 +92,7 @@ describe('CatalogPage', () => {
 
   beforeEach(() => {
     loadUsersMock.mockClear()
+    useOutgoingPendingSkillIdsMock.mockReturnValue([])
   })
 
   it('запрашивает первую страницу популярных, новых и рекомендуемых пользователей', () => {

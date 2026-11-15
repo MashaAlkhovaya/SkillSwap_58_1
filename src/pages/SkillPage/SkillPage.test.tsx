@@ -4,7 +4,7 @@ import { Provider } from 'react-redux'
 import { Link, MemoryRouter, Route, Routes } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import LoginPage from '@/pages/LoginPage'
-import { setAuthUser, logout } from '@/features/auth/model/authSlice'
+import { setAuthUser, logout, selectAuthUser } from '@/features/auth/model/authSlice'
 import { store } from '@/store'
 import { NotificationStack } from '@/widgets/NotificationStack'
 import { UserMenu } from '@/widgets/UserMenu'
@@ -22,6 +22,26 @@ const owners = [
   { id: 'alice', name: 'Алиса', city: 'Москва' },
   { id: 'ivan', name: 'Иван', city: 'Казань' },
 ]
+
+const { useGetSwapRequestsQueryMock, useCreateSwapRequestMutationMock, outgoing, createRequest } =
+  vi.hoisted(() => ({
+    useGetSwapRequestsQueryMock: vi.fn(),
+    useCreateSwapRequestMutationMock: vi.fn(),
+    outgoing: {
+      itemsByUser: {} as Record<
+        string,
+        { skillId: string; status: 'pending' | 'accepted' | 'rejected' }[]
+      >,
+      errorPayload: null as unknown,
+      gate: null as Promise<void> | null,
+    },
+    createRequest: { current: null as null | ReturnType<typeof vi.fn> },
+  }))
+
+vi.mock('@/entities/request/model/api/swapRequestApi', () => ({
+  useGetSwapRequestsQuery: useGetSwapRequestsQueryMock,
+  useCreateSwapRequestMutation: useCreateSwapRequestMutationMock,
+}))
 
 function renderExchange() {
   return render(
@@ -44,6 +64,41 @@ function renderExchange() {
 describe('Уведомления об обмене', () => {
   beforeEach(() => {
     localStorage.clear()
+
+    outgoing.itemsByUser = {}
+    outgoing.errorPayload = null
+    outgoing.gate = null
+
+    useGetSwapRequestsQueryMock.mockImplementation(() => {
+      const user = selectAuthUser(store.getState())
+      return {
+        data: { items: outgoing.itemsByUser[user?.id ?? ''] ?? [] },
+        isLoading: false,
+      }
+    })
+
+    const createMock = vi.fn(({ skillId }: { skillId: string }) => ({
+      unwrap: async () => {
+        await outgoing.gate
+        outgoing.gate = null
+
+        if (outgoing.errorPayload) throw outgoing.errorPayload
+
+        const user = selectAuthUser(store.getState())
+        const items = outgoing.itemsByUser[user?.id ?? ''] ?? []
+        outgoing.itemsByUser[user?.id ?? ''] = items
+
+        if (!items.some((item) => item.skillId === skillId)) {
+          items.push({ skillId, status: 'pending' })
+        }
+
+        return { id: `request-${items.length}` }
+      },
+    }))
+
+    createRequest.current = createMock
+    useCreateSwapRequestMutationMock.mockReturnValue([createMock, { isLoading: false }])
+
     vi.stubGlobal(
       'fetch',
       vi.fn(async (request: Request) => {
@@ -63,20 +118,120 @@ describe('Уведомления об обмене', () => {
     vi.unstubAllGlobals()
   })
 
-  it('сохраняет заявку и показывает модалку «Вы предложили обмен»', async () => {
+  it('отправляет заявку, показывает модалку «Вы предложили обмен» и уведомление', async () => {
     const user = userEvent.setup()
     renderExchange()
 
     await screen.findByText('Алиса')
-    expect(store.getState().exchange.proposedSkillIds).not.toContain('drawing')
     await user.click(screen.getByRole('button', { name: 'Предложить обмен' }))
 
+    expect(createRequest.current).toHaveBeenCalledWith({ skillId: 'drawing' })
     expect(screen.getByText('Вы предложили обмен')).toBeInTheDocument()
-    expect(store.getState().exchange.proposedSkillIds).toContain('drawing')
+    expect(screen.getByRole('button', { name: 'Обмен предложен' })).toBeDisabled()
+
+    const toast = screen.getByLabelText('Уведомления', { selector: 'div' })
+    expect(within(toast).getByText('Вы предложили обмен пользователю Алиса')).toBeVisible()
+    expect(within(toast).getByRole('link', { name: 'Перейти' })).toHaveAttribute(
+      'href',
+      '/skill/drawing',
+    )
 
     await user.click(screen.getByRole('button', { name: 'Готово' }))
-
     expect(screen.queryByText('Вы предложили обмен')).not.toBeInTheDocument()
+
+    await user.click(within(toast).getByRole('button', { name: 'Закрыть' }))
+  })
+
+  it('неактивная кнопка «Обмен предложен», если исходящая заявка уже есть', async () => {
+    outgoing.itemsByUser[currentUser.id] = [{ skillId: 'drawing', status: 'pending' }]
+
+    renderExchange()
+
+    await screen.findByText('Алиса')
+    expect(screen.getByRole('button', { name: 'Обмен предложен' })).toBeDisabled()
+    expect(createRequest.current).not.toHaveBeenCalled()
+  })
+
+  it('не отправляет второй запрос при повторном клике во время запроса', async () => {
+    const user = userEvent.setup()
+    renderExchange()
+
+    await screen.findByText('Алиса')
+
+    let release!: () => void
+    outgoing.gate = new Promise<void>((resolve) => {
+      release = resolve
+    })
+
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'Предложить обмен' }))
+    })
+    await act(async () => {
+      await user.click(screen.getByRole('button', { name: 'Предложить обмен' }))
+    })
+
+    expect(createRequest.current).toHaveBeenCalledTimes(1)
+
+    await act(async () => {
+      release()
+    })
+    expect(await screen.findByText('Вы предложили обмен')).toBeInTheDocument()
+    expect(createRequest.current).toHaveBeenCalledTimes(1)
+  })
+
+  it('показывает ошибку сервера, не меняя состояние кнопки и не открывая модалку', async () => {
+    const user = userEvent.setup()
+    outgoing.errorPayload = {
+      status: 409,
+      data: { message: 'Пользователь уже предложил вам обмен: ответьте на его заявку' },
+    }
+
+    renderExchange()
+
+    await screen.findByText('Алиса')
+    await user.click(screen.getByRole('button', { name: 'Предложить обмен' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Пользователь уже предложил вам обмен: ответьте на его заявку',
+    )
+    expect(screen.getByRole('button', { name: 'Предложить обмен' })).toBeEnabled()
+    expect(screen.queryByText('Вы предложили обмен')).not.toBeInTheDocument()
+  })
+
+  it('показывает общий текст ошибки, если сервер не вернул message', async () => {
+    const user = userEvent.setup()
+    outgoing.errorPayload = { status: 500 }
+
+    renderExchange()
+
+    await screen.findByText('Алиса')
+    await user.click(screen.getByRole('button', { name: 'Предложить обмен' }))
+
+    expect(await screen.findByRole('alert')).toHaveTextContent(
+      'Не удалось отправить заявку на обмен. Попробуйте ещё раз.',
+    )
+  })
+
+  it('кнопка отражает заявки текущего аккаунта после смены пользователя', async () => {
+    outgoing.itemsByUser[currentUser.id] = [{ skillId: 'drawing', status: 'pending' }]
+
+    renderExchange()
+
+    await screen.findByText('Алиса')
+    expect(screen.getByRole('button', { name: 'Обмен предложен' })).toBeDisabled()
+
+    act(() => {
+      store.dispatch(setAuthUser(otherUser))
+    })
+
+    expect(await screen.findByRole('button', { name: 'Предложить обмен' })).toBeEnabled()
+    expect(screen.queryByRole('button', { name: 'Обмен предложен' })).not.toBeInTheDocument()
+
+    act(() => {
+      store.dispatch(setAuthUser(currentUser))
+    })
+
+    expect(await screen.findByRole('button', { name: 'Обмен предложен' })).toBeDisabled()
   })
 
   it('создаёт плашку и запись из карточки навыка, открывает владельца и очищает только просмотренные', async () => {
@@ -87,7 +242,6 @@ describe('Уведомления об обмене', () => {
     await screen.findByText('Алиса')
     await user.click(offer)
 
-    expect(screen.getByRole('button', { name: 'Обмен предложен' })).toBeDisabled()
     const toast = screen.getByLabelText('Уведомления', { selector: 'div' })
     expect(within(toast).getByText('Вы предложили обмен пользователю Алиса')).toBeVisible()
     expect(within(toast).getByRole('link', { name: 'Перейти' })).toHaveAttribute(
@@ -112,6 +266,7 @@ describe('Уведомления об обмене', () => {
     ])
     await user.click(links[1])
     expect(await screen.findByText('Алиса')).toBeVisible()
+    expect(screen.getByRole('button', { name: 'Обмен предложен' })).toBeDisabled()
     expect(screen.queryByText('Новые уведомления')).not.toBeInTheDocument()
 
     await user.click(bell)
@@ -127,33 +282,6 @@ describe('Уведомления об обмене', () => {
     expect(screen.getByRole('button', { name: 'Обмен предложен' })).toBeDisabled()
   })
 
-  it('восстанавливает историю для нужного аккаунта и не восстанавливает плашку', async () => {
-    const user = userEvent.setup()
-    const { unmount } = renderExchange()
-
-    await screen.findByText('Алиса')
-    await user.click(screen.getByRole('button', { name: 'Предложить обмен' }))
-    act(() => {
-      store.dispatch(setAuthUser(otherUser))
-    })
-
-    const bell = screen.getByRole('button', { name: 'Уведомления' })
-    await user.click(bell)
-    expect(screen.getByText('Уведомлений пока нет')).toBeVisible()
-    expect(screen.getByRole('button', { name: 'Предложить обмен' })).toBeEnabled()
-
-    unmount()
-    await store.dispatch(logout())
-    store.dispatch(setAuthUser(currentUser))
-    renderExchange()
-
-    await screen.findByText('Алиса')
-    await user.click(screen.getByRole('button', { name: 'Уведомления' }))
-    expect(screen.getByText('Вы предложили обмен пользователю Алиса')).toBeVisible()
-    expect(screen.getByRole('button', { name: 'Обмен предложен' })).toBeDisabled()
-    expect(screen.queryByRole('button', { name: 'Закрыть' })).not.toBeInTheDocument()
-  })
-
   it('возвращает гостя к навыку после входа без автоматического предложения обмена', async () => {
     await store.dispatch(logout())
     const user = userEvent.setup()
@@ -161,6 +289,7 @@ describe('Уведомления об обмене', () => {
 
     await user.click(await screen.findByRole('button', { name: 'Предложить обмен' }))
     expect(screen.getByRole('region', { name: 'Вход' })).toBeVisible()
+    expect(createRequest.current).not.toHaveBeenCalled()
 
     act(() => {
       store.dispatch(setAuthUser(currentUser))

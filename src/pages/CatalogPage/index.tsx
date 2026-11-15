@@ -1,5 +1,3 @@
-// TODO: реализовать страницу CatalogPage
-
 import { loadUsers } from '@/entities/user/model/usersSlice'
 import { Card, Skeleton } from '@/shared/ui'
 import { RootState } from '@/store'
@@ -9,7 +7,6 @@ import { useEffect, useMemo } from 'react'
 import { useSelector } from 'react-redux'
 import { useSearchParams } from 'react-router-dom'
 
-import { selectProposedSkillIds } from '@/features/exchange'
 import { generatePath, useNavigate } from 'react-router-dom'
 import { ROUTES } from '@/shared/lib/constants'
 import type { User } from '@/shared/types'
@@ -26,7 +23,6 @@ export default function CatalogPage() {
     pages,
     hasMore,
   } = useSelector((store: RootState) => store.users)
-  const proposedSkillIds = useSelector(selectProposedSkillIds)
   const dispatch = useAppDispatch()
   const [searchParams] = useSearchParams()
   const name = searchParams.get('name')?.trim() ?? ''
@@ -59,7 +55,6 @@ export default function CatalogPage() {
             favoriteIds={[]}
             onDetails={openSkill}
             onFavoriteToggle={() => undefined}
-            proposedSkillIds={proposedSkillIds}
           />
         )}
       </section>
@@ -80,7 +75,6 @@ export default function CatalogPage() {
             favoriteIds={[]}
             onDetails={openSkill}
             onFavoriteToggle={() => undefined}
-            proposedSkillIds={proposedSkillIds}
           />
         )}
       </section>
@@ -101,7 +95,6 @@ export default function CatalogPage() {
             favoriteIds={[]}
             onDetails={openSkill}
             onFavoriteToggle={() => undefined}
-            proposedSkillIds={proposedSkillIds}
           />
         )}
       </section>
