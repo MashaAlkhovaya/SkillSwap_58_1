@@ -16,6 +16,7 @@ export const ROUTES = {
   TERMS: '/terms',
   NOT_FOUND: '/404',
   SERVER_ERROR: '/500',
+  EXCHANGES: '/profile/exchanges',
 } as const
 
 export const SKILL_CATEGORIES = [
