@@ -1,16 +1,12 @@
 import { loadUsers } from '@/entities/user/model/usersSlice'
 import { Card, Skeleton } from '@/shared/ui'
-import { RootState } from '@/store'
-import { useAppDispatch } from '@/store/hooks'
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { ActiveFilters, CatalogSection, FilterSidebar } from '@/widgets'
-import { useCallback, useEffect, useMemo } from 'react'
-import { useSelector } from 'react-redux'
-import { selectProposedSkillIds } from '@/features/exchange'
+import { useEffect } from 'react'
 import { generatePath, useNavigate } from 'react-router-dom'
-import { ROUTES, SKILL_CATEGORIES } from '@/shared/lib/constants'
+import { ROUTES } from '@/shared/lib/constants'
 import type { FiltersState, User } from '@/shared/types'
 import { useCatalogFilters } from '@/features/catalog-filter'
-import clsx from 'clsx'
 import styles from './CatalogPage.module.css'
 
 export default function CatalogPage() {
@@ -24,9 +20,8 @@ export default function CatalogPage() {
     errors,
     pages,
     hasMore,
-  } = useSelector((store: RootState) => store.users)
+  } = useAppSelector((store) => store.users)
 
-  const proposedSkillIds = useSelector(selectProposedSkillIds)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
 
@@ -35,9 +30,12 @@ export default function CatalogPage() {
   const openSkill = (user: User) => navigate(generatePath(ROUTES.SKILL, { id: user.canTeach.id }))
 
   useEffect(() => {
-    dispatch(loadUsers({ page: 1, sort: 'popular', filters }))
-    dispatch(loadUsers({ page: 1, sort: 'new', filters }))
-    dispatch(loadUsers({ page: 1, sort: 'random', filters }))
+    const requests = [
+      dispatch(loadUsers({ page: 1, sort: 'popular', filters })),
+      dispatch(loadUsers({ page: 1, sort: 'new', filters })),
+      dispatch(loadUsers({ page: 1, sort: 'random', filters })),
+    ]
+    return () => requests.forEach((request) => request.abort())
   }, [dispatch, filters])
 
   const handleRemoveFilter = (field: keyof FiltersState, value: string | null) => {
@@ -54,69 +52,21 @@ export default function CatalogPage() {
       case 'mode':
         setFilters((prev) => ({ ...prev, mode: 'all' }))
         break
-      case 'search':
-        setFilters((prev) => ({ ...prev, search: null }))
+      case 'name':
+        setFilters((prev) => ({ ...prev, name: null }))
         break
     }
   }
-
-  const getSkillTitleById = (id: string) => {
-    for (const category of SKILL_CATEGORIES) {
-      const sub = category.subcategories.find((s) => s.id === id)
-      if (sub) return sub.title
-    }
-    return ''
-  }
-
-  const filterBySearch = useCallback(
-    (users: User[]) => {
-      if (!filters.search) return users
-      const searchLower = filters.search.toLowerCase()
-
-      return users.filter((user) => {
-        const nameMatch = user.name.toLowerCase().includes(searchLower)
-
-        const canTeachId = user.canTeach?.subCategory
-        const canTeachTitle = getSkillTitleById(canTeachId) || ''
-        const canTeachMatch = canTeachTitle.toLowerCase().includes(searchLower)
-
-        const wantsMatch = user.wantsToLearn.some((skill) => {
-          const title = typeof skill === 'string' ? getSkillTitleById(skill) : ''
-          return title.toLowerCase().includes(searchLower)
-        })
-
-        return nameMatch || canTeachMatch || wantsMatch
-      })
-    },
-    [filters.search],
-  )
-
-  const filteredPopular = useMemo(
-    () => filterBySearch(popularUsers),
-    [popularUsers, filterBySearch],
-  )
-  const filteredNew = useMemo(() => filterBySearch(newUsers), [newUsers, filterBySearch])
-  const filteredRecommended = useMemo(
-    () => filterBySearch(recommendedUsers),
-    [recommendedUsers, filterBySearch],
-  )
-
-  const hasActiveFilters =
-    filters.mode !== 'all' ||
-    filters.gender !== null ||
-    filters.cities.length > 0 ||
-    filters.skillIds.length > 0 ||
-    filters.search !== null
 
   return (
     <div className={styles.page}>
       <div className={styles.container}>
         <FilterSidebar />
 
-        <main className={styles.content}>
+        <div className={styles.content}>
           <ActiveFilters filters={filters} onRemoveFilter={handleRemoveFilter} />
 
-          <div className={clsx(styles.sections, { [styles.withChips]: hasActiveFilters })}>
+          <div className={styles.sections}>
             <section>
               {isPopularLoading && popularUsers.length === 0 ? (
                 <CatalogPreloader />
@@ -125,7 +75,7 @@ export default function CatalogPage() {
               ) : (
                 <CatalogSection
                   title={'Популярное'}
-                  users={filteredPopular}
+                  users={popularUsers}
                   hasMore={hasMore.popular}
                   isLoadingMore={isPopularLoading}
                   onLoadMore={() =>
@@ -134,7 +84,6 @@ export default function CatalogPage() {
                   favoriteIds={[]}
                   onDetails={openSkill}
                   onFavoriteToggle={() => undefined}
-                  proposedSkillIds={proposedSkillIds}
                 />
               )}
             </section>
@@ -146,7 +95,7 @@ export default function CatalogPage() {
               ) : (
                 <CatalogSection
                   title={'Новое'}
-                  users={filteredNew}
+                  users={newUsers}
                   hasMore={hasMore.new}
                   isLoadingMore={isNewLoading}
                   onLoadMore={() =>
@@ -155,7 +104,6 @@ export default function CatalogPage() {
                   favoriteIds={[]}
                   onDetails={openSkill}
                   onFavoriteToggle={() => undefined}
-                  proposedSkillIds={proposedSkillIds}
                 />
               )}
             </section>
@@ -167,7 +115,7 @@ export default function CatalogPage() {
               ) : (
                 <CatalogSection
                   title={'Рекомендуем'}
-                  users={filteredRecommended}
+                  users={recommendedUsers}
                   hasMore={hasMore.random}
                   isLoadingMore={isRecommendedLoading}
                   onLoadMore={() =>
@@ -176,12 +124,11 @@ export default function CatalogPage() {
                   favoriteIds={[]}
                   onDetails={openSkill}
                   onFavoriteToggle={() => undefined}
-                  proposedSkillIds={proposedSkillIds}
                 />
               )}
             </section>
           </div>
-        </main>
+        </div>
       </div>
     </div>
   )

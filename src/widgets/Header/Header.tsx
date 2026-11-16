@@ -13,12 +13,10 @@ import {
   BookIcon,
   HomeIcon,
   LifestyleIcon,
-  SkillInput,
 } from '@/shared/ui'
 import styles from './Header.module.css'
 import { UserMenu } from '@/widgets/UserMenu'
-import { useEffect, useState } from 'react'
-import { useCatalogFilters } from '@/features/catalog-filter'
+import { SkillSearcher } from '@/widgets/SkillSearcher'
 
 const CATEGORY_ICONS = {
   business: BriefcaseIcon,
@@ -34,30 +32,6 @@ export function Header() {
   const navigate = useNavigate()
   const normalizedPathname = pathname.replace(/\/+$/, '') || '/'
   const isCompact = normalizedPathname === ROUTES.LOGIN || normalizedPathname === ROUTES.REGISTER
-
-  const { filters, setFilters } = useCatalogFilters()
-  const [localSearch, setLocalSearch] = useState(filters.search || '')
-
-  useEffect(() => {
-    setLocalSearch(filters.search || '')
-  }, [filters.search])
-
-  const handleSearchChange = (value: string) => {
-    setLocalSearch(value)
-
-    const searchValue = value.trim() === '' ? null : value
-
-    if (pathname !== ROUTES.HOME) {
-      if (searchValue) {
-        navigate(`${ROUTES.HOME}?q=${encodeURIComponent(searchValue)}`)
-      } else {
-        navigate(ROUTES.HOME)
-      }
-    } else {
-      setFilters((prev) => ({ ...prev, search: searchValue }))
-    }
-  }
-
   const handleClose = () => {
     navigate(getAuthReturnPath(state), { replace: true })
   }
@@ -122,7 +96,7 @@ export function Header() {
         </Dropdown>
       </div>
       <div className={styles.center}>
-        <SkillInput value={localSearch} onChange={handleSearchChange} />
+        <SkillSearcher />
       </div>
       <div className={styles.right}>
         <UserMenu />

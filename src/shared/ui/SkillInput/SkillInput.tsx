@@ -4,12 +4,20 @@ import styles from './SkillInput.module.css'
 interface SkillInputProps {
   value: string
   onChange: (value: string) => void
+  className?: string
   placeholder?: string
 }
 
-export const SkillInput = ({ value, onChange, placeholder = 'Искать навык' }: SkillInputProps) => {
+export function SkillInput({
+  value,
+  onChange,
+  className,
+  placeholder = 'Искать навык',
+}: SkillInputProps) {
   return (
     <TextInput
+      className={className}
+      aria-label={placeholder}
       placeholder={placeholder}
       value={value}
       onChange={(e) => onChange(e.target.value)}

@@ -1,89 +1,80 @@
 import { useCallback, useMemo } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import { FiltersState, FilterMode, Gender } from '@/shared/types'
-import { INITIAL_FILTERS_STATE } from '@/shared/lib/constants'
+import { useLocation, useSearchParams } from 'react-router-dom'
+import type { FiltersState, FilterMode, Gender } from '@/shared/types'
 import { CITIES, SKILL_CATEGORIES } from '@/shared/lib/constants'
+import { generateId } from '@/shared/lib/helpers'
 import type { City, SubCategoryId } from '@/shared/lib/constants'
 
-const VALID_CITIES = new Set<City>(CITIES)
-const VALID_SKILLS = new Set<SubCategoryId>(
+const VALID_CITIES = new Set<string>(CITIES)
+const VALID_SKILLS = new Set<string>(
   SKILL_CATEGORIES.flatMap((category) => category.subcategories.map((sub) => sub.id)),
 )
+const FILTER_PARAMS = ['type', 'mode', 'gender', 'city', 'subCategoryId[]', 'skillId', 'name', 'q']
 
-const MODE_TO_TYPE: Record<string, string> = {
-  wantToLearn: 'learn',
-  canTeach: 'teach',
-}
-const TYPE_TO_MODE: Record<string, FilterMode> = {
-  learn: 'wantToLearn',
-  teach: 'canTeach',
-}
+function readFilters(params: URLSearchParams): FiltersState {
+  const type = params.get('type') ?? params.get('mode')
+  const mode: FilterMode =
+    type === 'learn' || type === 'wantToLearn'
+      ? 'wantToLearn'
+      : type === 'teach' || type === 'canTeach'
+        ? 'canTeach'
+        : 'all'
+  const genderParam = params.get('gender')
+  const gender: Gender | null =
+    genderParam === 'male' || genderParam === 'Мужской'
+      ? 'Мужской'
+      : genderParam === 'female' || genderParam === 'Женский'
+        ? 'Женский'
+        : null
 
-const GENDER_TO_URL: Record<string, string> = {
-  Мужской: 'male',
-  Женский: 'female',
-}
-const URL_TO_GENDER: Record<string, Gender> = {
-  male: 'Мужской',
-  female: 'Женский',
+  return {
+    mode,
+    gender,
+    cities: [...new Set(params.getAll('city'))].filter((city) => VALID_CITIES.has(city)) as City[],
+    skillIds: [
+      ...new Set([...params.getAll('subCategoryId[]'), ...params.getAll('skillId')]),
+    ].filter((id) => VALID_SKILLS.has(id)) as SubCategoryId[],
+    name: (params.get('name') ?? params.get('q'))?.trim() || null,
+  }
 }
 
 export const useCatalogFilters = () => {
   const [searchParams, setSearchParams] = useSearchParams()
-
-  const filters: FiltersState = useMemo(() => {
-    const typeParam = searchParams.get('type')
-    const mode = (typeParam && TYPE_TO_MODE[typeParam]) || INITIAL_FILTERS_STATE.mode
-
-    const genderParam = searchParams.get('gender')
-    const gender = (genderParam && URL_TO_GENDER[genderParam]) || INITIAL_FILTERS_STATE.gender
-
-    const cities = searchParams
-      .getAll('city')
-      .filter((city) => VALID_CITIES.has(city as City)) as City[]
-
-    const skillIds = searchParams
-      .getAll('subCategoryId[]')
-      .filter((skillId) => VALID_SKILLS.has(skillId as SubCategoryId)) as SubCategoryId[]
-
-    const search = searchParams.get('q') || null
-
-    return { mode, gender, cities, skillIds, search }
-  }, [searchParams])
+  const { state } = useLocation()
+  const filters = useMemo(() => readFilters(searchParams), [searchParams])
 
   const setFilters: React.Dispatch<React.SetStateAction<FiltersState>> = useCallback(
     (newFilters) => {
-      const nextFilters = typeof newFilters === 'function' ? newFilters(filters) : newFilters
-
-      const params = new URLSearchParams()
-
-      if (nextFilters.mode !== 'all') {
-        const typeValue = MODE_TO_TYPE[nextFilters.mode]
-        if (typeValue) params.set('type', typeValue)
-      }
-      if (nextFilters.gender) {
-        const genderValue = GENDER_TO_URL[nextFilters.gender]
-        if (genderValue) params.set('gender', genderValue)
-      }
-      if (nextFilters.search) {
-        params.set('q', nextFilters.search)
-      }
-
-      nextFilters.cities.forEach((city) => params.append('city', city))
-      nextFilters.skillIds.forEach((skillId) => params.append('subCategoryId[]', skillId))
-
-      setSearchParams(params, { replace: true })
+      setSearchParams(
+        (current) => {
+          const next =
+            typeof newFilters === 'function' ? newFilters(readFilters(current)) : newFilters
+          const params = new URLSearchParams(current)
+          FILTER_PARAMS.forEach((key) => params.delete(key))
+          if (next.mode !== 'all')
+            params.set('type', next.mode === 'wantToLearn' ? 'learn' : 'teach')
+          if (next.gender) params.set('gender', next.gender === 'Мужской' ? 'male' : 'female')
+          if (next.name?.trim()) params.set('name', next.name.trim())
+          next.cities.forEach((city) => params.append('city', city))
+          next.skillIds.forEach((id) => params.append('subCategoryId[]', id))
+          return params
+        },
+        { replace: true, state },
+      )
     },
-    [filters, setSearchParams],
+    [setSearchParams, state],
   )
 
   const resetFilters = useCallback(() => {
-    setSearchParams(new URLSearchParams(), { replace: true })
-  }, [setSearchParams])
+    setSearchParams(
+      (current) => {
+        const params = new URLSearchParams(current)
+        FILTER_PARAMS.forEach((key) => params.delete(key))
+        return params
+      },
+      { replace: true, state: { ...state, catalogFiltersResetId: generateId() } },
+    )
+  }, [setSearchParams, state])
 
-  return {
-    filters,
-    setFilters,
-    resetFilters,
-  }
+  return { filters, setFilters, resetFilters }
 }

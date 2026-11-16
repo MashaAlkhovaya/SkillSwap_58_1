@@ -5,9 +5,9 @@ import { ActiveFilters } from './ActiveFilters'
 import { FilterMode } from '@/shared/types'
 import {
   CITIES,
+  INITIAL_FILTERS_STATE,
   MODE_OPTIONS,
   SKILL_CATEGORIES,
-  INITIAL_FILTERS_STATE,
 } from '@/shared/lib/constants'
 
 const REAL_CITY = CITIES[0]
@@ -22,7 +22,6 @@ const REAL_GENDER = 'Мужской'
 describe('ActiveFilters', () => {
   it('не рендерит чипы, если фильтры пустые', () => {
     render(<ActiveFilters filters={INITIAL_FILTERS_STATE} onRemoveFilter={vi.fn()} />)
-
     expect(screen.queryByRole('button')).not.toBeInTheDocument()
   })
 
@@ -108,5 +107,16 @@ describe('ActiveFilters', () => {
     await waitFor(() => {
       expect(handleRemove).toHaveBeenCalledWith('gender', null)
     })
+  })
+  it('позволяет удалить строку поиска отдельным чипом', async () => {
+    const onRemove = vi.fn()
+    render(
+      <ActiveFilters
+        filters={{ ...INITIAL_FILTERS_STATE, name: 'Гитара' }}
+        onRemoveFilter={onRemove}
+      />,
+    )
+    await userEvent.click(screen.getByRole('button', { name: /Гитара/i }))
+    await waitFor(() => expect(onRemove).toHaveBeenCalledWith('name', null))
   })
 })

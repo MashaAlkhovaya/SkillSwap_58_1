@@ -106,7 +106,6 @@ export type SubCategoryId = Category['subcategories'][number]['id']
 export const LOCAL_STORAGE_KEYS = {
   AUTH_USER: 'skillswap_auth_user',
   FAVORITES: 'skillswap_favorites',
-  REQUESTS: 'skillswap_requests',
   THEME: 'skillswap_theme',
 } as const
 
@@ -129,7 +128,7 @@ export const INITIAL_FILTERS_STATE: FiltersState = {
   gender: null,
   cities: [],
   skillIds: [],
-  search: null,
+  name: null,
 }
 
 export const MODE_OPTIONS = [

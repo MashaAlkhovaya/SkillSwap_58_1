@@ -41,6 +41,10 @@ export const ActiveFilters = ({ filters, onRemoveFilter }: ActiveFiltersProps) =
     }
   })
 
+  if (filters.name) {
+    chips.push({ id: 'name', label: filters.name, field: 'name', value: null })
+  }
+
   const hasChips = chips.length > 0
 
   return (

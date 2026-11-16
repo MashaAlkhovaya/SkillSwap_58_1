@@ -2,22 +2,26 @@ import { configureStore } from '@reduxjs/toolkit'
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Provider } from 'react-redux'
+import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+import { INITIAL_FILTERS_STATE } from '@/shared/lib/constants'
 import type { FiltersState, User } from '@/shared/types'
 import CatalogPage from './index'
-import exchangeReducer from '@/features/exchange/model/exchangeSlice'
-import { MemoryRouter } from 'react-router-dom'
-import { INITIAL_FILTERS_STATE } from '@/shared/lib/constants'
 
-const { loadUsersMock } = vi.hoisted(() => ({
-  loadUsersMock: vi.fn((params: { page?: number; sort: string; filters?: FiltersState }) => ({
-    type: 'users/load',
-    payload: params,
-  })),
+const { loadUsersMock, useOutgoingPendingSkillIdsMock } = vi.hoisted(() => ({
+  loadUsersMock: vi.fn(
+    (_params: { page?: number; sort: string; filters?: FiltersState }) => () =>
+      Object.assign(Promise.resolve(), { abort: vi.fn() }),
+  ),
+  useOutgoingPendingSkillIdsMock: vi.fn<() => string[]>(() => []),
 }))
 
 vi.mock('@/entities/user/model/usersSlice', () => ({
   loadUsers: loadUsersMock,
+}))
+
+vi.mock('@/features/exchange', () => ({
+  useOutgoingPendingSkillIds: useOutgoingPendingSkillIdsMock,
 }))
 
 function createUsers(count: number): User[] {
@@ -65,16 +69,16 @@ const defaultUsersState: UsersState = {
   errors: {},
 }
 
-function renderCatalogPage(usersState: UsersState = defaultUsersState) {
+function renderCatalogPage(usersState: UsersState = defaultUsersState, initialEntry = '/') {
   const store = configureStore({
-    reducer: { users: (state = usersState) => state, exchange: exchangeReducer },
+    reducer: { users: (state = usersState) => state },
   })
 
   return {
     store,
     ...render(
       <Provider store={store}>
-        <MemoryRouter>
+        <MemoryRouter initialEntries={[initialEntry]}>
           <CatalogPage />
         </MemoryRouter>
       </Provider>,
@@ -89,13 +93,13 @@ describe('CatalogPage', () => {
 
   beforeEach(() => {
     loadUsersMock.mockClear()
+    useOutgoingPendingSkillIdsMock.mockReturnValue([])
   })
 
-  it('запрашивает первую страницу популярных, новых и рекомендуемых пользователей с фильтрами', () => {
+  it('запрашивает первую страницу популярных, новых и рекомендуемых пользователей', () => {
     renderCatalogPage()
 
     expect(loadUsersMock).toHaveBeenCalledTimes(3)
-
     expect(loadUsersMock).toHaveBeenNthCalledWith(1, {
       page: 1,
       sort: 'popular',
@@ -195,6 +199,53 @@ describe('CatalogPage', () => {
       page: 3,
       sort: 'popular',
       filters: INITIAL_FILTERS_STATE,
+    })
+  })
+
+  it('передаёт name из URL при загрузке следующих страниц', async () => {
+    const user = userEvent.setup()
+    const users = createUsers(4)
+
+    class MockIntersectionObserver {
+      readonly root = null
+      readonly rootMargin = ''
+      readonly scrollMargin = ''
+      readonly thresholds = []
+
+      constructor(private callback: IntersectionObserverCallback) {}
+
+      observe(target: Element) {
+        this.callback(
+          [{ isIntersecting: true, target } as IntersectionObserverEntry],
+          this as unknown as IntersectionObserver,
+        )
+      }
+
+      unobserve() {}
+      disconnect() {}
+      takeRecords() {
+        return []
+      }
+    }
+
+    vi.stubGlobal('IntersectionObserver', MockIntersectionObserver)
+
+    renderCatalogPage(
+      {
+        ...defaultUsersState,
+        popularUsers: users,
+        pages: { popular: 2, new: 0, random: 0 },
+      },
+      '/?name=Музыка%20и%20звук',
+    )
+
+    const popularSection = screen.getByRole('region', { name: 'Популярное' })
+    await user.click(within(popularSection).getByRole('button', { name: 'Смотреть все' }))
+
+    expect(loadUsersMock).toHaveBeenCalledWith({
+      page: 3,
+      sort: 'popular',
+      filters: { ...INITIAL_FILTERS_STATE, name: 'Музыка и звук' },
     })
   })
 })

@@ -1,4 +1,5 @@
 import type { FiltersState, User } from '@/shared/types'
+import { INITIAL_FILTERS_STATE } from '@/shared/lib/constants'
 
 const BASE_URL = '/api'
 
@@ -14,41 +15,23 @@ export async function fetchUsers(
   page = 1,
   limit = 10,
   sort = 'random',
-  filters?: FiltersState,
+  filters: FiltersState = INITIAL_FILTERS_STATE,
+  signal?: AbortSignal,
 ): Promise<{ users: User[]; hasMore: boolean; total: number }> {
   const params = new URLSearchParams({
     page: String(page),
     limit: String(limit),
     delay: '100',
-    sort: sort,
+    sort,
+    type: filters.mode === 'wantToLearn' ? 'learn' : filters.mode === 'canTeach' ? 'teach' : 'all',
   })
+  if (filters.name?.trim()) params.set('name', filters.name.trim())
+  if (filters.gender) params.set('gender', filters.gender === 'Мужской' ? 'male' : 'female')
+  if (filters.cities.length === 1) params.set('city', filters.cities[0])
+  else filters.cities.forEach((city) => params.append('city[]', city))
+  filters.skillIds.forEach((id) => params.append('subCategoryId[]', id))
 
-  if (filters) {
-    if (filters.mode !== 'all') {
-      const typeMap: Record<string, string> = {
-        wantToLearn: 'learn',
-        canTeach: 'teach',
-      }
-      const typeValue = typeMap[filters.mode]
-      if (typeValue) {
-        params.append('type', typeValue)
-      }
-    }
-    if (filters.gender) {
-      const genderMap: Record<string, string> = {
-        Мужской: 'male',
-        Женский: 'female',
-      }
-      const genderValue = genderMap[filters.gender]
-      if (genderValue) {
-        params.append('gender', genderValue)
-      }
-    }
-    filters.cities.forEach((city) => params.append('city', city))
-    filters.skillIds.forEach((skillId) => params.append('subCategoryId[]', skillId))
-  }
-
-  const response = await fetch(`${BASE_URL}/users?${params}`)
+  const response = await fetch(`${BASE_URL}/users?${params}`, { signal })
   if (!response.ok) throw new Error('Failed to fetch users')
   const data: UsersResponse = await response.json()
   return { users: data.items, hasMore: data.hasMore, total: data.total }

@@ -27,7 +27,8 @@ export const FilterSidebar = () => {
     (filters.mode !== 'all' ? 1 : 0) +
     (filters.gender ? 1 : 0) +
     filters.cities.length +
-    filters.skillIds.length
+    filters.skillIds.length +
+    (filters.name ? 1 : 0)
 
   const visibleCategories = showAllSkills
     ? SKILL_CATEGORIES
