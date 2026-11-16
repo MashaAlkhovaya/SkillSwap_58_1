@@ -1,6 +1,7 @@
 import { FilterChip } from '@/shared/ui'
 import { FiltersState } from '@/shared/types'
 import { SKILL_CATEGORIES, MODE_OPTIONS } from '@/shared/lib/constants'
+import clsx from 'clsx'
 import styles from './ActiveFilters.module.css'
 
 interface ActiveFiltersProps {
@@ -40,17 +41,19 @@ export const ActiveFilters = ({ filters, onRemoveFilter }: ActiveFiltersProps) =
     }
   })
 
-  if (chips.length === 0) return null
+  const hasChips = chips.length > 0
 
   return (
-    <div className={styles.container}>
-      {chips.map((chip) => (
-        <FilterChip
-          key={chip.id}
-          label={chip.label}
-          onRemove={() => onRemoveFilter(chip.field, chip.value)}
-        />
-      ))}
+    <div className={clsx(styles.wrapper, { [styles.isVisible]: hasChips })}>
+      <div className={styles.container}>
+        {chips.map((chip) => (
+          <FilterChip
+            key={chip.id}
+            label={chip.label}
+            onRemove={() => onRemoveFilter(chip.field, chip.value)}
+          />
+        ))}
+      </div>
     </div>
   )
 }

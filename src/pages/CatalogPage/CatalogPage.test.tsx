@@ -3,13 +3,14 @@ import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { Provider } from 'react-redux'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { User } from '@/shared/types'
+import type { FiltersState, User } from '@/shared/types'
 import CatalogPage from './index'
 import exchangeReducer from '@/features/exchange/model/exchangeSlice'
 import { MemoryRouter } from 'react-router-dom'
+import { INITIAL_FILTERS_STATE } from '@/shared/lib/constants'
 
 const { loadUsersMock } = vi.hoisted(() => ({
-  loadUsersMock: vi.fn((params: { page?: number; sort: string }) => ({
+  loadUsersMock: vi.fn((params: { page?: number; sort: string; filters?: FiltersState }) => ({
     type: 'users/load',
     payload: params,
   })),
@@ -90,13 +91,26 @@ describe('CatalogPage', () => {
     loadUsersMock.mockClear()
   })
 
-  it('запрашивает первую страницу популярных, новых и рекомендуемых пользователей', () => {
+  it('запрашивает первую страницу популярных, новых и рекомендуемых пользователей с фильтрами', () => {
     renderCatalogPage()
 
     expect(loadUsersMock).toHaveBeenCalledTimes(3)
-    expect(loadUsersMock).toHaveBeenNthCalledWith(1, { page: 1, sort: 'popular' })
-    expect(loadUsersMock).toHaveBeenNthCalledWith(2, { page: 1, sort: 'new' })
-    expect(loadUsersMock).toHaveBeenNthCalledWith(3, { page: 1, sort: 'random' })
+
+    expect(loadUsersMock).toHaveBeenNthCalledWith(1, {
+      page: 1,
+      sort: 'popular',
+      filters: INITIAL_FILTERS_STATE,
+    })
+    expect(loadUsersMock).toHaveBeenNthCalledWith(2, {
+      page: 1,
+      sort: 'new',
+      filters: INITIAL_FILTERS_STATE,
+    })
+    expect(loadUsersMock).toHaveBeenNthCalledWith(3, {
+      page: 1,
+      sort: 'random',
+      filters: INITIAL_FILTERS_STATE,
+    })
   })
 
   it('показывает каталоги пользователей для всех трёх подборок', () => {
@@ -177,6 +191,10 @@ describe('CatalogPage', () => {
     const popularSection = screen.getByRole('region', { name: 'Популярное' })
     await user.click(within(popularSection).getByRole('button', { name: 'Смотреть все' }))
 
-    expect(loadUsersMock).toHaveBeenCalledWith({ page: 3, sort: 'popular' })
+    expect(loadUsersMock).toHaveBeenCalledWith({
+      page: 3,
+      sort: 'popular',
+      filters: INITIAL_FILTERS_STATE,
+    })
   })
 })

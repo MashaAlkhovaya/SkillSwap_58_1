@@ -2,15 +2,13 @@ import { render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { describe, it, expect, vi } from 'vitest'
 import { ActiveFilters } from './ActiveFilters'
-import { FiltersState, FilterMode } from '@/shared/types'
-import { CITIES, MODE_OPTIONS, SKILL_CATEGORIES } from '@/shared/lib/constants'
-
-const INITIAL_FILTERS: FiltersState = {
-  mode: 'all',
-  gender: null,
-  cities: [],
-  skillIds: [],
-}
+import { FilterMode } from '@/shared/types'
+import {
+  CITIES,
+  MODE_OPTIONS,
+  SKILL_CATEGORIES,
+  INITIAL_FILTERS_STATE,
+} from '@/shared/lib/constants'
 
 const REAL_CITY = CITIES[0]
 const REAL_SKILL_ID = SKILL_CATEGORIES[0].subcategories[0].id
@@ -22,17 +20,16 @@ const REAL_MODE_LABEL = MODE_OPTIONS[1].label
 const REAL_GENDER = 'Мужской'
 
 describe('ActiveFilters', () => {
-  it('не рендерится, если фильтры пустые', () => {
-    const { container } = render(
-      <ActiveFilters filters={INITIAL_FILTERS} onRemoveFilter={vi.fn()} />,
-    )
-    expect(container).toBeEmptyDOMElement()
+  it('не рендерит чипы, если фильтры пустые', () => {
+    render(<ActiveFilters filters={INITIAL_FILTERS_STATE} onRemoveFilter={vi.fn()} />)
+
+    expect(screen.queryByRole('button')).not.toBeInTheDocument()
   })
 
   it('отображает чип для режима', () => {
     render(
       <ActiveFilters
-        filters={{ ...INITIAL_FILTERS, mode: REAL_MODE_VALUE }}
+        filters={{ ...INITIAL_FILTERS_STATE, mode: REAL_MODE_VALUE }}
         onRemoveFilter={vi.fn()}
       />,
     )
@@ -42,7 +39,7 @@ describe('ActiveFilters', () => {
   it('отображает чипы для городов из констант', () => {
     render(
       <ActiveFilters
-        filters={{ ...INITIAL_FILTERS, cities: [REAL_CITY] }}
+        filters={{ ...INITIAL_FILTERS_STATE, cities: [REAL_CITY] }}
         onRemoveFilter={vi.fn()}
       />,
     )
@@ -52,7 +49,7 @@ describe('ActiveFilters', () => {
   it('отображает чипы для навыков (по реальному названию из констант)', () => {
     render(
       <ActiveFilters
-        filters={{ ...INITIAL_FILTERS, skillIds: [REAL_SKILL_ID] }}
+        filters={{ ...INITIAL_FILTERS_STATE, skillIds: [REAL_SKILL_ID] }}
         onRemoveFilter={vi.fn()}
       />,
     )
@@ -65,7 +62,7 @@ describe('ActiveFilters', () => {
 
     render(
       <ActiveFilters
-        filters={{ ...INITIAL_FILTERS, cities: [REAL_CITY] }}
+        filters={{ ...INITIAL_FILTERS_STATE, cities: [REAL_CITY] }}
         onRemoveFilter={handleRemove}
       />,
     )
@@ -83,7 +80,7 @@ describe('ActiveFilters', () => {
 
     render(
       <ActiveFilters
-        filters={{ ...INITIAL_FILTERS, mode: REAL_MODE_VALUE }}
+        filters={{ ...INITIAL_FILTERS_STATE, mode: REAL_MODE_VALUE }}
         onRemoveFilter={handleRemove}
       />,
     )
@@ -101,7 +98,7 @@ describe('ActiveFilters', () => {
 
     render(
       <ActiveFilters
-        filters={{ ...INITIAL_FILTERS, gender: REAL_GENDER }}
+        filters={{ ...INITIAL_FILTERS_STATE, gender: REAL_GENDER }}
         onRemoveFilter={handleRemove}
       />,
     )
