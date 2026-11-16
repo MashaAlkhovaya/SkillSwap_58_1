@@ -57,7 +57,6 @@ export function AppRouter() {
             <Route path={ROUTES.HOME} element={<CatalogPage />} />
             <Route path={ROUTES.ABOUT} element={<AboutPage />} />
             <Route path={ROUTES.SKILL} element={<SkillPage />} />
-            <Route path={ROUTES.FAVORITES} element={<FavoritesPage />} />
             <Route path={ROUTES.LOGIN} element={<LoginPage />} />
             <Route
               path={ROUTES.REGISTER}
@@ -67,6 +66,7 @@ export function AppRouter() {
             <Route element={<PrivateRoute />}>
               <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
               <Route path={ROUTES.CREATE} element={<CreateSkillPage />} />
+              <Route path={ROUTES.FAVORITES} element={<FavoritesPage />} />
               <Route path={ROUTES.EXCHANGES} element={<ExchangesPage />} />
             </Route>
             <Route path={ROUTES.SERVER_ERROR} element={<ServerErrorPage />} />

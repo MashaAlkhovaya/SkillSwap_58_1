@@ -14,6 +14,7 @@ export function UserMenu() {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
   const location = useLocation()
+  const isFavoritesPage = location.pathname.replace(/\/+$/, '') === ROUTES.FAVORITES
   const { theme, toggleTheme } = useTheme()
   const notify = useNotify()
 
@@ -48,8 +49,13 @@ export function UserMenu() {
         {user && (
           <>
             <NotificationDropdown key={user.id} />
-            <Link to={ROUTES.FAVORITES} className={styles.iconBtn} aria-label="Избранное">
-              <HeartIcon className={styles.icon} />
+            <Link
+              to={ROUTES.FAVORITES}
+              className={`${styles.iconBtn} ${isFavoritesPage ? styles.iconActive : ''}`}
+              aria-label="Избранное"
+              aria-current={isFavoritesPage ? 'page' : undefined}
+            >
+              <HeartIcon className={styles.icon} filled={isFavoritesPage} />
             </Link>
           </>
         )}

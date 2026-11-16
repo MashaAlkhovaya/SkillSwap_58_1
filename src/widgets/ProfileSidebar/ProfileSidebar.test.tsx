@@ -6,7 +6,7 @@ import { ROUTES } from '@/shared/lib/constants'
 import { ProfileSidebar } from './ProfileSidebar'
 import styles from './ProfileSidebar.module.css'
 
-const STUB_LABELS = ['Заявки', 'Избранное', 'Мои навыки'] as const
+const STUB_LABELS = ['Заявки', 'Мои навыки'] as const
 
 function LocationProbe() {
   const { pathname } = useLocation()
@@ -32,7 +32,7 @@ describe('ProfileSidebar', () => {
     expect(labels).toEqual(['Заявки', 'Мои обмены', 'Избранное', 'Мои навыки', 'Личные данные'])
   })
 
-  it('делает ссылками «Мои обмены» и «Личные данные», остальные — заглушки', async () => {
+  it('делает ссылками «Мои обмены», «Личные данные» и «Избранное»', async () => {
     const user = userEvent.setup()
     renderSidebar()
 
@@ -44,8 +44,11 @@ describe('ProfileSidebar', () => {
       'href',
       ROUTES.PROFILE,
     )
-
-    expect(screen.getAllByRole('link')).toHaveLength(2)
+    expect(screen.getByRole('link', { name: 'Избранное' })).toHaveAttribute(
+      'href',
+      ROUTES.FAVORITES,
+    )
+    expect(screen.getAllByRole('link')).toHaveLength(3)
 
     for (const label of STUB_LABELS) {
       expect(screen.getByRole('button', { name: label })).toBeInTheDocument()
@@ -53,6 +56,10 @@ describe('ProfileSidebar', () => {
 
     await user.click(screen.getByRole('button', { name: 'Заявки' }))
     expect(screen.getByTestId('location')).toHaveTextContent(ROUTES.PROFILE)
+
+    await user.click(screen.getByRole('link', { name: 'Избранное' }))
+
+    expect(screen.getByTestId('location')).toHaveTextContent(ROUTES.FAVORITES)
   })
 
   it('подсвечивает «Личные данные» на странице профиля', () => {
