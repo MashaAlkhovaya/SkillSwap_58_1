@@ -1,10 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { fetchSkillById } from '@/api/skills'
-import type { Skill } from '@/shared/types'
+import type { Skill, User } from '@/shared/types'
 import { SkillInfoCard } from '@/widgets/SkillInfoCard'
 import { SimilarSkills } from '@/widgets/SimilarSkills'
-import { useSimilarSkills } from '@/entities/skill/model/useSimilarSkills'
+import { Button } from '@/shared/ui'
+import { useSimilarSkills } from '../../entities/skill/model/useSimilarSkills'
 import styles from './SkillPage.module.css'
 
 export const SkillPage = () => {
@@ -35,24 +36,12 @@ export const SkillPage = () => {
         setIsLoading(false)
       }
     }
-
     loadSkill()
   }, [id])
 
-  const {
-    data: similarSkills,
-    isLoading: isSimilarLoading,
-    error: similarError,
-  } = useSimilarSkills(skill)
+  const { data: similarSkills } = useSimilarSkills(skill)
 
-  if (isLoading) {
-    return (
-      <div className={styles.loaderContainer}>
-        <div className={styles.loader}>Загрузка...</div>
-      </div>
-    )
-  }
-
+  if (isLoading) return <div className={styles.loader}>Загрузка...</div>
   if (isError || !skill) {
     return (
       <div className={styles.errorContainer}>
@@ -67,9 +56,21 @@ export const SkillPage = () => {
 
   return (
     <main className={styles.page}>
-      <SkillInfoCard skill={skill} />
+      <SkillInfoCard
+        skill={skill}
+        controls={
+          <Button variant="primary" className={styles.exchangeButton}>
+            Предложить обмен
+          </Button>
+        }
+      />
 
-      <SimilarSkills skills={similarSkills} isLoading={isSimilarLoading} error={similarError} />
+      <SimilarSkills
+        users={similarSkills as unknown as User[]}
+        favoriteIds={[]}
+        onDetails={() => {}}
+        onFavoriteToggle={() => {}}
+      />
     </main>
   )
 }
