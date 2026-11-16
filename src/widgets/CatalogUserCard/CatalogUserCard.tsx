@@ -7,13 +7,12 @@ import { getAgeWithDeclension } from '@/shared/lib/helpers'
 import { SKILL_CATEGORIES } from '@/shared/lib/constants'
 import type { User } from '@/shared/types'
 import type { SubCategoryId } from '@/shared/lib/constants'
+import { useLikeUser } from '@/features/like-user'
 import styles from './CatalogUserCard.module.css'
 
 interface CatalogUserCardProps {
   user: User
-  isFavorite: boolean
   onDetails: () => void
-  onFavoriteToggle: () => void
   isExchangeProposed?: boolean
 }
 
@@ -46,9 +45,7 @@ function HeartIcon({ filled }: { filled: boolean }) {
 
 export function CatalogUserCard({
   user,
-  isFavorite,
   onDetails,
-  onFavoriteToggle,
   isExchangeProposed = false,
 }: CatalogUserCardProps) {
   const teachCategory = SKILL_CATEGORIES.find((category) => category.id === user.canTeach.category)
@@ -74,6 +71,8 @@ export function CatalogUserCard({
   const visibleSkills = skillsToLearn.slice(0, MAX_VISIBLE_SKILLS)
   const remainingSkillsCount = Math.max(0, skillsToLearn.length - MAX_VISIBLE_SKILLS)
 
+  const { isLiked, isPending, toggle } = useLikeUser(user.id)
+
   return (
     <Card className={styles.card}>
       <div className={styles.header}>
@@ -92,11 +91,12 @@ export function CatalogUserCard({
         <Button
           variant="tertiary"
           size="sm"
-          className={`${styles.favoriteButton} ${isFavorite ? styles.favoriteActive : ''}`}
-          icon={<HeartIcon filled={isFavorite} />}
-          aria-label={isFavorite ? 'Убрать из избранного' : 'Добавить в избранное'}
-          aria-pressed={isFavorite}
-          onClick={onFavoriteToggle}
+          className={`${styles.favoriteButton} ${isLiked ? styles.favoriteActive : ''}`}
+          icon={<HeartIcon filled={isLiked} />}
+          aria-label={isLiked ? 'Убрать из избранного' : 'Добавить в избранное'}
+          aria-pressed={isLiked}
+          disabled={isPending}
+          onClick={toggle}
         />
       </div>
 

@@ -9,17 +9,13 @@ import styles from './SimilarSkills.module.css'
 
 export interface SimilarSkillsProps {
   users: User[]
-  favoriteIds: string[]
   onDetails: (user: User) => void
-  onFavoriteToggle: (user: User) => void
   title?: string
 }
 
 export function SimilarSkills({
   users,
-  favoriteIds,
   onDetails,
-  onFavoriteToggle,
   title = 'Похожие предложения',
 }: SimilarSkillsProps) {
   const headingId = useId()
@@ -79,12 +75,7 @@ export function SimilarSkills({
             <ul id={listId} className={styles.track}>
               {users.map((user) => (
                 <li key={user.id} className={styles.slide}>
-                  <CatalogUserCard
-                    user={user}
-                    isFavorite={favoriteIds.includes(user.id)}
-                    onDetails={() => onDetails(user)}
-                    onFavoriteToggle={() => onFavoriteToggle(user)}
-                  />
+                  <CatalogUserCard user={user} onDetails={() => onDetails(user)} />
                 </li>
               ))}
             </ul>

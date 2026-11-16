@@ -11,6 +11,9 @@ const { useOutgoingPendingSkillIdsMock } = vi.hoisted(() => ({
 vi.mock('@/features/exchange', () => ({
   useOutgoingPendingSkillIds: useOutgoingPendingSkillIdsMock,
 }))
+vi.mock('@/features/like-user', () => ({
+  useLikeUser: () => ({ isLiked: false, isPending: false, toggle: vi.fn() }),
+}))
 
 function createUsers(count: number): User[] {
   return Array.from({ length: count }, (_, index) => ({
@@ -41,15 +44,7 @@ describe('CatalogSection', () => {
   it('показывает 3 карточки, раскрывает все загруженные и сворачивает обратно', async () => {
     const user = userEvent.setup()
 
-    render(
-      <CatalogSection
-        title="Популярное"
-        users={createUsers(12)}
-        favoriteIds={[]}
-        onDetails={() => {}}
-        onFavoriteToggle={() => {}}
-      />,
-    )
+    render(<CatalogSection title="Популярное" users={createUsers(12)} onDetails={() => {}} />)
 
     expect(screen.getAllByRole('button', { name: 'Подробнее' })).toHaveLength(3)
 
@@ -67,15 +62,7 @@ describe('CatalogSection', () => {
   })
 
   it('не показывает кнопку раскрытия, если карточек не больше трёх', () => {
-    render(
-      <CatalogSection
-        title="Новое"
-        users={createUsers(3)}
-        favoriteIds={[]}
-        onDetails={() => {}}
-        onFavoriteToggle={() => {}}
-      />,
-    )
+    render(<CatalogSection title="Новое" users={createUsers(3)} onDetails={() => {}} />)
 
     expect(screen.getAllByRole('button', { name: 'Подробнее' })).toHaveLength(3)
     expect(screen.queryByRole('button', { name: 'Смотреть все' })).not.toBeInTheDocument()
@@ -86,15 +73,7 @@ describe('CatalogSection', () => {
     const users = createUsers(2)
     const onDetails = vi.fn()
 
-    render(
-      <CatalogSection
-        title="Каталог"
-        users={users}
-        favoriteIds={[]}
-        onDetails={onDetails}
-        onFavoriteToggle={() => {}}
-      />,
-    )
+    render(<CatalogSection title="Каталог" users={users} onDetails={onDetails} />)
 
     const section = screen.getByRole('region', { name: 'Каталог' })
     const detailsButtons = within(section).getAllByRole('button', { name: 'Подробнее' })
@@ -109,9 +88,7 @@ describe('CatalogSection', () => {
       <CatalogSection
         title="Рекомендуем"
         users={createUsers(5)}
-        favoriteIds={[]}
         onDetails={() => {}}
-        onFavoriteToggle={() => {}}
         showExpandButton={false}
       />,
     )
@@ -123,15 +100,7 @@ describe('CatalogSection', () => {
   it('показывает «Обмен предложен» только у карточки с предложенным навыком', () => {
     useOutgoingPendingSkillIdsMock.mockReturnValue(['skill-2'])
 
-    render(
-      <CatalogSection
-        title="Каталог"
-        users={createUsers(3)}
-        favoriteIds={[]}
-        onDetails={() => {}}
-        onFavoriteToggle={() => {}}
-      />,
-    )
+    render(<CatalogSection title="Каталог" users={createUsers(3)} onDetails={() => {}} />)
 
     expect(screen.getByRole('button', { name: 'Обмен предложен' })).toBeDisabled()
     expect(screen.getAllByRole('button', { name: 'Подробнее' })).toHaveLength(2)
@@ -143,9 +112,7 @@ describe('CatalogSection', () => {
       <CatalogSection
         title="Тест скелетонов"
         users={createUsers(5)}
-        favoriteIds={[]}
         onDetails={() => {}}
-        onFavoriteToggle={() => {}}
         hasMore={true}
         isLoadingMore={true}
       />,
@@ -167,9 +134,7 @@ describe('CatalogSection', () => {
       <CatalogSection
         title="Тест без загрузки"
         users={createUsers(5)}
-        favoriteIds={[]}
         onDetails={() => {}}
-        onFavoriteToggle={() => {}}
         hasMore={true}
         isLoadingMore={false}
       />,
