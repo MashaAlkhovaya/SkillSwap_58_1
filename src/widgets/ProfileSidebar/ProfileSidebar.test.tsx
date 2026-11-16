@@ -6,7 +6,7 @@ import { ROUTES } from '@/shared/lib/constants'
 import { ProfileSidebar } from './ProfileSidebar'
 import styles from './ProfileSidebar.module.css'
 
-const STUB_LABELS = ['Заявки', 'Мои обмены', 'Мои навыки'] as const
+const STUB_LABELS = ['Заявки', 'Мои навыки'] as const
 
 function LocationProbe() {
   const { pathname } = useLocation()
@@ -32,7 +32,7 @@ describe('ProfileSidebar', () => {
     expect(labels).toEqual(['Заявки', 'Мои обмены', 'Избранное', 'Мои навыки', 'Личные данные'])
   })
 
-  it('делает ссылками «Личные данные» и «Избранное», остальные пункты — заглушками', async () => {
+  it('делает ссылками «Мои обмены», «Личные данные» и «Избранное»', async () => {
     const user = userEvent.setup()
     renderSidebar()
 
@@ -48,7 +48,7 @@ describe('ProfileSidebar', () => {
       'href',
       ROUTES.FAVORITES,
     )
-    expect(screen.getAllByRole('link')).toHaveLength(2)
+    expect(screen.getAllByRole('link')).toHaveLength(3)
 
     for (const label of STUB_LABELS) {
       expect(screen.getByRole('button', { name: label })).toBeInTheDocument()
