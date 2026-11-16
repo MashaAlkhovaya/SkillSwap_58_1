@@ -96,7 +96,6 @@ export function Header() {
         </Dropdown>
       </div>
       <div className={styles.center}>
-        {/* TODO: заменить на виджет поиска по навыкам */}
         <SkillSearcher />
       </div>
       <div className={styles.right}>

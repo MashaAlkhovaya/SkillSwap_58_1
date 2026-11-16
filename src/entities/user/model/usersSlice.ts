@@ -1,4 +1,5 @@
-import { User } from '@/shared/types/index.ts'
+import { FiltersState, User } from '@/shared/types/index.ts'
+import { INITIAL_FILTERS_STATE } from '@/shared/lib/constants'
 import { fetchUsers, fetchUsersByIds } from '@/api/users.ts'
 import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
@@ -19,6 +20,8 @@ interface UsersState {
   favoritesIdsKey: string
   favoritesRequestId?: string | null
   errors: Partial<Record<UserSort, string>>
+  requestIds?: Partial<Record<UserSort, string>>
+  filterKeys?: Partial<Record<UserSort, string>>
   isExpanded: boolean
 }
 
@@ -44,21 +47,31 @@ const initialState: UsersState = {
   isExpanded: false,
 }
 
+interface LoadUsersArgs {
+  page?: number
+  limit?: number
+  sort: UserSort
+  filters?: FiltersState
+}
+
+function filterKey(filters = INITIAL_FILTERS_STATE) {
+  return JSON.stringify({
+    ...filters,
+    name: filters.name?.trim() || null,
+    cities: [...filters.cities].sort(),
+    skillIds: [...filters.skillIds].sort(),
+  })
+}
+
 export const loadUsers = createAsyncThunk(
   'users/load',
-  async (params: {
-    page?: number
-    limit?: number
-    sort: UserSort
-    type?: string
-    name?: string
-  }) => {
-    const { page = 1, limit = 9, sort, type = 'all', name = '' } = params
-    const data = await fetchUsers(page, limit, sort, type, name.trim())
+  async (params: LoadUsersArgs, { signal }) => {
+    const { page = 1, limit = 9, sort, filters } = params
+    const data = await fetchUsers(page, limit, sort, filters, signal)
     return { users: data.users, hasMore: data.hasMore, sort, page }
   },
   {
-    condition: ({ page = 1, sort }, { getState }) => {
+    condition: ({ page = 1, sort, filters }, { getState }) => {
       const state = (getState() as { users: UsersState }).users
       const isLoading =
         sort === 'popular'
@@ -66,7 +79,16 @@ export const loadUsers = createAsyncThunk(
           : sort === 'new'
             ? state.isNewLoading
             : state.isRecommendedLoading
-      return !isLoading && (page === 1 || (state.hasMore[sort] && page === state.pages[sort] + 1))
+      const isFirstPage = page === 1
+      const isNextPage = page === state.pages[sort] + 1
+
+      return (
+        isFirstPage ||
+        (!isLoading &&
+          state.hasMore[sort] &&
+          isNextPage &&
+          state.filterKeys?.[sort] === filterKey(filters))
+      )
     },
   },
 )
@@ -137,38 +159,52 @@ export const usersSlice = createSlice({
     selectUsersErrors: (state) => state.errors,
   },
   extraReducers: (builder) => {
-    builder
-      .addCase(loadUsers.pending, (state, action) => {
-        const { sort } = action.meta.arg
-        if (sort === 'popular') state.isPopularLoading = true
-        if (sort === 'new') state.isNewLoading = true
-        if (sort === 'random') state.isRecommendedLoading = true
-        delete state.errors[sort]
-      })
-      .addCase(loadUsers.fulfilled, (state, action) => {
-        const { users, hasMore, sort, page } = action.payload
-        if (sort === 'popular') {
-          state.popularUsers = page === 1 ? users : [...state.popularUsers, ...users]
-        }
-        if (sort === 'new') {
-          state.newUsers = page === 1 ? users : [...state.newUsers, ...users]
-        }
-        if (sort === 'random') {
-          state.recommendedUsers = page === 1 ? users : [...state.recommendedUsers, ...users]
-        }
-        state.pages[sort] = page
-        state.hasMore[sort] = hasMore
-        if (sort === 'popular') state.isPopularLoading = false
-        if (sort === 'new') state.isNewLoading = false
-        if (sort === 'random') state.isRecommendedLoading = false
-      })
-      .addCase(loadUsers.rejected, (state, action) => {
-        const { sort } = action.meta.arg
-        if (sort === 'popular') state.isPopularLoading = false
-        if (sort === 'new') state.isNewLoading = false
-        if (sort === 'random') state.isRecommendedLoading = false
+    builder.addCase(loadUsers.pending, (state, action) => {
+      const { sort, page = 1, filters } = action.meta.arg
+      state.requestIds ??= {}
+      state.filterKeys ??= {}
+      state.requestIds[sort] = action.meta.requestId
+      state.filterKeys[sort] = filterKey(filters)
+      if (sort === 'popular') state.isPopularLoading = true
+      if (sort === 'new') state.isNewLoading = true
+      if (sort === 'random') state.isRecommendedLoading = true
+      delete state.errors[sort]
+      if (page === 1) {
+        state.pages[sort] = 0
+        state.hasMore[sort] = true
+        if (sort === 'popular') state.popularUsers = []
+        if (sort === 'new') state.newUsers = []
+        if (sort === 'random') state.recommendedUsers = []
+      }
+    })
+    builder.addCase(loadUsers.fulfilled, (state, action) => {
+      const { users, hasMore, sort, page } = action.payload
+      if (state.requestIds?.[sort] !== action.meta.requestId) return
+      if (sort === 'popular') {
+        state.popularUsers = page === 1 ? users : [...state.popularUsers, ...users]
+      }
+      if (sort === 'new') {
+        state.newUsers = page === 1 ? users : [...state.newUsers, ...users]
+      }
+      if (sort === 'random') {
+        state.recommendedUsers = page === 1 ? users : [...state.recommendedUsers, ...users]
+      }
+      state.pages[sort] = page
+      state.hasMore[sort] = hasMore
+      if (sort === 'popular') state.isPopularLoading = false
+      if (sort === 'new') state.isNewLoading = false
+      if (sort === 'random') state.isRecommendedLoading = false
+    })
+    builder.addCase(loadUsers.rejected, (state, action) => {
+      const { sort } = action.meta.arg
+      if (state.requestIds?.[sort] !== action.meta.requestId) return
+      if (sort === 'popular') state.isPopularLoading = false
+      if (sort === 'new') state.isNewLoading = false
+      if (sort === 'random') state.isRecommendedLoading = false
+      if (!action.meta.aborted) {
         state.errors[sort] = action.error.message || 'Ошибка загрузки пользователей'
-      })
+      }
+    })
     builder
       .addCase(loadFavoriteUsers.pending, (state, action) => {
         const searchKey = `${action.meta.arg.ids.join('\u0000')}\u0001${action.meta.arg.name?.trim() ?? ''}`

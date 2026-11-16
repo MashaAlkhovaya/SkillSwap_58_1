@@ -1,4 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { INITIAL_FILTERS_STATE } from '@/shared/lib/constants'
+import type { FilterMode } from '@/shared/types'
 import { fetchUsers, fetchUsersByIds } from './users'
 
 const fetchMock = vi.fn()
@@ -13,8 +15,12 @@ describe('fetchUsers query parameters', () => {
     vi.stubGlobal('fetch', fetchMock)
   })
 
-  it.each(['all', 'learn', 'teach'])('передаёт type=%s', async (type) => {
-    await fetchUsers(1, 10, 'popular', type)
+  it.each<[FilterMode, string]>([
+    ['all', 'all'],
+    ['wantToLearn', 'learn'],
+    ['canTeach', 'teach'],
+  ])('передаёт режим %s как type=%s', async (mode, type) => {
+    await fetchUsers(1, 10, 'popular', { ...INITIAL_FILTERS_STATE, mode })
 
     const url = new URL(fetchMock.mock.calls[0][0], 'http://localhost')
     expect(url.searchParams.get('type')).toBe(type)
@@ -22,7 +28,7 @@ describe('fetchUsers query parameters', () => {
 
   it('кодирует name в URL и восстанавливает исходное значение при чтении параметров', async () => {
     const name = 'Музыка & звук + C++'
-    await fetchUsers(1, 10, 'popular', 'all', name)
+    await fetchUsers(1, 10, 'popular', { ...INITIAL_FILTERS_STATE, name })
 
     const requestUrl = String(fetchMock.mock.calls[0][0])
     const url = new URL(requestUrl, 'http://localhost')
@@ -32,7 +38,7 @@ describe('fetchUsers query parameters', () => {
   })
 
   it('не передаёт пустой name в запросе', async () => {
-    await fetchUsers(1, 10, 'popular', 'all', '')
+    await fetchUsers(1, 10, 'popular', { ...INITIAL_FILTERS_STATE, name: '' })
 
     const url = new URL(fetchMock.mock.calls[0][0], 'http://localhost')
     expect(url.searchParams.has('name')).toBe(false)

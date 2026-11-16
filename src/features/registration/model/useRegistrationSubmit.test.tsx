@@ -7,6 +7,7 @@ import { describe, it, expect, vi, beforeAll, afterEach, afterAll } from 'vitest
 
 import { baseApi } from '@/shared/api'
 import { setAuthUser } from '@/features/auth/model/authSlice'
+import { addNotification } from '@/features/notifications'
 import { saveServerAuthUser } from '@/features/auth/model/authUtils'
 import { useRegistrationSubmit } from './useRegistrationSubmit'
 import type { RegistrationFormValues } from './registrationSchema'
@@ -93,6 +94,9 @@ describe('useRegistrationSubmit', () => {
     expect(dispatch).toHaveBeenCalledWith(setAuthUser(SERVER_USER))
     expect(saveServerAuthUser).toHaveBeenCalledWith(SERVER_USER)
     expect(result.current.error).toBeNull()
+    expect(dispatch).not.toHaveBeenCalledWith(
+      expect.objectContaining({ type: addNotification.type }),
+    )
   })
 
   it('во время отправки isSubmitting = true и повторный вызов заблокирован', async () => {
@@ -173,6 +177,12 @@ describe('useRegistrationSubmit', () => {
 
     expect(ok).toBe(false)
     expect(result.current.error).toBe('Email уже зарегистрирован')
+    expect(dispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: addNotification.type,
+        payload: expect.objectContaining({ type: 'error', message: 'Email уже зарегистрирован' }),
+      }),
+    )
   })
 
   it('5xx без message: показывает запасное сообщение', async () => {

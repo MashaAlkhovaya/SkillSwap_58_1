@@ -1,4 +1,5 @@
-import type { User } from '@/shared/types'
+import type { FiltersState, User } from '@/shared/types'
+import { INITIAL_FILTERS_STATE } from '@/shared/lib/constants'
 
 const BASE_URL = '/api'
 
@@ -14,21 +15,26 @@ export async function fetchUsers(
   page = 1,
   limit = 10,
   sort = 'random',
-  type = 'all',
-  name: string = '',
-): Promise<{ users: User[]; hasMore: boolean }> {
+  filters: FiltersState = INITIAL_FILTERS_STATE,
+  signal?: AbortSignal,
+): Promise<{ users: User[]; hasMore: boolean; total: number }> {
   const params = new URLSearchParams({
     page: String(page),
     limit: String(limit),
-    type,
-    ...(name ? { name } : {}),
     delay: '100',
     sort,
+    type: filters.mode === 'wantToLearn' ? 'learn' : filters.mode === 'canTeach' ? 'teach' : 'all',
   })
-  const response = await fetch(`${BASE_URL}/users?${params}`)
+  if (filters.name?.trim()) params.set('name', filters.name.trim())
+  if (filters.gender) params.set('gender', filters.gender === 'Мужской' ? 'male' : 'female')
+  if (filters.cities.length === 1) params.set('city', filters.cities[0])
+  else filters.cities.forEach((city) => params.append('city[]', city))
+  filters.skillIds.forEach((id) => params.append('subCategoryId[]', id))
+
+  const response = await fetch(`${BASE_URL}/users?${params}`, { signal })
   if (!response.ok) throw new Error('Failed to fetch users')
   const data: UsersResponse = await response.json()
-  return { users: data.items, hasMore: data.hasMore }
+  return { users: data.items, hasMore: data.hasMore, total: data.total }
 }
 
 export async function fetchUsersByIds(

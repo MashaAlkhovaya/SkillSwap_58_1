@@ -4,14 +4,15 @@ import userEvent from '@testing-library/user-event'
 import { Provider } from 'react-redux'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { User } from '@/shared/types'
+import { INITIAL_FILTERS_STATE } from '@/shared/lib/constants'
+import type { FiltersState, User } from '@/shared/types'
 import CatalogPage from './index'
 
 const { loadUsersMock, useOutgoingPendingSkillIdsMock } = vi.hoisted(() => ({
-  loadUsersMock: vi.fn((params: { page?: number; sort: string }) => ({
-    type: 'users/load',
-    payload: params,
-  })),
+  loadUsersMock: vi.fn(
+    (_params: { page?: number; sort: string; filters?: FiltersState }) => () =>
+      Object.assign(Promise.resolve(), { abort: vi.fn() }),
+  ),
   useOutgoingPendingSkillIdsMock: vi.fn<() => string[]>(() => []),
 }))
 
@@ -99,9 +100,21 @@ describe('CatalogPage', () => {
     renderCatalogPage()
 
     expect(loadUsersMock).toHaveBeenCalledTimes(3)
-    expect(loadUsersMock).toHaveBeenNthCalledWith(1, { page: 1, sort: 'popular' })
-    expect(loadUsersMock).toHaveBeenNthCalledWith(2, { page: 1, sort: 'new' })
-    expect(loadUsersMock).toHaveBeenNthCalledWith(3, { page: 1, sort: 'random' })
+    expect(loadUsersMock).toHaveBeenNthCalledWith(1, {
+      page: 1,
+      sort: 'popular',
+      filters: INITIAL_FILTERS_STATE,
+    })
+    expect(loadUsersMock).toHaveBeenNthCalledWith(2, {
+      page: 1,
+      sort: 'new',
+      filters: INITIAL_FILTERS_STATE,
+    })
+    expect(loadUsersMock).toHaveBeenNthCalledWith(3, {
+      page: 1,
+      sort: 'random',
+      filters: INITIAL_FILTERS_STATE,
+    })
   })
 
   it('показывает каталоги пользователей для всех трёх подборок', () => {
@@ -182,7 +195,11 @@ describe('CatalogPage', () => {
     const popularSection = screen.getByRole('region', { name: 'Популярное' })
     await user.click(within(popularSection).getByRole('button', { name: 'Смотреть все' }))
 
-    expect(loadUsersMock).toHaveBeenCalledWith({ page: 3, sort: 'popular' })
+    expect(loadUsersMock).toHaveBeenCalledWith({
+      page: 3,
+      sort: 'popular',
+      filters: INITIAL_FILTERS_STATE,
+    })
   })
 
   it('передаёт name из URL при загрузке следующих страниц', async () => {
@@ -228,7 +245,7 @@ describe('CatalogPage', () => {
     expect(loadUsersMock).toHaveBeenCalledWith({
       page: 3,
       sort: 'popular',
-      name: 'Музыка и звук',
+      filters: { ...INITIAL_FILTERS_STATE, name: 'Музыка и звук' },
     })
   })
 })

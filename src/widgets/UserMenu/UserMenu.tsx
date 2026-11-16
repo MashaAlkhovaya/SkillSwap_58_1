@@ -3,6 +3,7 @@ import type { AuthRedirectState } from '@/shared/lib/authRedirect'
 import { logout, selectAuthUser } from '@/features/auth/model/authSlice'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { useTheme } from '@/features/theme-switcher'
+import { useNotify } from '@/features/notifications'
 import { Avatar, Dropdown, Button, MoonIcon, HeartIcon, LogoutIcon } from '@/shared/ui'
 import { ROUTES } from '@/shared/lib/constants'
 import styles from './UserMenu.module.css'
@@ -15,13 +16,21 @@ export function UserMenu() {
   const location = useLocation()
   const isFavoritesPage = location.pathname.replace(/\/+$/, '') === ROUTES.FAVORITES
   const { theme, toggleTheme } = useTheme()
+  const notify = useNotify()
 
   const authRedirectState: AuthRedirectState = {
     from: location.pathname + location.search,
   }
 
   const handleLogout = async () => {
-    await dispatch(logout())
+    try {
+      await dispatch(logout()).unwrap()
+    } catch {
+      notify.error('Ошибка выхода, попробуйте ещё раз')
+      return
+    }
+
+    notify.success('Выход выполнен')
     navigate(ROUTES.HOME)
   }
 

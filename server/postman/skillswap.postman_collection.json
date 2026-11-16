@@ -753,6 +753,17 @@
                   "disabled": true
                 },
                 {
+                  "key": "city[]",
+                  "value": "Москва",
+                  "description": "Для нескольких городов повторяйте city[]; значения объединяются через ИЛИ до пагинации.",
+                  "disabled": true
+                },
+                {
+                  "key": "city[]",
+                  "value": "Казань",
+                  "disabled": true
+                },
+                {
                   "key": "type",
                   "value": "learn",
                   "description": "learn → canTeach; teach → wantsToLearn; all → оба поля (по умолчанию).",
@@ -3171,6 +3182,36 @@
                   "pm.test('404', () => pm.response.to.have.status(404))",
                   "pm.test('ошибка в формате { message }', () => {",
                   "  pm.expect(pm.response.json()).to.have.property('message')",
+                  "})"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Фильтры — несколько городов",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": "{{baseUrl}}/users?city[]=Москва&city[]=Казань&sort=new&limit=100",
+            "description": "city[] объединяет города через ИЛИ до сортировки и пагинации. Одиночный city остаётся совместимым; при одновременном city и city[] применяются оба ограничения через И. Пустые и неизвестные города возвращают 400; повторяющиеся города не дублируют пользователей."
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200', () => pm.response.to.have.status(200))",
+                  "const body = pm.response.json()",
+                  "pm.test('только выбранные города, без дубликатов', () => {",
+                  "  pm.expect(body.items.length).to.be.above(0)",
+                  "  body.items.forEach(user => pm.expect(['Москва', 'Казань']).to.include(user.city))",
+                  "  pm.expect(new Set(body.items.map(user => user.id)).size).to.eql(body.items.length)",
+                  "})",
+                  "pm.test('метаданные после фильтрации', () => {",
+                  "  pm.expect(body.total).to.eql(body.items.length)",
+                  "  pm.expect(body.hasMore).to.eql(false)",
                   "})"
                 ]
               }

@@ -6,6 +6,7 @@ import { Provider } from 'react-redux'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { LOCAL_STORAGE_KEYS } from '@/shared/lib/constants'
 import authReducer, { logout, setAuthUser } from './authSlice'
+import notificationsReducer from '@/features/notifications/model/notificationsSlice'
 import { saveServerAuthUser } from './authUtils'
 import { useAuthForm } from './useAuthForm'
 import { MemoryRouter } from 'react-router'
@@ -83,7 +84,7 @@ function AuthFormProbe() {
 
 function renderAuthForm() {
   const store = configureStore({
-    reducer: { auth: authReducer },
+    reducer: { auth: authReducer, notifications: notificationsReducer },
     preloadedState: {
       auth: { user: null, profile: null },
     },
@@ -238,6 +239,9 @@ describe('useAuthForm', () => {
 
     expect(JSON.parse(savedProfile ?? 'null')).toEqual(profile)
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
+    expect(store.getState().notifications.items).toEqual([
+      expect.objectContaining({ type: 'success', message: 'Вы вошли в аккаунт' }),
+    ])
   })
 
   it('показывает сообщение сервера при неверных данных', async () => {
@@ -258,6 +262,9 @@ describe('useAuthForm', () => {
 
     expect(await screen.findByRole('alert')).toHaveTextContent('Неправильные почта или пароль')
     expect(store.getState().auth.user).toBeNull()
+    expect(store.getState().notifications.items).toEqual([
+      expect.objectContaining({ type: 'error', message: 'Неправильные почта или пароль' }),
+    ])
   })
 
   it('показывает общее сообщение, если сервер недоступен', async () => {

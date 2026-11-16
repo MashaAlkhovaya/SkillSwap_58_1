@@ -28,7 +28,7 @@
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 324px));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 324px));
   gap: var(--space-lg);
 }
 
@@ -37,19 +37,9 @@
   width: 100%;
 }
 
-@media (width <= 760px) {
-  .grid {
-    grid-template-columns: repeat(2, minmax(0, 324px));
-  }
-}
-
 @media (width <= 480px) {
   .header {
     align-items: flex-start;
-  }
-
-  .grid {
-    grid-template-columns: minmax(0, 324px);
   }
 }
 

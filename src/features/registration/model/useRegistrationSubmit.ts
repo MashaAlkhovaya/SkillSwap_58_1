@@ -3,6 +3,7 @@ import { useAppDispatch } from '@/store/hooks'
 import { saveServerAuthUser } from '@/features/auth/model/authUtils'
 import { setAuthUser } from '@/features/auth/model/authSlice'
 import { getErrorMessage } from '@/shared/api/getErrorMessage'
+import { useNotify } from '@/features/notifications'
 import { buildRegistrationFormData, useRegisterMutation } from '../api/registrationApi'
 import type { RegistrationFormValues } from './registrationSchema'
 
@@ -14,6 +15,7 @@ export function useRegistrationSubmit() {
   const [register, { isLoading }] = useRegisterMutation()
   const [error, setError] = useState<string | null>(null)
   const pendingRef = useRef(false)
+  const notify = useNotify()
 
   const clearError = useCallback(() => setError(null), [])
 
@@ -32,13 +34,15 @@ export function useRegistrationSubmit() {
 
         return true
       } catch (requestError) {
-        setError(getErrorMessage(requestError, FALLBACK_ERROR))
+        const message = getErrorMessage(requestError, FALLBACK_ERROR)
+        setError(message)
+        notify.error(message)
         return false
       } finally {
         pendingRef.current = false
       }
     },
-    [dispatch, register],
+    [dispatch, notify, register],
   )
 
   return { registerUser, isSubmitting: isLoading, error, clearError }
