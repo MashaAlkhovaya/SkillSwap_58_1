@@ -1,6 +1,6 @@
 import { User } from '@/shared/types/index.ts'
 import { fetchUsers, fetchUsersByIds } from '@/api/users.ts'
-import { createAsyncThunk, createSlice } from '@reduxjs/toolkit'
+import { createAsyncThunk, createSlice, type PayloadAction } from '@reduxjs/toolkit'
 
 interface UsersState {
   popularUsers: User[]
@@ -115,6 +115,15 @@ export const usersSlice = createSlice({
       state.favoritesIdsKey = ''
       state.favoritesRequestId = null
     },
+    removeFavoriteUser: (
+      state,
+      action: PayloadAction<{ userId: string; favoritesIdsKey: string }>,
+    ) => {
+      state.favoriteUsers = state.favoriteUsers.filter((user) => user.id !== action.payload.userId)
+      state.favoritesIdsKey = action.payload.favoritesIdsKey
+      state.favoritesPage = 1
+      state.favoritesHasMore = false
+    },
   },
   selectors: {
     selectPopularUsers: (state) => state.popularUsers,
@@ -222,6 +231,6 @@ export const selectFavoritesLoading = (state: { users: UsersState }) =>
   state.users.isFavoritesLoading
 export const selectFavoritesError = (state: { users: UsersState }) => state.users.favoritesError
 
-export const { clearFavoriteUsers } = usersSlice.actions
+export const { clearFavoriteUsers, removeFavoriteUser } = usersSlice.actions
 
 export default usersSlice.reducer

@@ -17,10 +17,34 @@ export const authApi = baseApi.injectEndpoints({
       query: () => '/auth/me',
     }),
 
+    removeLike: builder.mutation<void, string>({
+      query: (targetUserId) => ({
+        url: `/auth/me/likes/${encodeURIComponent(targetUserId)}`,
+        method: 'DELETE',
+      }),
+      async onQueryStarted(targetUserId, { dispatch, queryFulfilled }) {
+        try {
+          await queryFulfilled
+          dispatch(
+            authApi.util.updateQueryData('getAuthMe', undefined, (user) => {
+              user.likes = user.likes.filter((id) => id !== targetUserId)
+            }),
+          )
+        } catch {
+          // При ошибке запроса профиль и избранное остаются без изменений.
+        }
+      },
+    }),
+
     updateProfile: builder.mutation<User, ProfileUpdatePayload>({
       query: profileUpdateQuery,
     }),
   }),
 })
 
-export const { useLoginMutation, useGetAuthMeQuery, useUpdateProfileMutation } = authApi
+export const {
+  useLoginMutation,
+  useGetAuthMeQuery,
+  useRemoveLikeMutation,
+  useUpdateProfileMutation,
+} = authApi

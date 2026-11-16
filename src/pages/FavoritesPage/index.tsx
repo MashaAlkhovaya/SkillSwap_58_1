@@ -1,5 +1,6 @@
 import { useGetAuthMeQuery } from '@/features/auth/api/authApi'
 import { clearFavoriteUsers, loadFavoriteUsers } from '@/entities/user/model/usersSlice'
+import { useFavoriteLikes } from '@/features/favorites'
 import type { RootState } from '@/store'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { ROUTES } from '@/shared/lib/constants'
@@ -22,6 +23,7 @@ export default function FavoritesPage() {
     useAppSelector((state: RootState) => state.users)
   const { data: currentUser, error: profileError } = useGetAuthMeQuery()
   const likedUserIds = currentUser?.likes ?? EMPTY_IDS
+  const { removeFavorite } = useFavoriteLikes({ likedUserIds, name })
 
   const loadFavorites = useCallback(
     (nextPage: number) =>
@@ -61,7 +63,7 @@ export default function FavoritesPage() {
           onLoadMore={() => void loadFavorites(favoritesPage + 1)}
           favoriteIds={likedUserIds}
           onDetails={openSkill}
-          onFavoriteToggle={() => undefined}
+          onFavoriteToggle={removeFavorite}
         />
       )}
     </main>
