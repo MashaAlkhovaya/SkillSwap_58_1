@@ -6,13 +6,14 @@ import { MemoryRouter } from 'react-router-dom'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { User } from '@/shared/types'
 import authReducer from '@/features/auth/model/authSlice'
-import { useGetAuthMeQuery } from '@/features/auth/api/authApi'
+import { useGetAuthMeQuery, useRemoveLikeMutation } from '@/features/auth/api/authApi'
 import usersReducer from '@/entities/user/model/usersSlice'
 import { fetchUsersByIds } from '@/api/users'
 import FavoritesPage from './index'
 
 vi.mock('@/features/auth/api/authApi', () => ({
   useGetAuthMeQuery: vi.fn(),
+  useRemoveLikeMutation: vi.fn(),
 }))
 
 vi.mock('@/api/users', () => ({
@@ -25,14 +26,21 @@ vi.mock('@/widgets', () => ({
     title,
     users,
     onLoadMore,
+    onFavoriteToggle,
   }: {
     title: string
     users: User[]
     onLoadMore: () => void
+    onFavoriteToggle: (user: User) => void
   }) => (
     <section aria-label={title}>
       {users.map((user) => (
-        <p key={user.id}>{user.name}</p>
+        <div key={user.id}>
+          <p>{user.name}</p>
+          <button type="button" onClick={() => onFavoriteToggle(user)}>
+            Убрать из избранного {user.id}
+          </button>
+        </div>
       ))}
       <button type="button" onClick={onLoadMore}>
         Загрузить ещё
@@ -42,7 +50,9 @@ vi.mock('@/widgets', () => ({
 }))
 
 const queryMock = vi.mocked(useGetAuthMeQuery)
+const removeLikeMutationMock = vi.mocked(useRemoveLikeMutation)
 const fetchUsersByIdsMock = vi.mocked(fetchUsersByIds)
+const removeLikeMock = vi.fn()
 
 const createUser = (id: string): User => ({
   id,
@@ -76,6 +86,8 @@ describe('FavoritesPage', () => {
   beforeEach(() => {
     fetchUsersByIdsMock.mockReset()
     queryMock.mockReset()
+    removeLikeMock.mockReset()
+    removeLikeMutationMock.mockReturnValue([removeLikeMock] as never)
   })
 
   it('загружает пользователей по likes, а не запрашивает общий каталог', async () => {
@@ -140,5 +152,47 @@ describe('FavoritesPage', () => {
     renderFavoritesPage()
 
     expect(await screen.findByRole('heading', { name: /500|ошибка/i })).toBeVisible()
+  })
+
+  it('снимает лайк и удаляет карточку после успешного ответа сервера', async () => {
+    const user = userEvent.setup()
+    queryMock.mockReturnValue({
+      data: { ...createUser('current'), likes: ['user-02', 'user-03'] },
+    } as never)
+    fetchUsersByIdsMock.mockResolvedValue({
+      users: [createUser('user-02'), createUser('user-03')],
+      hasMore: false,
+    })
+    const unwrap = vi.fn().mockResolvedValue(undefined)
+    removeLikeMock.mockReturnValue({ unwrap })
+
+    const { store } = renderFavoritesPage()
+    await screen.findByText('Пользователь user-02')
+
+    await user.click(screen.getByRole('button', { name: 'Убрать из избранного user-02' }))
+
+    expect(removeLikeMock).toHaveBeenCalledWith('user-02')
+    expect(unwrap).toHaveBeenCalledOnce()
+    expect(screen.queryByText('Пользователь user-02')).not.toBeInTheDocument()
+    expect(screen.getByText('Пользователь user-03')).toBeVisible()
+    expect(store.getState().users.favoritesIdsKey).toBe('user-03\u0001')
+  })
+
+  it('оставляет карточку в избранном, если сервер не снял лайк', async () => {
+    const user = userEvent.setup()
+    queryMock.mockReturnValue({
+      data: { ...createUser('current'), likes: ['user-02'] },
+    } as never)
+    fetchUsersByIdsMock.mockResolvedValue({ users: [createUser('user-02')], hasMore: false })
+    const unwrap = vi.fn().mockRejectedValue(new Error('Ошибка сети'))
+    removeLikeMock.mockReturnValue({ unwrap })
+
+    renderFavoritesPage()
+    await screen.findByText('Пользователь user-02')
+
+    await user.click(screen.getByRole('button', { name: 'Убрать из избранного user-02' }))
+
+    expect(removeLikeMock).toHaveBeenCalledWith('user-02')
+    expect(screen.getByText('Пользователь user-02')).toBeVisible()
   })
 })
