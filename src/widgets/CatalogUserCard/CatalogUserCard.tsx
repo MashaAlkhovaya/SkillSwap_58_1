@@ -116,7 +116,11 @@ export function CatalogUserCard({
             <Chip key={skill.id} label={skill.title} category={skill.category} />
           ))}
 
-          {remainingSkillsCount > 0 && <Chip label={`+${remainingSkillsCount}`} />}
+          {remainingSkillsCount > 0 && (
+            <span className={styles.remainingSkills}>
+              <Chip label={`+${remainingSkillsCount}`} />
+            </span>
+          )}
         </div>
       </div>
 
