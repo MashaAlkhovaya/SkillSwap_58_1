@@ -19,6 +19,7 @@ const RegisterPage = lazy(() => import('@/pages/RegisterPage'))
 const ServerErrorPage = lazy(() => import('@/pages/ServerErrorPage'))
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'))
 const AboutPage = lazy(() => import('@/pages/AboutPage'))
+const ExchangesPage = lazy(() => import('@/pages/ExchangesPage'))
 
 export function ApiErrorRedirect() {
   const navigate = useNavigate()
@@ -66,6 +67,7 @@ export function AppRouter() {
               <Route path={ROUTES.PROFILE} element={<ProfilePage />} />
               <Route path={ROUTES.CREATE} element={<CreateSkillPage />} />
               <Route path={ROUTES.FAVORITES} element={<FavoritesPage />} />
+              <Route path={ROUTES.EXCHANGES} element={<ExchangesPage />} />
             </Route>
             <Route path={ROUTES.SERVER_ERROR} element={<ServerErrorPage />} />
             <Route path={ROUTES.NOT_FOUND} element={<NotFoundPage />} />

@@ -36,6 +36,10 @@ describe('ProfileSidebar', () => {
     const user = userEvent.setup()
     renderSidebar()
 
+    expect(screen.getByRole('link', { name: 'Мои обмены' })).toHaveAttribute(
+      'href',
+      ROUTES.EXCHANGES,
+    )
     expect(screen.getByRole('link', { name: 'Личные данные' })).toHaveAttribute(
       'href',
       ROUTES.PROFILE,
@@ -51,7 +55,6 @@ describe('ProfileSidebar', () => {
     }
 
     await user.click(screen.getByRole('button', { name: 'Заявки' }))
-
     expect(screen.getByTestId('location')).toHaveTextContent(ROUTES.PROFILE)
 
     await user.click(screen.getByRole('link', { name: 'Избранное' }))
@@ -68,11 +71,26 @@ describe('ProfileSidebar', () => {
     expect(personalData).toHaveClass(styles.itemActive)
   })
 
-  it('не подсвечивает «Личные данные» на другом маршруте', () => {
-    renderSidebar(ROUTES.HOME)
+  it('подсвечивает «Мои обмены» на странице обменов', () => {
+    renderSidebar(ROUTES.EXCHANGES)
 
+    const exchangesLink = screen.getByRole('link', { name: 'Мои обмены' })
     const personalData = screen.getByRole('link', { name: 'Личные данные' })
 
+    expect(exchangesLink).toHaveAttribute('aria-current', 'page')
+    expect(exchangesLink).toHaveClass(styles.itemActive)
+    expect(personalData).not.toHaveAttribute('aria-current')
+    expect(personalData).not.toHaveClass(styles.itemActive)
+  })
+
+  it('не подсвечивает ссылки на другом маршруте', () => {
+    renderSidebar(ROUTES.HOME)
+
+    const exchangesLink = screen.getByRole('link', { name: 'Мои обмены' })
+    const personalData = screen.getByRole('link', { name: 'Личные данные' })
+
+    expect(exchangesLink).not.toHaveAttribute('aria-current')
+    expect(exchangesLink).not.toHaveClass(styles.itemActive)
     expect(personalData).not.toHaveAttribute('aria-current')
     expect(personalData).not.toHaveClass(styles.itemActive)
   })

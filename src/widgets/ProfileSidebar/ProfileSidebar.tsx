@@ -31,7 +31,7 @@ type SidebarItem = {
 
 const ITEMS: SidebarItem[] = [
   { id: 'requests', label: 'Заявки' },
-  { id: 'exchanges', label: 'Мои обмены' },
+  { id: 'exchanges', label: 'Мои обмены', to: ROUTES.EXCHANGES },
   { id: 'favorites', label: 'Избранное', to: ROUTES.FAVORITES },
   { id: 'skills', label: 'Мои навыки' },
   { id: 'personal', label: 'Личные данные', to: ROUTES.PROFILE },
@@ -39,7 +39,7 @@ const ITEMS: SidebarItem[] = [
 
 export type ProfileSidebarProps = {
   className?: string
-  activeItemId?: 'personal'
+  activeItemId?: ProfileSidebarItemId
 }
 
 function SidebarItemContent({ id, label }: { id: ProfileSidebarItemId; label: string }) {
