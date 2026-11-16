@@ -188,6 +188,10 @@ const updatedUser = await response.json()
 
 - `gender`: `female` или `male`; без параметра — любой пол.
 - `city`: точное название из `CITIES`, например `Москва`.
+- `city[]`: несколько городов через повторение ключа, например
+  `city[]=Москва&city[]=Казань`. Достаточно совпадения одного города; дубликаты
+  не дублируют пользователей. Пустые и неизвестные города возвращают `400`.
+  Если переданы и `city`, и `city[]`, применяются оба ограничения через И.
 - `type`: желание посетителя — `learn` («хочу научиться», поиск в
   `canTeach.subCategory`), `teach` («могу научить», поиск в `wantsToLearn`),
   `all` (по умолчанию, поиск в обоих полях).
@@ -219,6 +223,7 @@ const updatedUser = await response.json()
 GET /api/users?gender=female&type=learn&subCategoryId[]=english&subCategoryId[]=german&city=Москва
 GET /api/users?ids[]=user-01&ids[]=user-02&name=БАРАБАН&page=1&limit=12
 GET /api/users?type=teach&name=АНГЛ&page=1&limit=12
+GET /api/users?city[]=Москва&city[]=Казань&sort=new&page=1&limit=9
 ```
 
 `likes` — ID пользователей, которым пользователь поставил лайк. Для сортировки

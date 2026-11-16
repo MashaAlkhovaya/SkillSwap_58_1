@@ -206,7 +206,9 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
         res.status(400).json({ message: `Неизвестная сортировка: ${req.query.sort}` })
         return
       }
-      const { gender, city, type, subCategoryIds, userIds, name } = parseUserFilters(req.query)
+      const { gender, city, cities, type, subCategoryIds, userIds, name } = parseUserFilters(
+        req.query,
+      )
       const requestedIds = userIds === undefined ? undefined : new Set(userIds)
       const matchingSkillIds = name
         ? new Set(
@@ -235,6 +237,7 @@ export function createApp({ dataDir = DEFAULT_DATA, defaultDelay = 1000 }: AppOp
         }
         if (gender !== undefined && user.gender !== gender) return false
         if (city !== undefined && user.city !== city) return false
+        if (cities.length > 0 && !cities.includes(user.city)) return false
         if (subCategoryIds.length === 0) return true
         return (
           (type !== 'teach' && subCategoryIds.includes(user.canTeach.subCategory)) ||

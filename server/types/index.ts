@@ -48,6 +48,7 @@ export interface SwapRequestListQuery extends Pick<ListQuery, 'page' | 'limit'> 
 export interface UserListQuery extends ListQuery {
   gender?: string
   city?: string
+  'city[]'?: string | string[]
   name?: string
   'ids[]'?: string | string[]
   'subCategoryId[]'?: string | string[]

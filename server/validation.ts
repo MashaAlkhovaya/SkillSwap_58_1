@@ -54,6 +54,8 @@ function choices<T extends string>(value: unknown, values: readonly T[], field: 
 }
 
 export function parseUserFilters(query: UserListQuery) {
+  const rawCities = query['city[]']
+  const cities = rawCities === undefined ? [] : Array.isArray(rawCities) ? rawCities : [rawCities]
   const rawIds = query['subCategoryId[]']
   const ids = rawIds === undefined ? [] : Array.isArray(rawIds) ? rawIds : [rawIds]
   const rawUserIds = query['ids[]']
@@ -70,6 +72,7 @@ export function parseUserFilters(query: UserListQuery) {
         ? undefined
         : choice(query.gender, ['female', 'male'] as const, 'gender'),
     city: query.city === undefined ? undefined : choice(query.city, CITIES, 'city'),
+    cities: [...new Set(cities.map((city) => choice(city, CITIES, 'city[]')))],
     type: choice(query.type ?? 'all', ['learn', 'teach', 'all'] as const, 'type'),
     subCategoryIds: ids.map((id) => choice(id, allowedIds, 'subCategoryId[]')),
   }

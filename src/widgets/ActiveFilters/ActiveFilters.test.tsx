@@ -20,11 +20,9 @@ const REAL_MODE_LABEL = MODE_OPTIONS[1].label
 const REAL_GENDER = 'Мужской'
 
 describe('ActiveFilters', () => {
-  it('не рендерится, если фильтры пустые', () => {
-    const { container } = render(
-      <ActiveFilters filters={INITIAL_FILTERS_STATE} onRemoveFilter={vi.fn()} />,
-    )
-    expect(container).toBeEmptyDOMElement()
+  it('не рендерит чипы, если фильтры пустые', () => {
+    render(<ActiveFilters filters={INITIAL_FILTERS_STATE} onRemoveFilter={vi.fn()} />)
+    expect(screen.queryByRole('button')).not.toBeInTheDocument()
   })
 
   it('отображает чип для режима', () => {
@@ -109,5 +107,16 @@ describe('ActiveFilters', () => {
     await waitFor(() => {
       expect(handleRemove).toHaveBeenCalledWith('gender', null)
     })
+  })
+  it('позволяет удалить строку поиска отдельным чипом', async () => {
+    const onRemove = vi.fn()
+    render(
+      <ActiveFilters
+        filters={{ ...INITIAL_FILTERS_STATE, name: 'Гитара' }}
+        onRemoveFilter={onRemove}
+      />,
+    )
+    await userEvent.click(screen.getByRole('button', { name: /Гитара/i }))
+    await waitFor(() => expect(onRemove).toHaveBeenCalledWith('name', null))
   })
 })

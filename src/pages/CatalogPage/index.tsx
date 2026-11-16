@@ -1,15 +1,13 @@
 import { loadUsers } from '@/entities/user/model/usersSlice'
 import { Card, Skeleton } from '@/shared/ui'
-import { RootState } from '@/store'
-import { useAppDispatch } from '@/store/hooks'
-import { CatalogSection } from '@/widgets'
-import { useEffect, useMemo } from 'react'
-import { useSelector } from 'react-redux'
-import { useSearchParams } from 'react-router-dom'
-
+import { useAppDispatch, useAppSelector } from '@/store/hooks'
+import { ActiveFilters, CatalogSection, FilterSidebar } from '@/widgets'
+import { useEffect } from 'react'
 import { generatePath, useNavigate } from 'react-router-dom'
 import { ROUTES } from '@/shared/lib/constants'
-import type { User } from '@/shared/types'
+import type { FiltersState, User } from '@/shared/types'
+import { useCatalogFilters } from '@/features/catalog-filter'
+import styles from './CatalogPage.module.css'
 
 export default function CatalogPage() {
   const {
@@ -22,82 +20,116 @@ export default function CatalogPage() {
     errors,
     pages,
     hasMore,
-  } = useSelector((store: RootState) => store.users)
-  const dispatch = useAppDispatch()
-  const [searchParams] = useSearchParams()
-  const name = searchParams.get('name')?.trim() ?? ''
-  const nameFilter = useMemo(() => (name ? { name } : {}), [name])
+  } = useAppSelector((store) => store.users)
 
+  const dispatch = useAppDispatch()
   const navigate = useNavigate()
+
+  const { filters, setFilters } = useCatalogFilters()
+
   const openSkill = (user: User) => navigate(generatePath(ROUTES.SKILL, { id: user.canTeach.id }))
 
   useEffect(() => {
-    dispatch(loadUsers({ page: 1, sort: 'popular', ...nameFilter }))
-    dispatch(loadUsers({ page: 1, sort: 'new', ...nameFilter }))
-    dispatch(loadUsers({ page: 1, sort: 'random', ...nameFilter }))
-  }, [dispatch, nameFilter])
+    const requests = [
+      dispatch(loadUsers({ page: 1, sort: 'popular', filters })),
+      dispatch(loadUsers({ page: 1, sort: 'new', filters })),
+      dispatch(loadUsers({ page: 1, sort: 'random', filters })),
+    ]
+    return () => requests.forEach((request) => request.abort())
+  }, [dispatch, filters])
+
+  const handleRemoveFilter = (field: keyof FiltersState, value: string | null) => {
+    switch (field) {
+      case 'cities':
+        setFilters((prev) => ({ ...prev, cities: prev.cities.filter((c) => c !== value) }))
+        break
+      case 'skillIds':
+        setFilters((prev) => ({ ...prev, skillIds: prev.skillIds.filter((id) => id !== value) }))
+        break
+      case 'gender':
+        setFilters((prev) => ({ ...prev, gender: null }))
+        break
+      case 'mode':
+        setFilters((prev) => ({ ...prev, mode: 'all' }))
+        break
+      case 'name':
+        setFilters((prev) => ({ ...prev, name: null }))
+        break
+    }
+  }
+
   return (
-    <div style={{ display: 'grid', gap: '40px' }}>
-      <section>
-        {isPopularLoading && popularUsers.length === 0 ? (
-          <CatalogPreloader />
-        ) : errors.popular ? (
-          <h2>Ошибка: {errors.popular}</h2>
-        ) : (
-          <CatalogSection
-            title={'Популярное'}
-            users={popularUsers}
-            hasMore={hasMore.popular}
-            isLoadingMore={isPopularLoading}
-            onLoadMore={() =>
-              dispatch(loadUsers({ page: pages.popular + 1, sort: 'popular', ...nameFilter }))
-            }
-            favoriteIds={[]}
-            onDetails={openSkill}
-            onFavoriteToggle={() => undefined}
-          />
-        )}
-      </section>
-      <section>
-        {isNewLoading && newUsers.length === 0 ? (
-          <CatalogPreloader />
-        ) : errors.new ? (
-          <h2>Ошибка: {errors.new}</h2>
-        ) : (
-          <CatalogSection
-            title={'Новое'}
-            users={newUsers}
-            hasMore={hasMore.new}
-            isLoadingMore={isNewLoading}
-            onLoadMore={() =>
-              dispatch(loadUsers({ page: pages.new + 1, sort: 'new', ...nameFilter }))
-            }
-            favoriteIds={[]}
-            onDetails={openSkill}
-            onFavoriteToggle={() => undefined}
-          />
-        )}
-      </section>
-      <section>
-        {isRecommendedLoading && recommendedUsers.length === 0 ? (
-          <CatalogPreloader />
-        ) : errors.random ? (
-          <h2>Ошибка: {errors.random}</h2>
-        ) : (
-          <CatalogSection
-            title={'Рекомендуем'}
-            users={recommendedUsers}
-            hasMore={hasMore.random}
-            isLoadingMore={isRecommendedLoading}
-            onLoadMore={() =>
-              dispatch(loadUsers({ page: pages.random + 1, sort: 'random', ...nameFilter }))
-            }
-            favoriteIds={[]}
-            onDetails={openSkill}
-            onFavoriteToggle={() => undefined}
-          />
-        )}
-      </section>
+    <div className={styles.page}>
+      <div className={styles.container}>
+        <FilterSidebar />
+
+        <div className={styles.content}>
+          <ActiveFilters filters={filters} onRemoveFilter={handleRemoveFilter} />
+
+          <div className={styles.sections}>
+            <section>
+              {isPopularLoading && popularUsers.length === 0 ? (
+                <CatalogPreloader />
+              ) : errors.popular ? (
+                <h2>Ошибка: {errors.popular}</h2>
+              ) : (
+                <CatalogSection
+                  title={'Популярное'}
+                  users={popularUsers}
+                  hasMore={hasMore.popular}
+                  isLoadingMore={isPopularLoading}
+                  onLoadMore={() =>
+                    dispatch(loadUsers({ page: pages.popular + 1, sort: 'popular', filters }))
+                  }
+                  favoriteIds={[]}
+                  onDetails={openSkill}
+                  onFavoriteToggle={() => undefined}
+                />
+              )}
+            </section>
+            <section>
+              {isNewLoading && newUsers.length === 0 ? (
+                <CatalogPreloader />
+              ) : errors.new ? (
+                <h2>Ошибка: {errors.new}</h2>
+              ) : (
+                <CatalogSection
+                  title={'Новое'}
+                  users={newUsers}
+                  hasMore={hasMore.new}
+                  isLoadingMore={isNewLoading}
+                  onLoadMore={() =>
+                    dispatch(loadUsers({ page: pages.new + 1, sort: 'new', filters }))
+                  }
+                  favoriteIds={[]}
+                  onDetails={openSkill}
+                  onFavoriteToggle={() => undefined}
+                />
+              )}
+            </section>
+            <section>
+              {isRecommendedLoading && recommendedUsers.length === 0 ? (
+                <CatalogPreloader />
+              ) : errors.random ? (
+                <h2>Ошибка: {errors.random}</h2>
+              ) : (
+                <CatalogSection
+                  title={'Рекомендуем'}
+                  users={recommendedUsers}
+                  hasMore={hasMore.random}
+                  isLoadingMore={isRecommendedLoading}
+                  onLoadMore={() =>
+                    dispatch(loadUsers({ page: pages.random + 1, sort: 'random', filters }))
+                  }
+                  favoriteIds={[]}
+                  onDetails={openSkill}
+                  onFavoriteToggle={() => undefined}
+                />
+              )}
+            </section>
+          </div>
+        </div>
+      </div>
     </div>
   )
 }
