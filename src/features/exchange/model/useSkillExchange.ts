@@ -1,10 +1,11 @@
-import { useCallback, useMemo, useRef, useState } from 'react'
+import { useCallback, useMemo, useRef } from 'react'
 import { skipToken } from '@reduxjs/toolkit/query'
 import {
   useCreateSwapRequestMutation,
   useGetSwapRequestsQuery,
 } from '@/entities/request/model/api/swapRequestApi'
 import { selectAuthUser } from '@/features/auth/model/authSlice'
+import { useNotify } from '@/features/notifications'
 import { useAppSelector } from '@/store/hooks'
 import type { RequestStatus } from '@/shared/types'
 
@@ -30,7 +31,7 @@ export function useSkillExchange(skillId?: string) {
     user && skillId ? { role: 'outgoing', limit: OUTGOING_LIMIT } : skipToken,
   )
   const [createSwapRequest, { isLoading: isCreating }] = useCreateSwapRequestMutation()
-  const [error, setError] = useState<string | null>(null)
+  const notify = useNotify()
 
   const isSubmittingRef = useRef(false)
 
@@ -45,25 +46,22 @@ export function useSkillExchange(skillId?: string) {
     if (!skillId || request || isSubmittingRef.current) return false
 
     isSubmittingRef.current = true
-    setError(null)
 
     try {
       await createSwapRequest({ skillId }).unwrap()
       return true
     } catch (submitError) {
-      setError(getSwapRequestErrorMessage(submitError))
+      notify.error(getSwapRequestErrorMessage(submitError))
       return false
     } finally {
       isSubmittingRef.current = false
     }
-  }, [createSwapRequest, request, skillId])
+  }, [createSwapRequest, notify, request, skillId])
 
   return {
     status,
     isProposed: status !== 'idle',
     isLoading: isRequestsLoading || isCreating,
-    error,
-    resetError: useCallback(() => setError(null), []),
     propose,
   }
 }
