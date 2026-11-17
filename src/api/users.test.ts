@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { INITIAL_FILTERS_STATE } from '@/shared/lib/constants'
 import type { FilterMode } from '@/shared/types'
-import { fetchUsers } from './users'
+import { fetchUsers, fetchUsersByIds } from './users'
 
 const fetchMock = vi.fn()
 
@@ -42,5 +42,50 @@ describe('fetchUsers query parameters', () => {
 
     const url = new URL(fetchMock.mock.calls[0][0], 'http://localhost')
     expect(url.searchParams.has('name')).toBe(false)
+  })
+})
+
+describe('fetchUsersByIds', () => {
+  beforeEach(() => {
+    fetchMock.mockReset()
+    fetchMock.mockResolvedValue({
+      ok: true,
+      json: async () => ({ items: [], page: 1, limit: 12, total: 0, hasMore: false }),
+    })
+    vi.stubGlobal('fetch', fetchMock)
+  })
+
+  it('запрашивает избранных пользователей по ID, не используя каталог', async () => {
+    await fetchUsersByIds(['user-01', 'user-03'], 2, 12)
+
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    const url = new URL(fetchMock.mock.calls[0][0], 'http://localhost')
+    expect(url.pathname).toBe('/api/users')
+    expect(url.searchParams.getAll('ids[]')).toEqual(['user-01', 'user-03'])
+    expect(url.searchParams.get('page')).toBe('2')
+    expect(url.searchParams.get('limit')).toBe('12')
+    expect(url.searchParams.has('sort')).toBe(false)
+    expect(url.searchParams.has('type')).toBe(false)
+  })
+
+  it('передаёт название навыка при поиске среди избранных', async () => {
+    await fetchUsersByIds(['user-01'], 1, 12, 'Гитара & звук')
+
+    const url = new URL(fetchMock.mock.calls[0][0], 'http://localhost')
+    expect(url.searchParams.get('name')).toBe('Гитара & звук')
+    expect(url.searchParams.getAll('ids[]')).toEqual(['user-01'])
+  })
+
+  it('возвращает пустой результат без запроса, если ID нет', async () => {
+    await expect(fetchUsersByIds([])).resolves.toEqual({ users: [], hasMore: false })
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('отклоняет запрос с понятной ошибкой при неуспешном ответе', async () => {
+    fetchMock.mockResolvedValueOnce({ ok: false })
+
+    await expect(fetchUsersByIds(['user-01'])).rejects.toThrow(
+      'Не удалось загрузить избранных пользователей',
+    )
   })
 })
