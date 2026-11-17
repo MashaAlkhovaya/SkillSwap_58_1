@@ -14,6 +14,8 @@ interface CatalogUserCardProps {
   user: User
   onDetails: () => void
   isExchangeProposed?: boolean
+  isFavorite?: boolean
+  onFavoriteToggle?: () => void
 }
 
 const MAX_VISIBLE_SKILLS = 2
@@ -47,6 +49,8 @@ export function CatalogUserCard({
   user,
   onDetails,
   isExchangeProposed = false,
+  isFavorite,
+  onFavoriteToggle,
 }: CatalogUserCardProps) {
   const teachCategory = SKILL_CATEGORIES.find((category) => category.id === user.canTeach.category)
 
@@ -71,7 +75,10 @@ export function CatalogUserCard({
   const visibleSkills = skillsToLearn.slice(0, MAX_VISIBLE_SKILLS)
   const remainingSkillsCount = Math.max(0, skillsToLearn.length - MAX_VISIBLE_SKILLS)
 
-  const { isLiked, isPending, toggle } = useLikeUser(user.id)
+  const { isLiked: internalIsLiked, isPending, toggle } = useLikeUser(user.id)
+
+  const isControlled = onFavoriteToggle !== undefined || isFavorite !== undefined
+  const isLiked = isControlled ? (isFavorite ?? false) : internalIsLiked
 
   return (
     <Card className={styles.card}>
@@ -95,8 +102,8 @@ export function CatalogUserCard({
           icon={<HeartIcon filled={isLiked} />}
           aria-label={isLiked ? 'Убрать из избранного' : 'Добавить в избранное'}
           aria-pressed={isLiked}
-          disabled={isPending}
-          onClick={toggle}
+          disabled={isControlled ? false : isPending}
+          onClick={isControlled ? onFavoriteToggle : toggle}
         />
       </div>
 

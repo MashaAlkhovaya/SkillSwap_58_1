@@ -18,6 +18,8 @@ interface CatalogSectionProps {
   hasMore?: boolean
   isLoadingMore?: boolean
   onLoadMore?: () => void
+  favoriteIds?: string[]
+  onFavoriteToggle?: (user: User) => void
 }
 
 export function CatalogSection({
@@ -28,6 +30,8 @@ export function CatalogSection({
   hasMore = false,
   isLoadingMore = false,
   onLoadMore,
+  favoriteIds,
+  onFavoriteToggle,
 }: CatalogSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const headingId = useId()
@@ -70,6 +74,8 @@ export function CatalogSection({
             key={user.id}
             user={user}
             isExchangeProposed={outgoingPendingSkillIds.includes(user.canTeach.id)}
+            isFavorite={favoriteIds?.includes(user.id) ?? false}
+            onFavoriteToggle={onFavoriteToggle ? () => onFavoriteToggle(user) : undefined}
             onDetails={() => onDetails(user)}
           />
         ))}

@@ -11,12 +11,16 @@ export interface SimilarSkillsProps {
   users: User[]
   onDetails: (user: User) => void
   title?: string
+  favoriteIds?: string[]
+  onFavoriteToggle?: (user: User) => void
 }
 
 export function SimilarSkills({
   users,
   onDetails,
   title = 'Похожие предложения',
+  favoriteIds,
+  onFavoriteToggle,
 }: SimilarSkillsProps) {
   const headingId = useId()
   const listId = useId()
@@ -75,7 +79,12 @@ export function SimilarSkills({
             <ul id={listId} className={styles.track}>
               {users.map((user) => (
                 <li key={user.id} className={styles.slide}>
-                  <CatalogUserCard user={user} onDetails={() => onDetails(user)} />
+                  <CatalogUserCard
+                    user={user}
+                    isFavorite={favoriteIds?.includes(user.id) ?? false}
+                    onFavoriteToggle={onFavoriteToggle ? () => onFavoriteToggle(user) : undefined}
+                    onDetails={() => onDetails(user)}
+                  />
                 </li>
               ))}
             </ul>
