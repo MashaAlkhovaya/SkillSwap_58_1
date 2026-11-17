@@ -77,7 +77,7 @@ export function CatalogUserCard({
 
   const { isLiked: internalIsLiked, isPending, toggle } = useLikeUser(user.id)
 
-  const isControlled = onFavoriteToggle !== undefined || isFavorite !== undefined
+  const isControlled = onFavoriteToggle !== undefined
   const isLiked = isControlled ? (isFavorite ?? false) : internalIsLiked
 
   return (

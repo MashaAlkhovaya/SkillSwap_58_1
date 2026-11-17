@@ -10,8 +10,6 @@ export const likeUserApi = baseApi.injectEndpoints({
         method: 'PUT',
       }),
       onQueryStarted: (targetUserId, { dispatch, getState, queryFulfilled }) => {
-        console.log('[likeUserApi] removeLike onQueryStarted, id:', targetUserId)
-
         const patch = dispatch(
           authApi.util.updateQueryData('getAuthMe', undefined, (profile) => {
             if (!profile.likes.includes(targetUserId)) {
@@ -22,8 +20,6 @@ export const likeUserApi = baseApi.injectEndpoints({
 
         void queryFulfilled
           .then(() => {
-            console.log('[likeUserApi] removeLike fulfilled, id:', targetUserId)
-
             if (!authApi.endpoints.getAuthMe.select()(getState()).data) {
               return
             }
