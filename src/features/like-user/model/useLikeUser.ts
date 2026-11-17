@@ -5,7 +5,7 @@ import { useAppDispatch, useAppSelector } from '@/store/hooks'
 import { selectIsAuthenticated, selectProfile } from '@/features/auth/model/authSlice'
 import { useGetAuthMeQuery } from '@/features/auth/api/authApi'
 import { addNotification } from '@/features/notifications/model/notificationsSlice'
-import { useAddLikeMutation, useRemoveLikeMutation } from '../api/likeUserApi'
+import { useLikeUserAddMutation, useLikeUserRemoveMutation } from '../api/likeUserApi'
 import { pendingLikes } from './pendingLikesStore'
 
 const TOAST_DURATION_MS = 4000
@@ -32,8 +32,8 @@ export function useLikeUser(targetUserId: string) {
     skip: !isAuthenticated,
   })
 
-  const [addLike] = useAddLikeMutation()
-  const [removeLike] = useRemoveLikeMutation()
+  const [addLike] = useLikeUserAddMutation()
+  const [removeLike] = useLikeUserRemoveMutation()
 
   const profile = cachedProfile ?? sliceProfile
   const isLiked = profile ? profile.likes.includes(targetUserId) : false

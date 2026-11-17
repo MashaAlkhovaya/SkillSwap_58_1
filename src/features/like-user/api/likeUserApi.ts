@@ -4,12 +4,14 @@ import { applyConfirmedLikesChange } from '../model/likesSync'
 
 export const likeUserApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
-    addLike: build.mutation<void, string>({
+    likeUserAdd: build.mutation<void, string>({
       query: (targetUserId) => ({
         url: `/auth/me/likes/${encodeURIComponent(targetUserId)}`,
         method: 'PUT',
       }),
       onQueryStarted: (targetUserId, { dispatch, getState, queryFulfilled }) => {
+        console.log('[likeUserApi] removeLike onQueryStarted, id:', targetUserId)
+
         const patch = dispatch(
           authApi.util.updateQueryData('getAuthMe', undefined, (profile) => {
             if (!profile.likes.includes(targetUserId)) {
@@ -20,6 +22,8 @@ export const likeUserApi = baseApi.injectEndpoints({
 
         void queryFulfilled
           .then(() => {
+            console.log('[likeUserApi] removeLike fulfilled, id:', targetUserId)
+
             if (!authApi.endpoints.getAuthMe.select()(getState()).data) {
               return
             }
@@ -34,7 +38,7 @@ export const likeUserApi = baseApi.injectEndpoints({
       },
     }),
 
-    removeLike: build.mutation<void, string>({
+    likeUserRemove: build.mutation<void, string>({
       query: (targetUserId) => ({
         url: `/auth/me/likes/${encodeURIComponent(targetUserId)}`,
         method: 'DELETE',
@@ -64,4 +68,4 @@ export const likeUserApi = baseApi.injectEndpoints({
   }),
 })
 
-export const { useAddLikeMutation, useRemoveLikeMutation } = likeUserApi
+export const { useLikeUserAddMutation, useLikeUserRemoveMutation } = likeUserApi
