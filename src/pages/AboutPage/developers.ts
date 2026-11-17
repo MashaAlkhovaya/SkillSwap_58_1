@@ -33,8 +33,9 @@ export const developers: Developer[] = [
   },
   {
     name: 'Мария',
-    role: placeholderRole,
-    about: placeholderAbout,
+    role: 'Frontend-разработчица, хранительница состояния «Обмен предложен»',
+    about:
+      'Занимаюсь frontend-разработкой на React и TypeScript. Интересно видеть, как из кода рисуется страница. В SkillSwap сделала заявки на обмен: кнопку «Предложить обмен», модальное окно, состояние «Обмен предложен» в карточках каталога и сохранение заявок через Redux Toolkit и localStorage. Писала тесты и истории для Storybook.',
     avatar: 'https://github.com/MashaAlkhovaya.png',
     github: 'https://github.com/MashaAlkhovaya',
   },
