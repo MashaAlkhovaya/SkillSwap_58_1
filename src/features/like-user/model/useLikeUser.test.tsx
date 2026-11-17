@@ -220,22 +220,28 @@ function renderLikeProbes({
 // ---------- Тесты ----------
 
 describe('useLikeUser', () => {
-  beforeEach(async () => {
-    localStorage.clear()
-
-    // Доразрешаем запросы, зависшие из-за прерванного теста,
-    // чтобы мутации завершились и хук почистил свои pending-флаги
+  const drainPendingRequests = async () => {
     const leftovers = pendingRequests.splice(0)
 
-    if (leftovers.length > 0) {
+    if (leftovers.length === 0) {
+      return
+    }
+
+    await act(async () => {
       for (const request of leftovers) {
         request.resolve(new Response(null, { status: 201 }))
       }
-      // Даём микротаскам доразобрать ответы
-      await new Promise((resolve) => setTimeout(resolve, 0))
-    }
 
+      await new Promise((resolve) => setTimeout(resolve, 0))
+    })
+  }
+  beforeEach(async () => {
+    await drainPendingRequests()
     fetchMock.mockClear()
+  })
+
+  afterEach(async () => {
+    await drainPendingRequests()
   })
 
   it('ставит лайк и синхронизирует кеш, слайс и localStorage', async () => {
