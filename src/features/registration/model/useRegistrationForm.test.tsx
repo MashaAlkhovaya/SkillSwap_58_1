@@ -1,7 +1,7 @@
 import { yupResolver } from '@hookform/resolvers/yup'
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import type { PropsWithChildren } from 'react'
-import { FormProvider, useForm } from 'react-hook-form'
+import { FormProvider, useForm, useWatch } from 'react-hook-form'
 import { describe, expect, it, vi } from 'vitest'
 import { registrationDefaultValues, registrationSchema } from './registrationSchema'
 import type { RegistrationFormValues } from './registrationSchema'
@@ -16,7 +16,8 @@ function RegistrationFormHarness({ children }: PropsWithChildren) {
     defaultValues: registrationDefaultValues,
     resolver: yupResolver(registrationSchema),
     shouldUnregister: false,
-    mode: 'onTouched',
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
   })
 
   return <FormProvider {...methods}>{children}</FormProvider>
@@ -25,6 +26,7 @@ function RegistrationFormHarness({ children }: PropsWithChildren) {
 function RegistrationFormProbe({ onNext }: HarnessProps) {
   const form = useRegistrationForm()
   const { errors } = form.formState
+  useWatch({ control: form.control })
 
   return (
     <>
