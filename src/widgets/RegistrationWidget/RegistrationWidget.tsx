@@ -282,7 +282,7 @@ function RegistrationWidgetForm({
               id="reg-name"
               placeholder="Введите ваше имя"
               className={styles.input}
-              {...register('name', { onChange: () => void form.trigger('name') })}
+              {...register('name')}
             />
             {errors.name && <p className={styles.error}>{errors.name.message}</p>}
           </div>

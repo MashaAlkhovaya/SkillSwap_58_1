@@ -62,6 +62,49 @@ export function saveUserProfile(profile: User): void {
   localStorage.setItem(PROFILE_STORAGE_KEY, JSON.stringify(profile))
 }
 
+/** Читает сохранённый профиль из localStorage, если он валиден */
+export function getSavedUserProfile(): User | null {
+  try {
+    const raw = localStorage.getItem(PROFILE_STORAGE_KEY)
+
+    if (!raw) {
+      return null
+    }
+
+    const profile: unknown = JSON.parse(raw)
+
+    if (
+      typeof profile === 'object' &&
+      profile !== null &&
+      'id' in profile &&
+      typeof profile.id === 'string' &&
+      'likes' in profile &&
+      Array.isArray(profile.likes)
+    ) {
+      return profile as User
+    }
+
+    return null
+  } catch {
+    return null
+  }
+}
+
+/** Патчит сохранённый профиль по свежему снимку на момент записи */
+export function patchSavedUserProfile(patch: (profile: User) => User): void {
+  const profile = getSavedUserProfile()
+
+  if (!profile) {
+    return
+  }
+
+  try {
+    saveUserProfile(patch(profile))
+  } catch {
+    // Ошибка записи localStorage не критична: кеш и слайс уже согласованы
+  }
+}
+
 /** Удаляет сохраненный профиль */
 export function clearUserProfile(): void {
   localStorage.removeItem(PROFILE_STORAGE_KEY)

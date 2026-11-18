@@ -1,7 +1,7 @@
 .stack {
   position: fixed;
   z-index: 1000;
-  top: calc(2 * var(--space-2xl));
+  bottom: calc(2 * var(--space-2xl));
   right: var(--space-lg);
   display: flex;
   flex-direction: column;
@@ -24,6 +24,6 @@
 
 @media (width <= 768px) {
   .stack {
-    top: calc(4 * var(--space-2xl));
+    bottom: calc(4 * var(--space-2xl));
   }
 }

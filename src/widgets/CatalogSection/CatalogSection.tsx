@@ -13,25 +13,25 @@ const SKELETON_COUNT = 9
 interface CatalogSectionProps {
   title: string
   users: User[]
-  favoriteIds: string[]
   onDetails: (user: User) => void
-  onFavoriteToggle: (user: User) => void
   showExpandButton?: boolean
   hasMore?: boolean
   isLoadingMore?: boolean
   onLoadMore?: () => void
+  favoriteIds?: string[]
+  onFavoriteToggle?: (user: User) => void
 }
 
 export function CatalogSection({
   title,
   users,
-  favoriteIds,
   onDetails,
-  onFavoriteToggle,
   showExpandButton = true,
   hasMore = false,
   isLoadingMore = false,
   onLoadMore,
+  favoriteIds,
+  onFavoriteToggle,
 }: CatalogSectionProps) {
   const [isExpanded, setIsExpanded] = useState(false)
   const headingId = useId()
@@ -73,10 +73,10 @@ export function CatalogSection({
           <CatalogUserCard
             key={user.id}
             user={user}
-            isFavorite={favoriteIds.includes(user.id)}
             isExchangeProposed={outgoingPendingSkillIds.includes(user.canTeach.id)}
+            isFavorite={favoriteIds?.includes(user.id) ?? false}
+            onFavoriteToggle={onFavoriteToggle ? () => onFavoriteToggle(user) : undefined}
             onDetails={() => onDetails(user)}
-            onFavoriteToggle={() => onFavoriteToggle(user)}
           />
         ))}
 

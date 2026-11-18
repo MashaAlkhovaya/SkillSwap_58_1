@@ -19,22 +19,25 @@ export const developers: Developer[] = [
   },
   {
     name: 'Соня',
-    role: placeholderRole,
-    about: placeholderAbout,
+    role: 'PM, помощник тимлида',
+    about:
+      'Бакалавр по направлению «Реклама и связи с общественностью». В проекте занималась настройкой Redux-хранилища и RTK Query, созданием некоторых UI-компонентов и виджетов, написанием тестов и историй для Storybook. В рамках своей роли также нарезала задачи на доску, организовывала и проведила командные созвоны.',
     avatar: 'https://github.com/so-nechaeva.png',
     github: 'https://github.com/so-nechaeva',
   },
   {
     name: 'Татьяна',
-    role: placeholderRole,
-    about: placeholderAbout,
+    role: 'Frontend‑разработчик',
+    about:
+      'В проекте Skill Swap я отвечала за реализацию компонентов интерфейса и интеграцию с API,  разбиралась в документации React DayPicker и  училась встраивать сторонние решения в существующую кодовую базу. Я прокачала навыки работы с системой контроля версий - от оформления коммитов до разрешения конфликтов при слиянии веток и получила ценный опыт командной разработки.',
     avatar: 'https://github.com/karasuta.png',
     github: 'https://github.com/karasuta',
   },
   {
     name: 'Мария',
-    role: placeholderRole,
-    about: placeholderAbout,
+    role: 'Frontend-разработчица, хранительница состояния «Обмен предложен»',
+    about:
+      'Занимаюсь frontend-разработкой на React и TypeScript. Интересно видеть, как из кода рисуется страница. В SkillSwap сделала заявки на обмен: кнопку «Предложить обмен», модальное окно, состояние «Обмен предложен» в карточках каталога и сохранение заявок через Redux Toolkit и localStorage. Писала тесты и истории для Storybook.',
     avatar: 'https://github.com/MashaAlkhovaya.png',
     github: 'https://github.com/MashaAlkhovaya',
   },
