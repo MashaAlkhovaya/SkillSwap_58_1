@@ -26,8 +26,9 @@ export const developers: Developer[] = [
   },
   {
     name: 'Татьяна',
-    role: placeholderRole,
-    about: placeholderAbout,
+    role: 'Frontend‑разработчик',
+    about:
+      'В проекте Skill Swap я отвечала за реализацию компонентов интерфейса и интеграцию с API,  разбиралась в документации React DayPicker и  училась встраивать сторонние решения в существующую кодовую базу. Я прокачала навыки работы с системой контроля версий - от оформления коммитов до разрешения конфликтов при слиянии веток и получила ценный опыт командной разработки.',
     avatar: 'https://github.com/karasuta.png',
     github: 'https://github.com/karasuta',
   },
