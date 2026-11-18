@@ -16,7 +16,7 @@
 }
 
 .label:has(.hiddenInput:focus-visible) {
-  outline: 2px solid #abd27a;
+  outline: 2px solid var(--color-link);
   outline-offset: var(--space-xs);
 }
 
@@ -32,7 +32,14 @@
 
 .label:has(.hiddenInput:checked) .iconWrapper,
 .label:has(.hiddenInput:indeterminate) .iconWrapper {
-  color: #abd27a;
+  color: var(--color-link);
+}
+
+[data-theme='dark'] .label:has(.hiddenInput:checked) .iconWrapper,
+[data-theme='dark'] .label:has(.hiddenInput:indeterminate) .iconWrapper {
+  color: #4ade80;
+
+  --checkbox-checkmark-color: #052e16;
 }
 
 .label.disabled {
@@ -41,11 +48,11 @@
 }
 
 .label.disabled .iconWrapper {
-  color: #999;
+  color: var(--color-text-secondary);
 }
 
 .label.disabled:hover .iconWrapper {
-  color: #999;
+  color: var(--color-text-secondary);
 }
 
 .label:not(.disabled):hover .iconWrapper {

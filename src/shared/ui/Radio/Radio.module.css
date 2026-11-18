@@ -15,7 +15,7 @@
 }
 
 .label:has(.hiddenInput:focus-visible) {
-  outline: 2px solid #abd27a;
+  outline: 2px solid var(--color-link);
   outline-offset: var(--space-xs);
 }
 
@@ -34,10 +34,6 @@
   transition: opacity 0.2s ease;
 }
 
-.label:hover .iconWrapper {
-  color: #4a5c30;
-}
-
 .iconWrapper.active {
   color: var(--color-link);
 }
@@ -52,11 +48,11 @@
 }
 
 .label.disabled .iconWrapper {
-  color: #999;
+  color: var(--color-text-secondary);
 }
 
 .label.disabled:hover .iconWrapper {
-  color: #999;
+  color: var(--color-text-secondary);
 }
 
 .label:not(.disabled):hover .iconWrapper {

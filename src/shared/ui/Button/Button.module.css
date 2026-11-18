@@ -33,7 +33,7 @@
 /* Primary: зелёная кнопка с заливкой */
 .variant_primary {
   background-color: #abd27a;
-  color: #253017;
+  color: var(--color-text-main);
 }
 
 .variant_primary:hover:not(:disabled) {
@@ -48,7 +48,7 @@
 /* Secondary: кнопка с зелёной обводкой */
 .variant_secondary {
   background: transparent;
-  color: #253017;
+  color: var(--color-text-main);
   border: 1px solid #abd27a;
 }
 
@@ -64,7 +64,7 @@
 /* Tertiary: светлая кнопка без обводки */
 .variant_tertiary {
   background: var(--color-bg);
-  color: #253017;
+  color: var(--color-text-main);
   border: none;
 }
 
@@ -117,6 +117,15 @@
 
 [data-theme='dark'] .variant_secondary:hover:not(:disabled) {
   background: #14532d;
+}
+
+[data-theme='dark'] .variant_tertiary {
+  color: var(--color-text-main);
+  background: var(--color-bg-secondary);
+}
+
+[data-theme='dark'] .variant_tertiary:hover:not(:disabled) {
+  background: var(--color-bg-surface);
 }
 
 .loading .label,

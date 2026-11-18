@@ -20,7 +20,7 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #253017;
+  color: var(--color-text-main);
   padding: 2px;
   display: flex;
   align-items: center;
@@ -41,11 +41,11 @@
 }
 
 .expandBtn:hover {
-  color: #333;
+  color: var(--color-text);
 }
 
 .container.isExpanded .expandBtn:hover {
-  color: #3d6b1c;
+  color: var(--color-link);
 }
 
 .icon {
