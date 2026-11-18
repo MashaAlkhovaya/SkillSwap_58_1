@@ -7,6 +7,14 @@ import { SKILL_CATEGORIES } from '@/shared/lib/constants'
 
 import type { User } from '@/shared/types'
 
+const likeState = vi.hoisted(() => ({
+  current: { isLiked: false, isPending: false, toggle: vi.fn() },
+}))
+
+vi.mock('@/features/like-user', () => ({
+  useLikeUser: () => likeState.current,
+}))
+
 // Тестовые данные на основе пользователя из users.json
 const createUser = (overrides: Partial<User> = {}): User => ({
   id: 'user-01',
@@ -39,23 +47,19 @@ const getSkillTitle = (skillId: string) => {
   return category?.subcategories.find((skill) => skill.id === skillId)?.title
 }
 
-function renderCard(user = createUser(), isFavorite = false) {
+function renderCard(user = createUser()) {
   const onDetails = vi.fn()
-  const onFavoriteToggle = vi.fn()
 
-  render(
-    <CatalogUserCard
-      user={user}
-      isFavorite={isFavorite}
-      onDetails={onDetails}
-      onFavoriteToggle={onFavoriteToggle}
-    />,
-  )
+  render(<CatalogUserCard user={user} onDetails={onDetails} />)
 
-  return { onDetails, onFavoriteToggle }
+  return { onDetails }
 }
 
 describe('CatalogUserCard', () => {
+  beforeEach(() => {
+    likeState.current = { isLiked: false, isPending: false, toggle: vi.fn() }
+  })
+
   it('отображает имя пользователя', () => {
     const user = createUser()
 
@@ -131,34 +135,33 @@ describe('CatalogUserCard', () => {
     expect(onDetails).toHaveBeenCalledTimes(1)
   })
 
-  it('вызывает onFavoriteToggle при нажатии на сердечко', () => {
-    const { onFavoriteToggle } = renderCard()
+  it('вызывает toggle из useLikeUser при нажатии на сердечко', () => {
+    renderCard()
 
     fireEvent.click(screen.getByRole('button', { name: 'Добавить в избранное' }))
 
-    expect(onFavoriteToggle).toHaveBeenCalledTimes(1)
+    expect(likeState.current.toggle).toHaveBeenCalledTimes(1)
   })
 
   it('правильно отображает состояние избранного', () => {
-    renderCard(createUser(), true)
+    likeState.current.isLiked = true
 
-    const favoriteButton = screen.getByRole('button', {
-      name: 'Убрать из избранного',
-    })
+    renderCard()
+
+    const favoriteButton = screen.getByRole('button', { name: 'Убрать из избранного' })
 
     expect(favoriteButton.getAttribute('aria-pressed')).toBe('true')
   })
+  it('блокирует сердечко, пока лайк в обработке', () => {
+    likeState.current.isPending = true
+
+    renderCard()
+
+    expect(screen.getByRole('button', { name: 'Добавить в избранное' })).toBeDisabled()
+  })
 
   it('показывает «Обмен предложен» вместо «Подробнее», если обмен предложен', () => {
-    render(
-      <CatalogUserCard
-        user={createUser()}
-        isFavorite={false}
-        onDetails={vi.fn()}
-        onFavoriteToggle={vi.fn()}
-        isExchangeProposed
-      />,
-    )
+    render(<CatalogUserCard user={createUser()} onDetails={vi.fn()} isExchangeProposed />)
 
     const button = screen.getByRole('button', { name: 'Обмен предложен' })
 
@@ -169,15 +172,7 @@ describe('CatalogUserCard', () => {
   it('не вызывает onDetails, если обмен предложен', () => {
     const onDetails = vi.fn()
 
-    render(
-      <CatalogUserCard
-        user={createUser()}
-        isFavorite={false}
-        onDetails={onDetails}
-        onFavoriteToggle={vi.fn()}
-        isExchangeProposed
-      />,
-    )
+    render(<CatalogUserCard user={createUser()} onDetails={onDetails} isExchangeProposed />)
 
     fireEvent.click(screen.getByRole('button', { name: 'Обмен предложен' }))
 

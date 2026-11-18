@@ -9,18 +9,18 @@ import styles from './SimilarSkills.module.css'
 
 export interface SimilarSkillsProps {
   users: User[]
-  favoriteIds: string[]
   onDetails: (user: User) => void
-  onFavoriteToggle: (user: User) => void
   title?: string
+  favoriteIds?: string[]
+  onFavoriteToggle?: (user: User) => void
 }
 
 export function SimilarSkills({
   users,
-  favoriteIds,
   onDetails,
-  onFavoriteToggle,
   title = 'Похожие предложения',
+  favoriteIds,
+  onFavoriteToggle,
 }: SimilarSkillsProps) {
   const headingId = useId()
   const listId = useId()
@@ -81,9 +81,9 @@ export function SimilarSkills({
                 <li key={user.id} className={styles.slide}>
                   <CatalogUserCard
                     user={user}
-                    isFavorite={favoriteIds.includes(user.id)}
+                    isFavorite={favoriteIds?.includes(user.id) ?? false}
+                    onFavoriteToggle={onFavoriteToggle ? () => onFavoriteToggle(user) : undefined}
                     onDetails={() => onDetails(user)}
-                    onFavoriteToggle={() => onFavoriteToggle(user)}
                   />
                 </li>
               ))}

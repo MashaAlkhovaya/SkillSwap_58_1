@@ -4,6 +4,10 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import type { User } from '@/shared/types'
 import { SimilarSkills } from './SimilarSkills'
 
+vi.mock('@/features/like-user', () => ({
+  useLikeUser: () => ({ isLiked: false, isPending: false, toggle: vi.fn() }),
+}))
+
 function createUsers(count: number): User[] {
   return Array.from({ length: count }, (_, index) => ({
     id: `user-${index + 1}`,
@@ -77,20 +81,12 @@ function mockCarouselLayout() {
   }
 }
 
-function renderWidget(users: User[], favoriteIds: string[] = []) {
+function renderWidget(users: User[]) {
   const onDetails = vi.fn()
-  const onFavoriteToggle = vi.fn()
 
-  render(
-    <SimilarSkills
-      users={users}
-      favoriteIds={favoriteIds}
-      onDetails={onDetails}
-      onFavoriteToggle={onFavoriteToggle}
-    />,
-  )
+  render(<SimilarSkills users={users} onDetails={onDetails} />)
 
-  return { onDetails, onFavoriteToggle }
+  return { onDetails }
 }
 
 describe('SimilarSkills', () => {
@@ -140,13 +136,10 @@ describe('SimilarSkills', () => {
   it('передаёт выбранного пользователя в обработчики карточки', async () => {
     const user = userEvent.setup()
     const users = createUsers(2)
-    const { onDetails, onFavoriteToggle } = renderWidget(users, [users[0].id])
+    const { onDetails } = renderWidget(users)
 
     await user.click(screen.getAllByRole('button', { name: 'Подробнее' })[1])
-    await user.click(screen.getByRole('button', { name: 'Убрать из избранного' }))
-
     expect(onDetails).toHaveBeenCalledWith(users[1])
-    expect(onFavoriteToggle).toHaveBeenCalledWith(users[0])
   })
 
   it('прокручивает ленту на одну карточку и включает стрелку назад', async () => {
