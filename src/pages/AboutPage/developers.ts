@@ -19,8 +19,9 @@ export const developers: Developer[] = [
   },
   {
     name: 'Соня',
-    role: placeholderRole,
-    about: placeholderAbout,
+    role: 'PM, помощник тимлида',
+    about:
+      'Бакалавр по направлению «Реклама и связи с общественностью». В проекте занималась настройкой Redux-хранилища и RTK Query, созданием некоторых UI-компонентов и виджетов, написанием тестов и историй для Storybook. В рамках своей роли также нарезала задачи на доску, организовывала и проведила командные созвоны.',
     avatar: 'https://github.com/so-nechaeva.png',
     github: 'https://github.com/so-nechaeva',
   },
