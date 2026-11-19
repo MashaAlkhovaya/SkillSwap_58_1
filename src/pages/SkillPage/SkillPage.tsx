@@ -36,12 +36,20 @@ export const SkillPage = () => {
         setIsLoading(false)
       }
     }
+
     loadSkill()
   }, [id])
 
   const { data: similarSkills } = useSimilarSkills(skill)
 
-  if (isLoading) return <div className={styles.loader}>Загрузка...</div>
+  if (isLoading) {
+    return (
+      <div className={styles.loaderContainer}>
+        <div className={styles.loader}>Загрузка...</div>
+      </div>
+    )
+  }
+
   if (isError || !skill) {
     return (
       <div className={styles.errorContainer}>
@@ -60,7 +68,7 @@ export const SkillPage = () => {
         skill={skill}
         controls={
           <Button variant="primary" className={styles.exchangeButton}>
-            Предложить обмен
+            Обмен предложен
           </Button>
         }
       />
