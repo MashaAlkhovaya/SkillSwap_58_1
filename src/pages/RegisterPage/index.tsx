@@ -6,7 +6,6 @@ import { useEffect, useState } from 'react'
 
 export const REGISTRATION_STEPS = [1, 2, 3] as const
 export type RegistrationStep = (typeof REGISTRATION_STEPS)[number]
-export const TOTAL_STEPS = REGISTRATION_STEPS.length
 
 interface RegisterPageProps {
   currentStep: RegistrationStep

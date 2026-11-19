@@ -66,8 +66,9 @@ export const developers: Developer[] = [
   },
   {
     name: 'Женя',
-    role: placeholderRole,
-    about: placeholderAbout,
+    role: 'Роль в проекте: Frontend‑разработчик',
+    about:
+      'Программирую на C#, Delphi. Изучаю новый для меня web-стек. В проекте работала над каталогом с бесконечной прокруткой, компонентом Select.',
     avatar: 'https://github.com/zen-ja.png',
     github: 'https://github.com/zen-ja',
   },

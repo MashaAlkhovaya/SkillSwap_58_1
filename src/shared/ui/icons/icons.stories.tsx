@@ -6,7 +6,6 @@ import {
   BellIcon,
   BookIcon,
   BriefcaseIcon,
-  ChevronDownIcon,
   ChevronRightIcon,
   ClockIcon,
   GalleryEditIcon,
@@ -29,7 +28,6 @@ import {
 
 const icons: Array<[string, ComponentType<IconProps>]> = [
   ['Search', SearchIcon],
-  ['ChevronDown', ChevronDownIcon],
   ['ChevronRight', ChevronRightIcon],
   ['Moon', MoonIcon],
   ['Bell', BellIcon],
