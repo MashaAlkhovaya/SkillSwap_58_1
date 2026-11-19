@@ -14,7 +14,7 @@ function renderHeader() {
   const store = configureStore({
     reducer: { auth: authReducer, notificationHistory: notificationHistoryReducer },
     preloadedState: {
-      auth: { user: null, profile: null },
+      auth: { user: null },
     },
   })
 
@@ -76,7 +76,7 @@ describe('Header', () => {
     const store = configureStore({
       reducer: { auth: authReducer, notificationHistory: notificationHistoryReducer },
       preloadedState: {
-        auth: { user, profile: null },
+        auth: { user },
       },
     })
 

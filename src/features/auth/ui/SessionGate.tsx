@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react'
 import type { ReactNode } from 'react'
 import { useGetAuthMeQuery } from '../api/authApi'
-import { getAuthUser, saveServerAuthUser, saveUserProfile } from '../model/authUtils'
-import { logout, setAuthUser, setProfile } from '../model/authSlice'
+import { getAuthUser, saveServerAuthUser } from '../model/authUtils'
+import { logout, setAuthUser, setSessionCheckStatus } from '../model/authSlice'
 import { useAppDispatch } from '@/store/hooks'
-import { Skeleton } from '@/shared/ui'
+import { useStore } from 'react-redux'
+import type { store } from '@/store'
 
 interface SessionGateProps {
   children: ReactNode
@@ -13,16 +14,32 @@ interface SessionGateProps {
 export function SessionGate({ children }: SessionGateProps) {
   const dispatch = useAppDispatch()
 
+  const appStore = useStore.withTypes<typeof store>()()
+  const [initialUser] = useState(() => appStore.getState().auth.user)
+
   /** Запоминаем сохранённую сессию при запуске приложения. */
   const [savedUser] = useState(() => getAuthUser())
   const [isFinished, setIsFinished] = useState(() => !savedUser?.token)
 
-  const { data, error, refetch } = useGetAuthMeQuery(undefined, {
+  const { data, error } = useGetAuthMeQuery(undefined, {
     skip: isFinished,
   })
 
   useEffect(() => {
     if (isFinished || !savedUser?.token) {
+      return
+    }
+
+    const currentUser = appStore.getState().auth.user
+    const currentSavedUser = getAuthUser()
+
+    const sessionChanged =
+      currentUser !== initialUser ||
+      currentSavedUser?.id !== savedUser.id ||
+      currentSavedUser?.token !== savedUser.token
+
+    if (sessionChanged) {
+      setIsFinished(true)
       return
     }
 
@@ -36,9 +53,8 @@ export function SessionGate({ children }: SessionGateProps) {
       }
 
       saveServerAuthUser(confirmedUser)
-      saveUserProfile(data)
       dispatch(setAuthUser(confirmedUser))
-      dispatch(setProfile(data))
+      dispatch(setSessionCheckStatus('success'))
       setIsFinished(true)
       return
     }
@@ -47,23 +63,13 @@ export function SessionGate({ children }: SessionGateProps) {
       void dispatch(logout()).then(() => {
         setIsFinished(true)
       })
+      return
     }
-  }, [data, dispatch, error, isFinished, savedUser])
 
-  if (isFinished) {
-    return <>{children}</>
-  }
+    if (error) {
+      dispatch(setSessionCheckStatus('error'))
+    }
+  }, [appStore, data, dispatch, error, initialUser, isFinished, savedUser])
 
-  if (error && !('status' in error && error.status === 401)) {
-    return (
-      <div role="alert">
-        <p>Не удалось проверить вход. Проверьте подключение и попробуйте ещё раз.</p>
-        <button type="button" onClick={() => void refetch()}>
-          Повторить
-        </button>
-      </div>
-    )
-  }
-
-  return <Skeleton width="100%" height="100vh" />
+  return <>{children}</>
 }

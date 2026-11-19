@@ -43,7 +43,6 @@ function renderPage() {
     preloadedState: {
       auth: {
         user: authUser,
-        profile: null,
       },
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(baseApi.middleware),
