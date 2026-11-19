@@ -3,7 +3,7 @@ import {
   useRespondToSwapRequestMutation,
   useDeleteSwapRequestMutation,
 } from '@/entities/request/model/api/swapRequestApi'
-import { selectProfile } from '@/features/auth/model/authSlice'
+import { selectAuthUser } from '@/features/auth/model/authSlice'
 import { SwapRequestCard } from '@/widgets/SwapRequestCard'
 import { ProfileSidebar } from '@/widgets/ProfileSidebar'
 import { Title, Skeleton, Text, Button } from '@/shared/ui'
@@ -25,8 +25,8 @@ function isFetchBaseQueryError(error: unknown): error is FetchBaseQueryError {
 }
 
 export default function ExchangesPage() {
-  const profile = useAppSelector(selectProfile)
-  const currentUserId = profile?.id || ''
+  const user = useAppSelector(selectAuthUser)
+  const currentUserId = user?.id || ''
   const notify = useNotify()
 
   const incoming = useSwapRequestsList({ role: 'incoming', status: 'pending' })

@@ -1,10 +1,9 @@
 import { configureStore } from '@reduxjs/toolkit'
-import { render, screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { act, render, screen, waitFor } from '@testing-library/react'
 import { Provider } from 'react-redux'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { LOCAL_STORAGE_KEYS } from '@/shared/lib/constants'
-import authReducer from '../model/authSlice'
+import authReducer, { setAuthUser } from '../model/authSlice'
 import { SessionGate } from './SessionGate'
 import type { User } from '@/shared/types'
 
@@ -35,7 +34,7 @@ function renderSessionGate() {
   const store = configureStore({
     reducer: { auth: authReducer },
     preloadedState: {
-      auth: { user: null, profile: null },
+      auth: { user: null },
     },
   })
 
@@ -54,6 +53,7 @@ describe('SessionGate', () => {
   beforeEach(() => {
     localStorage.clear()
     localStorage.setItem(LOCAL_STORAGE_KEYS.AUTH_USER, JSON.stringify(savedUser))
+
     queryMock.mockClear()
     queryState.data = undefined
     queryState.error = undefined
@@ -66,7 +66,7 @@ describe('SessionGate', () => {
     const store = configureStore({
       reducer: { auth: authReducer },
       preloadedState: {
-        auth: { user: null, profile: null },
+        auth: { user: null },
       },
     })
 
@@ -79,7 +79,6 @@ describe('SessionGate', () => {
     )
 
     expect(screen.getByText('Приложение открыто')).toBeInTheDocument()
-
     expect(queryMock).toHaveBeenCalledWith(undefined, { skip: true })
   })
 
@@ -117,13 +116,71 @@ describe('SessionGate', () => {
 
     expect(store.getState().auth.user).toEqual(expectedUser)
 
-    expect(store.getState().auth.profile).toEqual(queryState.data)
-    const savedProfile = localStorage.getItem('skillswap_user_profile')
-    expect(savedProfile).not.toBeNull()
-    expect(JSON.parse(savedProfile ?? 'null')).toEqual(queryState.data)
+    expect(localStorage.getItem('skillswap_user_profile')).toBeNull()
 
     const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.AUTH_USER)
     expect(JSON.parse(saved ?? 'null')).toEqual(expectedUser)
+  })
+
+  it('не перезаписывает новую сессию поздним ответом старой проверки', () => {
+    const store = configureStore({
+      reducer: { auth: authReducer },
+      preloadedState: {
+        auth: { user: null },
+      },
+    })
+
+    const { rerender } = render(
+      <Provider store={store}>
+        <SessionGate>
+          <p>Приложение открыто</p>
+        </SessionGate>
+      </Provider>,
+    )
+
+    const newUser = {
+      id: 'user-02',
+      name: 'Новый пользователь',
+      email: 'new@example.com',
+      token: 'new-token',
+    }
+
+    act(() => {
+      localStorage.setItem(LOCAL_STORAGE_KEYS.AUTH_USER, JSON.stringify(newUser))
+      store.dispatch(setAuthUser(newUser))
+    })
+
+    queryState.data = {
+      id: 'user-01',
+      name: 'Ответ старой проверки',
+      email: 'old@example.com',
+      avatarUrl: null,
+      birthDate: '1995-02-08T00:00:00.000Z',
+      gender: 'female',
+      city: 'Москва',
+      bio: '',
+      createdAt: '2025-01-01T00:00:00.000Z',
+      likes: [],
+      canTeach: {
+        id: 'skill-01',
+        category: 'art',
+        subCategory: 'illustration',
+      },
+      wantsToLearn: [],
+    }
+
+    rerender(
+      <Provider store={store}>
+        <SessionGate>
+          <p>Приложение открыто</p>
+        </SessionGate>
+      </Provider>,
+    )
+
+    expect(store.getState().auth.user).toEqual(newUser)
+
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.AUTH_USER)
+    expect(JSON.parse(saved ?? 'null')).toEqual(newUser)
   })
 
   it('очищает сессию, если сервер вернул 401', async () => {
@@ -140,29 +197,25 @@ describe('SessionGate', () => {
     expect(localStorage.getItem(LOCAL_STORAGE_KEYS.AUTH_USER)).toBeNull()
   })
 
-  it('сохраняет сессию при ошибке сервера и позволяет повторить проверку', async () => {
+  it('оставляет приложение открытым и сохраняет сессию при ошибке сети', async () => {
     queryState.error = { status: 'FETCH_ERROR' }
 
-    const userEvents = userEvent.setup()
     const store = renderSessionGate()
 
-    expect(screen.getByRole('alert')).toHaveTextContent('Не удалось проверить вход')
+    expect(screen.getByText('Приложение открыто')).toBeInTheDocument()
 
-    expect(store.getState().auth.user).toBeNull()
+    await waitFor(() => {
+      expect(store.getState().auth.sessionCheckStatus).toBe('error')
+    })
 
     const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.AUTH_USER)
     expect(JSON.parse(saved ?? 'null')).toEqual(savedUser)
-
-    await userEvents.click(screen.getByRole('button', { name: 'Повторить' }))
-
-    expect(queryState.refetch).toHaveBeenCalledOnce()
   })
 
-  it('не считает пользователя вошедшим, пока сессия проверяется', () => {
-    const store = renderSessionGate()
+  it('показывает приложение, пока сохранённая сессия проверяется', () => {
+    renderSessionGate()
 
-    expect(document.querySelector('[aria-hidden="true"]')).toBeInTheDocument()
-    expect(store.getState().auth.user).toBeNull()
-    expect(screen.queryByText('Приложение открыто')).not.toBeInTheDocument()
+    expect(screen.getByText('Приложение открыто')).toBeInTheDocument()
+    expect(queryMock).toHaveBeenCalledWith(undefined, { skip: false })
   })
 })

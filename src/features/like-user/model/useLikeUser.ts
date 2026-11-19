@@ -2,7 +2,7 @@ import { useCallback, useSyncExternalStore } from 'react'
 import { useNavigate } from 'react-router'
 import { ROUTES } from '@/shared/lib/constants'
 import { useAppDispatch, useAppSelector } from '@/store/hooks'
-import { selectIsAuthenticated, selectProfile } from '@/features/auth/model/authSlice'
+import { selectIsAuthenticated } from '@/features/auth/model/authSlice'
 import { useGetAuthMeQuery } from '@/features/auth/api/authApi'
 import { addNotification } from '@/features/notifications/model/notificationsSlice'
 import { useLikeUserAddMutation, useLikeUserRemoveMutation } from '../api/likeUserApi'
@@ -26,16 +26,14 @@ export function useLikeUser(targetUserId: string) {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const isAuthenticated = useAppSelector(selectIsAuthenticated)
-  const sliceProfile = useAppSelector(selectProfile)
 
-  const { data: cachedProfile } = useGetAuthMeQuery(undefined, {
+  const { data: profile } = useGetAuthMeQuery(undefined, {
     skip: !isAuthenticated,
   })
 
   const [addLike] = useLikeUserAddMutation()
   const [removeLike] = useLikeUserRemoveMutation()
 
-  const profile = cachedProfile ?? sliceProfile
   const isLiked = profile ? profile.likes.includes(targetUserId) : false
 
   const isPending = useSyncExternalStore(

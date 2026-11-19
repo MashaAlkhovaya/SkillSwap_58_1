@@ -8,8 +8,8 @@ import type { store } from '@/store'
 import { useAppDispatch } from '@/store/hooks'
 import type { AuthUser } from '@/shared/types'
 import { authApi, useLoginMutation } from '../api/authApi'
-import { logout, setAuthUser, setProfile } from './authSlice'
-import { getAuthUser, saveServerAuthUser, saveUserProfile } from './authUtils'
+import { logout, setAuthUser, setLoginInProgress, setSessionCheckStatus } from './authSlice'
+import { getAuthUser, saveServerAuthUser } from './authUtils'
 import { useNavigate } from 'react-router'
 import { ROUTES } from '@/shared/lib/constants'
 import { useNotify } from '@/features/notifications'
@@ -81,6 +81,8 @@ export function useAuthForm(returnTo: string = ROUTES.HOME) {
   })
 
   const submitCredentials = handleSubmit(async (values) => {
+    dispatch(setLoginInProgress(true))
+
     try {
       const user = await login(values).unwrap()
 
@@ -94,7 +96,7 @@ export function useAuthForm(returnTo: string = ROUTES.HOME) {
       const currentSession = appStore.getState().auth.user
 
       try {
-        const profile = await dispatch(
+        await dispatch(
           authApi.endpoints.getAuthMe.initiate(undefined, {
             subscribe: false,
             forceRefetch: true,
@@ -106,8 +108,6 @@ export function useAuthForm(returnTo: string = ROUTES.HOME) {
           appStore.getState().auth.user === currentSession &&
           getAuthUser()?.token === user.token
         ) {
-          saveUserProfile(profile)
-          dispatch(setProfile(profile))
           notify.success('Вы вошли в аккаунт')
           navigate(returnTo, { replace: true })
         }
@@ -131,10 +131,14 @@ export function useAuthForm(returnTo: string = ROUTES.HOME) {
           return
         }
 
+        dispatch(setSessionCheckStatus('error'))
+
         showError('Вы вошли, но не удалось загрузить профиль. Попробуйте обновить страницу.')
       }
     } catch (requestError) {
       showError(getLoginError(requestError))
+    } finally {
+      dispatch(setLoginInProgress(false))
     }
   })
 

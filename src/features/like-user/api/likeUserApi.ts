@@ -1,6 +1,5 @@
 import { baseApi } from '@/shared/api'
 import { authApi } from '@/features/auth/api/authApi'
-import { applyConfirmedLikesChange } from '../model/likesSync'
 
 export const likeUserApi = baseApi.injectEndpoints({
   endpoints: (build) => ({
@@ -9,8 +8,11 @@ export const likeUserApi = baseApi.injectEndpoints({
         url: `/auth/me/likes/${encodeURIComponent(targetUserId)}`,
         method: 'PUT',
       }),
-      onQueryStarted: (targetUserId, { dispatch, getState, queryFulfilled }) => {
-        const patch = dispatch(
+      async onQueryStarted(targetUserId, { dispatch, getState, queryFulfilled }) {
+        const initialProfile = authApi.endpoints.getAuthMe.select()(getState())
+        const wasLiked = initialProfile.data?.likes.includes(targetUserId)
+
+        dispatch(
           authApi.util.updateQueryData('getAuthMe', undefined, (profile) => {
             if (!profile.likes.includes(targetUserId)) {
               profile.likes.push(targetUserId)
@@ -18,19 +20,25 @@ export const likeUserApi = baseApi.injectEndpoints({
           }),
         )
 
-        void queryFulfilled
-          .then(() => {
-            if (!authApi.endpoints.getAuthMe.select()(getState()).data) {
-              return
-            }
+        try {
+          await queryFulfilled
+        } catch {
+          const currentProfile = authApi.endpoints.getAuthMe.select()(getState())
 
-            applyConfirmedLikesChange(dispatch, getState, targetUserId, 'add')
-          })
-          .catch(() => {
-            if (authApi.endpoints.getAuthMe.select()(getState()).data) {
-              patch.undo()
-            }
-          })
+          // Не меняем новый профиль после выхода, повторного входа или загрузки.
+          if (!initialProfile.data || currentProfile.requestId !== initialProfile.requestId) {
+            return
+          }
+
+          if (!wasLiked) {
+            dispatch(
+              authApi.util.updateQueryData('getAuthMe', undefined, (profile) => {
+                // Откатываем только этот лайк, сохраняя параллельные изменения.
+                profile.likes = profile.likes.filter((id) => id !== targetUserId)
+              }),
+            )
+          }
+        }
       },
     }),
 
@@ -39,26 +47,35 @@ export const likeUserApi = baseApi.injectEndpoints({
         url: `/auth/me/likes/${encodeURIComponent(targetUserId)}`,
         method: 'DELETE',
       }),
-      onQueryStarted: (targetUserId, { dispatch, getState, queryFulfilled }) => {
-        const patch = dispatch(
+      async onQueryStarted(targetUserId, { dispatch, getState, queryFulfilled }) {
+        const initialProfile = authApi.endpoints.getAuthMe.select()(getState())
+        const previousIndex = initialProfile.data?.likes.indexOf(targetUserId) ?? -1
+
+        dispatch(
           authApi.util.updateQueryData('getAuthMe', undefined, (profile) => {
             profile.likes = profile.likes.filter((id) => id !== targetUserId)
           }),
         )
 
-        void queryFulfilled
-          .then(() => {
-            if (!authApi.endpoints.getAuthMe.select()(getState()).data) {
-              return
-            }
+        try {
+          await queryFulfilled
+        } catch {
+          const currentProfile = authApi.endpoints.getAuthMe.select()(getState())
 
-            applyConfirmedLikesChange(dispatch, getState, targetUserId, 'remove')
-          })
-          .catch(() => {
-            if (authApi.endpoints.getAuthMe.select()(getState()).data) {
-              patch.undo()
-            }
-          })
+          if (!initialProfile.data || currentProfile.requestId !== initialProfile.requestId) {
+            return
+          }
+
+          if (previousIndex >= 0) {
+            dispatch(
+              authApi.util.updateQueryData('getAuthMe', undefined, (profile) => {
+                if (!profile.likes.includes(targetUserId)) {
+                  profile.likes.splice(previousIndex, 0, targetUserId)
+                }
+              }),
+            )
+          }
+        }
       },
     }),
   }),

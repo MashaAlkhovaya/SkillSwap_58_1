@@ -5,7 +5,9 @@ import authReducer, {
   logout,
   selectAuthUser,
   selectIsAuthenticated,
+  selectSessionCheckStatus,
   setAuthUser,
+  setSessionCheckStatus,
 } from './authSlice'
 import { getAuthUser, saveServerAuthUser } from './authUtils'
 
@@ -20,7 +22,7 @@ function createStore() {
   return configureStore({
     reducer: { auth: authReducer },
     preloadedState: {
-      auth: { user: null, profile: null },
+      auth: { user: null },
     },
   })
 }
@@ -80,5 +82,21 @@ describe('authSlice', () => {
     localStorage.setItem(LOCAL_STORAGE_KEYS.AUTH_USER, 'неверные данные')
 
     expect(getAuthUser()).toBeNull()
+  })
+
+  it('сохраняет статус проверки сессии и сбрасывает его при выходе', async () => {
+    const store = createStore()
+
+    expect(selectSessionCheckStatus(store.getState())).toBe('idle')
+
+    store.dispatch(setSessionCheckStatus('checking'))
+    expect(selectSessionCheckStatus(store.getState())).toBe('checking')
+
+    store.dispatch(setSessionCheckStatus('error'))
+    expect(selectSessionCheckStatus(store.getState())).toBe('error')
+
+    await store.dispatch(logout())
+
+    expect(selectSessionCheckStatus(store.getState())).toBe('idle')
   })
 })
