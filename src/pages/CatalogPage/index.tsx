@@ -81,9 +81,7 @@ export default function CatalogPage() {
                   onLoadMore={() =>
                     dispatch(loadUsers({ page: pages.popular + 1, sort: 'popular', filters }))
                   }
-                  favoriteIds={[]}
                   onDetails={openSkill}
-                  onFavoriteToggle={() => undefined}
                 />
               )}
             </section>
@@ -101,9 +99,7 @@ export default function CatalogPage() {
                   onLoadMore={() =>
                     dispatch(loadUsers({ page: pages.new + 1, sort: 'new', filters }))
                   }
-                  favoriteIds={[]}
                   onDetails={openSkill}
-                  onFavoriteToggle={() => undefined}
                 />
               )}
             </section>
@@ -121,9 +117,7 @@ export default function CatalogPage() {
                   onLoadMore={() =>
                     dispatch(loadUsers({ page: pages.random + 1, sort: 'random', filters }))
                   }
-                  favoriteIds={[]}
                   onDetails={openSkill}
-                  onFavoriteToggle={() => undefined}
                 />
               )}
             </section>

@@ -3,7 +3,7 @@
   max-width: 324px;
   flex-shrink: 0;
   padding: 20px;
-  background: #fff;
+  background: var(--color-bg-surface);
   border-radius: var(--radius-lg);
   border: 1px solid transparent;
   display: flex;
@@ -22,6 +22,7 @@
 
 .title {
   white-space: nowrap;
+  color: var(--color-text-main);
 }
 
 .resetIcon {
@@ -30,7 +31,7 @@
 }
 
 .resetBtn {
-  color: #508826 !important;
+  color: var(--color-link) !important;
 }
 
 .resetBtn svg {

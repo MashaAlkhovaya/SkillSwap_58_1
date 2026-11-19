@@ -16,7 +16,8 @@ export const RegistrationFormProvider = ({ children }: RegistrationFormProviderP
     defaultValues: registrationDefaultValues,
     resolver: yupResolver(registrationSchema),
     shouldUnregister: false,
-    mode: 'onTouched',
+    mode: 'onSubmit',
+    reValidateMode: 'onSubmit',
   })
   return (
     <FormProvider {...form}>

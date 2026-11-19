@@ -6,8 +6,9 @@ import userEvent from '@testing-library/user-event'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import authReducer from '@/features/auth/model/authSlice'
 import notificationsReducer from '@/features/notifications/model/notificationsSlice'
-import type { AuthUser } from '@/shared/types'
+import type { AuthUser, User } from '@/shared/types'
 import { baseApi } from '@/shared/api'
+import { authApi } from '@/features/auth/api/authApi'
 import { LOCAL_STORAGE_KEYS } from '@/shared/lib/constants'
 import ProfilePage from './index'
 
@@ -18,7 +19,7 @@ const authUser: AuthUser = {
   token: 'token-user-01',
 }
 
-const profile = {
+const profile: User = {
   id: 'user-01',
   name: 'Анна',
   email: 'anna@example.com',
@@ -29,11 +30,15 @@ const profile = {
   bio: 'Учу рисовать',
   createdAt: '2020-01-01T00:00:00.000Z',
   likes: [],
-  canTeach: { id: 'skill-01', category: 'business', subCategory: 'management' },
+  canTeach: {
+    id: 'skill-01',
+    category: 'business',
+    subCategory: 'team-management',
+  },
   wantsToLearn: [],
 }
 
-function renderPage() {
+async function renderPage(cachedProfile: User | null = profile) {
   const store = configureStore({
     reducer: {
       auth: authReducer,
@@ -47,6 +52,10 @@ function renderPage() {
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(baseApi.middleware),
   })
+
+  if (cachedProfile) {
+    await store.dispatch(authApi.util.upsertQueryData('getAuthMe', undefined, cachedProfile))
+  }
 
   render(
     <Provider store={store}>
@@ -69,6 +78,19 @@ describe('ProfilePage', () => {
     localStorage.clear()
   })
 
+  it('загружает профиль с сервера, если кеш ещё пуст', async () => {
+    localStorage.setItem(LOCAL_STORAGE_KEYS.AUTH_USER, JSON.stringify(authUser))
+    const fetchMock = vi.fn(async () => Response.json(profile))
+    vi.stubGlobal('fetch', fetchMock)
+
+    const store = await renderPage(null)
+
+    expect(await screen.findByLabelText('Почта')).toHaveValue(profile.email)
+    expect(authApi.endpoints.getAuthMe.select()(store.getState()).data).toEqual(profile)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(localStorage.getItem('skillswap_user_profile')).toBeNull()
+  })
+
   it('заполняет форму данными пользователя и обновляет сессию после сохранения', async () => {
     const user = userEvent.setup()
     const saved = JSON.stringify(authUser)
@@ -82,8 +104,8 @@ describe('ProfilePage', () => {
     })
     vi.stubGlobal('fetch', fetchMock)
 
-    const store = renderPage()
-
+    const store = await renderPage()
+    expect(fetchMock.mock.calls.some(([input]) => requestOf(input).method === 'GET')).toBe(false)
     expect(await screen.findByLabelText('Почта')).toHaveValue('anna@example.com')
     expect(screen.getByLabelText('Имя')).toHaveValue('Анна')
     expect(screen.getByLabelText('Дата рождения')).toHaveValue('01.01.1990')
@@ -121,6 +143,10 @@ describe('ProfilePage', () => {
       email: 'anna@example.com',
       token: 'token-user-01',
     })
+    await waitFor(() => {
+      expect(authApi.endpoints.getAuthMe.select()(store.getState()).data?.name).toBe('Мария')
+    })
+    expect(localStorage.getItem('skillswap_user_profile')).toBeNull()
     expect(store.getState().notifications.items).toEqual([
       expect.objectContaining({ type: 'success', message: 'Профиль сохранён' }),
     ])
@@ -138,7 +164,7 @@ describe('ProfilePage', () => {
     })
     vi.stubGlobal('fetch', fetchMock)
 
-    const store = renderPage()
+    const store = await renderPage()
     await screen.findByLabelText('Почта')
     await user.click(screen.getByRole('button', { name: 'Сохранить' }))
 
@@ -157,16 +183,16 @@ describe('ProfilePage', () => {
     const fetchMock = vi.fn(async (input: RequestInfo | URL) => {
       const request = requestOf(input)
       if (request.method === 'PATCH') {
-        return Response.json({ ...profile, bio: 'Новый рассказ' })
+        return Response.json({ ...profile, bio: 'О себе' })
       }
       return Response.json(profile)
     })
     vi.stubGlobal('fetch', fetchMock)
 
-    const store = renderPage()
+    const store = await renderPage()
     await screen.findByLabelText('О себе')
     await user.clear(screen.getByLabelText('О себе'))
-    await user.type(screen.getByLabelText('О себе'), 'Новый рассказ')
+    await user.type(screen.getByLabelText('О себе'), 'О себе')
     await user.click(screen.getByRole('button', { name: 'Сохранить' }))
 
     await waitFor(() =>
@@ -183,5 +209,10 @@ describe('ProfilePage', () => {
 
     expect(store.getState().auth.user).toEqual(authUser)
     expect(localStorage.getItem(LOCAL_STORAGE_KEYS.AUTH_USER)).toBe(saved)
+    await waitFor(() => {
+      expect(authApi.endpoints.getAuthMe.select()(store.getState()).data?.bio).toBe('О себе')
+    })
+
+    expect(localStorage.getItem('skillswap_user_profile')).toBeNull()
   })
 })

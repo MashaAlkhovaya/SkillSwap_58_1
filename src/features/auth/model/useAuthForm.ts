@@ -19,7 +19,7 @@ const authFormSchema = yup.object({
   password: yup.string().required('Введите пароль'),
 })
 
-export type AuthFormValues = yup.InferType<typeof authFormSchema>
+//export type AuthFormValues = yup.InferType<typeof authFormSchema>
 
 const DEFAULT_ERROR = 'Не удалось войти. Попробуйте ещё раз.'
 

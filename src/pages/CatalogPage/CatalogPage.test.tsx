@@ -24,6 +24,10 @@ vi.mock('@/features/exchange', () => ({
   useOutgoingPendingSkillIds: useOutgoingPendingSkillIdsMock,
 }))
 
+vi.mock('@/features/like-user', () => ({
+  useLikeUser: () => ({ isLiked: false, isPending: false, toggle: vi.fn() }),
+}))
+
 function createUsers(count: number): User[] {
   return Array.from({ length: count }, (_, index) => ({
     id: `user-${index + 1}`,
