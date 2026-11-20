@@ -43,7 +43,6 @@ const createTestStore = (profile: User | null = null) => {
               token: 'mock',
             }
           : null,
-        profile: profile as User | null,
       },
     },
   })

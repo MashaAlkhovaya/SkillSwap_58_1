@@ -33,7 +33,7 @@ function renderUserMenu(authUser: AuthUser | null = null) {
       notifications: notificationsReducer,
       notificationHistory: notificationHistoryReducer,
     },
-    preloadedState: { auth: { user: authUser, profile: null } },
+    preloadedState: { auth: { user: authUser } },
   })
 
   render(

@@ -8,6 +8,7 @@ import authReducer from '@/features/auth/model/authSlice'
 import notificationsReducer from '@/features/notifications/model/notificationsSlice'
 import type { AuthUser, User } from '@/shared/types'
 import { baseApi } from '@/shared/api'
+import { authApi } from '@/features/auth/api/authApi'
 import { LOCAL_STORAGE_KEYS } from '@/shared/lib/constants'
 import ProfilePage from './index'
 
@@ -37,7 +38,7 @@ const profile: User = {
   wantsToLearn: [],
 }
 
-function renderPage() {
+async function renderPage(cachedProfile: User | null = profile) {
   const store = configureStore({
     reducer: {
       auth: authReducer,
@@ -47,11 +48,14 @@ function renderPage() {
     preloadedState: {
       auth: {
         user: authUser,
-        profile,
       },
     },
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(baseApi.middleware),
   })
+
+  if (cachedProfile) {
+    await store.dispatch(authApi.util.upsertQueryData('getAuthMe', undefined, cachedProfile))
+  }
 
   render(
     <Provider store={store}>
@@ -74,6 +78,19 @@ describe('ProfilePage', () => {
     localStorage.clear()
   })
 
+  it('загружает профиль с сервера, если кеш ещё пуст', async () => {
+    localStorage.setItem(LOCAL_STORAGE_KEYS.AUTH_USER, JSON.stringify(authUser))
+    const fetchMock = vi.fn(async () => Response.json(profile))
+    vi.stubGlobal('fetch', fetchMock)
+
+    const store = await renderPage(null)
+
+    expect(await screen.findByLabelText('Почта')).toHaveValue(profile.email)
+    expect(authApi.endpoints.getAuthMe.select()(store.getState()).data).toEqual(profile)
+    expect(fetchMock).toHaveBeenCalledTimes(1)
+    expect(localStorage.getItem('skillswap_user_profile')).toBeNull()
+  })
+
   it('заполняет форму данными пользователя и обновляет сессию после сохранения', async () => {
     const user = userEvent.setup()
     const saved = JSON.stringify(authUser)
@@ -87,7 +104,7 @@ describe('ProfilePage', () => {
     })
     vi.stubGlobal('fetch', fetchMock)
 
-    const store = renderPage()
+    const store = await renderPage()
     expect(fetchMock.mock.calls.some(([input]) => requestOf(input).method === 'GET')).toBe(false)
     expect(await screen.findByLabelText('Почта')).toHaveValue('anna@example.com')
     expect(screen.getByLabelText('Имя')).toHaveValue('Анна')
@@ -127,11 +144,9 @@ describe('ProfilePage', () => {
       token: 'token-user-01',
     })
     await waitFor(() => {
-      expect(store.getState().auth.profile?.name).toBe('Мария')
+      expect(authApi.endpoints.getAuthMe.select()(store.getState()).data?.name).toBe('Мария')
     })
-    expect(JSON.parse(localStorage.getItem('skillswap_user_profile') ?? 'null')).toMatchObject({
-      name: 'Мария',
-    })
+    expect(localStorage.getItem('skillswap_user_profile')).toBeNull()
     expect(store.getState().notifications.items).toEqual([
       expect.objectContaining({ type: 'success', message: 'Профиль сохранён' }),
     ])
@@ -149,7 +164,7 @@ describe('ProfilePage', () => {
     })
     vi.stubGlobal('fetch', fetchMock)
 
-    const store = renderPage()
+    const store = await renderPage()
     await screen.findByLabelText('Почта')
     await user.click(screen.getByRole('button', { name: 'Сохранить' }))
 
@@ -174,7 +189,7 @@ describe('ProfilePage', () => {
     })
     vi.stubGlobal('fetch', fetchMock)
 
-    const store = renderPage()
+    const store = await renderPage()
     await screen.findByLabelText('О себе')
     await user.clear(screen.getByLabelText('О себе'))
     await user.type(screen.getByLabelText('О себе'), 'О себе')
@@ -195,11 +210,9 @@ describe('ProfilePage', () => {
     expect(store.getState().auth.user).toEqual(authUser)
     expect(localStorage.getItem(LOCAL_STORAGE_KEYS.AUTH_USER)).toBe(saved)
     await waitFor(() => {
-      expect(store.getState().auth.profile?.bio).toBe('О себе')
+      expect(authApi.endpoints.getAuthMe.select()(store.getState()).data?.bio).toBe('О себе')
     })
 
-    expect(JSON.parse(localStorage.getItem('skillswap_user_profile') ?? 'null')).toMatchObject({
-      bio: 'О себе',
-    })
+    expect(localStorage.getItem('skillswap_user_profile')).toBeNull()
   })
 })

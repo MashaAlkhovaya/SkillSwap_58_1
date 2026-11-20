@@ -86,7 +86,7 @@ function renderAuthForm() {
   const store = configureStore({
     reducer: { auth: authReducer, notifications: notificationsReducer },
     preloadedState: {
-      auth: { user: null, profile: null },
+      auth: { user: null },
     },
   })
 
@@ -110,6 +110,34 @@ describe('useAuthForm', () => {
     loadingState.isLoading = false
   })
 
+  it('сохраняет сессию и статус ошибки, если профиль не загрузился', async () => {
+    loginMock.mockReturnValue({
+      unwrap: () => Promise.resolve(user),
+    })
+
+    profileMock.mockRejectedValue({ status: 'FETCH_ERROR' })
+
+    const userEvents = userEvent.setup()
+    const { store } = renderAuthForm()
+
+    await userEvents.type(screen.getByRole('textbox', { name: 'Email' }), user.email)
+    await userEvents.type(screen.getByLabelText('Пароль'), 'test-password')
+    await userEvents.click(screen.getByRole('button', { name: 'Войти' }))
+
+    await waitFor(() => {
+      expect(store.getState().auth.sessionCheckStatus).toBe('error')
+    })
+
+    expect(store.getState().auth.user).toEqual(user)
+
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEYS.AUTH_USER)
+    expect(JSON.parse(saved ?? 'null')).toEqual(user)
+
+    expect(
+      screen.getByText('Вы вошли, но не удалось загрузить профиль. Попробуйте обновить страницу.'),
+    ).toBeInTheDocument()
+  })
+
   it('очищает сессию, если сервер отклонил токен при загрузке профиля', async () => {
     loginMock.mockReturnValue({
       unwrap: () => Promise.resolve(user),
@@ -128,7 +156,6 @@ describe('useAuthForm', () => {
       expect(store.getState().auth.user).toBeNull()
     })
 
-    expect(store.getState().auth.profile).toBeNull()
     expect(localStorage.getItem(LOCAL_STORAGE_KEYS.AUTH_USER)).toBeNull()
     expect(localStorage.getItem('skillswap_user_profile')).toBeNull()
   })
@@ -174,7 +201,8 @@ describe('useAuthForm', () => {
       await Promise.resolve()
     })
 
-    expect(store.getState().auth.profile).toBeNull()
+    expect(store.getState().auth.user).toEqual(user)
+    expect(store.getState().notifications.items).toEqual([])
     expect(localStorage.getItem('skillswap_user_profile')).toBeNull()
   })
 
@@ -191,7 +219,7 @@ describe('useAuthForm', () => {
 
   it('блокирует кнопку, пока выполняется вход', async () => {
     loginMock.mockReturnValue({
-      unwrap: () => new Promise<typeof user>(() => {}), // логин "висит"
+      unwrap: () => new Promise<typeof user>(() => {}),
     })
 
     const userEvents = userEvent.setup()
@@ -232,12 +260,10 @@ describe('useAuthForm', () => {
     expect(JSON.parse(saved ?? 'null')).toEqual(user)
 
     await waitFor(() => {
-      expect(store.getState().auth.profile).toEqual(profile)
+      expect(profileMock).toHaveBeenCalled()
     })
 
-    const savedProfile = localStorage.getItem('skillswap_user_profile')
-
-    expect(JSON.parse(savedProfile ?? 'null')).toEqual(profile)
+    expect(localStorage.getItem('skillswap_user_profile')).toBeNull()
     expect(screen.queryByRole('alert')).not.toBeInTheDocument()
     expect(store.getState().notifications.items).toEqual([
       expect.objectContaining({ type: 'success', message: 'Вы вошли в аккаунт' }),

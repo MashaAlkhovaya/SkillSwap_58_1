@@ -16,7 +16,6 @@ export {
   BellIcon,
   BookIcon,
   BriefcaseIcon,
-  ChevronDownIcon,
   ChevronRightIcon,
   GalleryEditIcon,
   GlobalIcon,

@@ -6,10 +6,10 @@ import { Provider } from 'react-redux'
 import { MemoryRouter, Route, Routes } from 'react-router'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { baseApi } from '@/shared/api'
-import authReducer, { logout } from '@/features/auth/model/authSlice'
+import authReducer, { logout, setAuthUser } from '@/features/auth/model/authSlice'
 import { authApi } from '@/features/auth/api/authApi'
 import notificationsReducer from '@/features/notifications/model/notificationsSlice'
-import { saveServerAuthUser, saveUserProfile } from '@/features/auth/model/authUtils'
+import { saveServerAuthUser } from '@/features/auth/model/authUtils'
 import type { AuthUser, User } from '@/shared/types'
 import { useLikeUser } from './useLikeUser'
 
@@ -131,7 +131,7 @@ const reducer = combineReducers({
 
 type TestStore = ReturnType<typeof makeTestStore>
 
-function makeTestStore(preloadedAuth: { user: AuthUser | null; profile: User | null }) {
+function makeTestStore(preloadedAuth: { user: AuthUser | null }) {
   return configureStore({
     reducer,
     middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(baseApi.middleware),
@@ -160,7 +160,7 @@ function LikeProbe({ targetUserId, label }: { targetUserId: string; label: strin
   )
 }
 
-function renderLikeProbes({
+async function renderLikeProbes({
   targetUserIds,
   initialProfile,
   authenticated = true,
@@ -171,15 +171,17 @@ function renderLikeProbes({
 }) {
   if (authenticated) {
     saveServerAuthUser(authUser)
-    saveUserProfile(initialProfile)
   }
 
   profileHolder.current = initialProfile
 
   const store = makeTestStore({
     user: authenticated ? authUser : null,
-    profile: authenticated ? initialProfile : null,
   })
+
+  if (authenticated) {
+    await store.dispatch(authApi.util.upsertQueryData('getAuthMe', undefined, initialProfile))
+  }
 
   function wrapper({ children }: { children: ReactNode }) {
     return (
@@ -194,17 +196,7 @@ function renderLikeProbes({
     )
   }
 
-  const getLikes = () => {
-    const cached = authApi.endpoints.getAuthMe.select()(store.getState()).data
-
-    return {
-      cached: cached?.likes,
-      slice: store.getState().auth.profile?.likes,
-      storage: JSON.parse(localStorage.getItem('skillswap_user_profile') ?? 'null')?.likes as
-        | string[]
-        | undefined,
-    }
-  }
+  const getLikes = () => authApi.endpoints.getAuthMe.select()(store.getState()).data?.likes
 
   const content = (
     <>
@@ -242,12 +234,27 @@ describe('useLikeUser', () => {
 
   afterEach(async () => {
     await drainPendingRequests()
+    localStorage.clear()
   })
 
-  it('ставит лайк и синхронизирует кеш, слайс и localStorage', async () => {
+  it('направляет гостя на вход без запросов профиля и лайков', async () => {
+    const userEvents = userEvent.setup()
+    await renderLikeProbes({
+      targetUserIds: ['user-02'],
+      initialProfile: makeProfile([]),
+      authenticated: false,
+    })
+
+    await userEvents.click(screen.getByRole('button', { name: /Карточка 1/ }))
+
+    expect(await screen.findByText('Страница входа')).toBeInTheDocument()
+    expect(fetchMock).not.toHaveBeenCalled()
+  })
+
+  it('ставит лайк и обновляет общий кеш профиля', async () => {
     const initial = makeProfile([])
     const userEvents = userEvent.setup()
-    const { store, getLikes } = renderLikeProbes({
+    const { store, getLikes } = await renderLikeProbes({
       targetUserIds: ['user-02'],
       initialProfile: initial,
     })
@@ -264,9 +271,7 @@ describe('useLikeUser', () => {
     await waitFor(() => {
       const likes = getLikes()
 
-      expect(likes.cached).toEqual(['user-02'])
-      expect(likes.slice).toEqual(['user-02'])
-      expect(likes.storage).toEqual(['user-02'])
+      expect(likes).toEqual(['user-02'])
     })
 
     expect(screen.getByRole('button', { name: /Карточка 1/ })).toHaveAttribute(
@@ -274,17 +279,14 @@ describe('useLikeUser', () => {
       'true',
     )
     expect(screen.getByRole('button', { name: /Карточка 1/ })).toBeEnabled()
-    expect(JSON.parse(localStorage.getItem('skillswap_user_profile') ?? 'null')).toEqual({
-      ...initial,
-      likes: ['user-02'],
-    })
+    expect(localStorage.getItem('skillswap_user_profile')).toBeNull()
     expect(store.getState().notifications.items).toEqual([])
   })
 
-  it('снимает лайк и синхронизирует кеш, слайс и localStorage', async () => {
+  it('снимает лайк и обновляет общий кеш профиля', async () => {
     const initial = makeProfile(['user-02'])
     const userEvents = userEvent.setup()
-    const { store, getLikes } = renderLikeProbes({
+    const { store, getLikes } = await renderLikeProbes({
       targetUserIds: ['user-02'],
       initialProfile: initial,
     })
@@ -304,9 +306,7 @@ describe('useLikeUser', () => {
     await waitFor(() => {
       const likes = getLikes()
 
-      expect(likes.cached).toEqual([])
-      expect(likes.slice).toEqual([])
-      expect(likes.storage).toEqual([])
+      expect(likes).toEqual([])
     })
 
     expect(screen.getByRole('button', { name: /Карточка 1/ })).toHaveAttribute(
@@ -319,7 +319,7 @@ describe('useLikeUser', () => {
   it('при ошибке откатывает UI, показывает тост с сообщением сервера и сохраняет другие лайки', async () => {
     const initial = makeProfile(['user-03'])
     const userEvents = userEvent.setup()
-    const { store, getLikes } = renderLikeProbes({
+    const { store, getLikes } = await renderLikeProbes({
       targetUserIds: ['user-02'],
       initialProfile: initial,
     })
@@ -341,19 +341,17 @@ describe('useLikeUser', () => {
     await waitFor(() => {
       const likes = getLikes()
 
-      expect(likes.cached).toEqual(['user-03'])
-      expect(likes.slice).toEqual(['user-03'])
-      expect(likes.storage).toEqual(['user-03'])
+      expect(likes).toEqual(['user-03'])
     })
 
-    // Профиль в localStorage не перезаписан снимком с ошибкой
-    expect(JSON.parse(localStorage.getItem('skillswap_user_profile') ?? 'null')).toEqual(initial)
+    // Полный профиль хранится только в кеше запросов.
+    expect(localStorage.getItem('skillswap_user_profile')).toBeNull()
   })
 
   it('при ошибке без тела показывает fallback-сообщение в тосте', async () => {
     const initial = makeProfile([])
     const userEvents = userEvent.setup()
-    const { store, getLikes } = renderLikeProbes({
+    const { store, getLikes } = await renderLikeProbes({
       targetUserIds: ['user-02'],
       initialProfile: initial,
     })
@@ -369,14 +367,14 @@ describe('useLikeUser', () => {
     await waitForErrorNotification(store, 'Не удалось обновить избранное')
 
     await waitFor(() => {
-      expect(getLikes().slice).toEqual([])
+      expect(getLikes()).toEqual([])
     })
   })
 
   it('параллельные лайки разных пользователей не затирают друг друга', async () => {
     const initial = makeProfile([])
     const userEvents = userEvent.setup()
-    const { getLikes } = renderLikeProbes({
+    const { getLikes } = await renderLikeProbes({
       targetUserIds: ['user-02', 'user-03'],
       initialProfile: initial,
     })
@@ -404,18 +402,16 @@ describe('useLikeUser', () => {
     await waitFor(() => {
       const likes = getLikes()
 
-      expect(likes.cached).toEqual(expect.arrayContaining(['user-02', 'user-03']))
-      expect(likes.slice).toEqual(expect.arrayContaining(['user-02', 'user-03']))
-      expect(likes.storage).toEqual(expect.arrayContaining(['user-02', 'user-03']))
+      expect(likes).toEqual(expect.arrayContaining(['user-02', 'user-03']))
     })
 
-    expect(getLikes().slice).toHaveLength(2)
+    expect(getLikes()).toHaveLength(2)
   })
 
   it('при параллельных запросах успех одного и ошибка другого не мешают друг другу', async () => {
     const initial = makeProfile([])
     const userEvents = userEvent.setup()
-    const { store, getLikes } = renderLikeProbes({
+    const { store, getLikes } = await renderLikeProbes({
       targetUserIds: ['user-02', 'user-03'],
       initialProfile: initial,
     })
@@ -447,16 +443,70 @@ describe('useLikeUser', () => {
     await waitFor(() => {
       const likes = getLikes()
 
-      expect(likes.cached).toEqual(['user-02'])
-      expect(likes.slice).toEqual(['user-02'])
-      expect(likes.storage).toEqual(['user-02'])
+      expect(likes).toEqual(['user-02'])
     })
+  })
+
+  it('откат первого лайка не удаляет успешный параллельный лайк', async () => {
+    const userEvents = userEvent.setup()
+    const { store, getLikes } = await renderLikeProbes({
+      targetUserIds: ['user-02', 'user-03'],
+      initialProfile: makeProfile([]),
+    })
+
+    await userEvents.click(screen.getByRole('button', { name: /Карточка 1/ }))
+    await userEvents.click(screen.getByRole('button', { name: /Карточка 2/ }))
+
+    const failed = await takeLikeRequest('PUT', 'user-02')
+    const succeeded = await takeLikeRequest('PUT', 'user-03')
+
+    await act(async () => {
+      succeeded.resolve(new Response(null, { status: 201 }))
+    })
+    await act(async () => {
+      failed.resolve(jsonResponse({ message: 'Лайк не сохранён' }, 409))
+    })
+
+    await waitForErrorNotification(store, 'Лайк не сохранён')
+    expect(getLikes()).toEqual(['user-03'])
+    expect(screen.getByRole('button', { name: /Карточка 2/ })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
+  })
+
+  it('восстанавливает снятый лайк при ошибке, сохраняя успешный параллельный лайк', async () => {
+    const userEvents = userEvent.setup()
+    const { store, getLikes } = await renderLikeProbes({
+      targetUserIds: ['user-02', 'user-03'],
+      initialProfile: makeProfile(['user-02', 'user-04']),
+    })
+
+    await userEvents.click(screen.getByRole('button', { name: /Карточка 1/ }))
+    await userEvents.click(screen.getByRole('button', { name: /Карточка 2/ }))
+
+    const failed = await takeLikeRequest('DELETE', 'user-02')
+    const succeeded = await takeLikeRequest('PUT', 'user-03')
+
+    await act(async () => {
+      succeeded.resolve(new Response(null, { status: 201 }))
+    })
+    await act(async () => {
+      failed.resolve(jsonResponse({ message: 'Лайк не снят' }, 409))
+    })
+
+    await waitForErrorNotification(store, 'Лайк не снят')
+    expect(getLikes()).toEqual(['user-02', 'user-04', 'user-03'])
+    expect(screen.getByRole('button', { name: /Карточка 1/ })).toHaveAttribute(
+      'aria-pressed',
+      'true',
+    )
   })
 
   it('блокирует повторный клик по одному получателю во всех копиях карточки', async () => {
     const initial = makeProfile([])
     const userEvents = userEvent.setup()
-    const { getLikes } = renderLikeProbes({
+    const { getLikes } = await renderLikeProbes({
       targetUserIds: ['user-02', 'user-02'],
       initialProfile: initial,
     })
@@ -475,7 +525,7 @@ describe('useLikeUser', () => {
     })
 
     await waitFor(() => {
-      expect(getLikes().storage).toEqual(['user-02'])
+      expect(getLikes()).toEqual(['user-02'])
     })
 
     expect(likeRequestCalls()).toHaveLength(1)
@@ -484,7 +534,10 @@ describe('useLikeUser', () => {
   it('не сохраняет лайк, если пользователь вышел до ответа сервера', async () => {
     const initial = makeProfile(['user-03'])
     const userEvents = userEvent.setup()
-    const { store } = renderLikeProbes({ targetUserIds: ['user-02'], initialProfile: initial })
+    const { store, getLikes } = await renderLikeProbes({
+      targetUserIds: ['user-02'],
+      initialProfile: initial,
+    })
 
     await userEvents.click(screen.getByRole('button', { name: /Карточка 1/ }))
 
@@ -496,7 +549,8 @@ describe('useLikeUser', () => {
     })
 
     await waitFor(() => {
-      expect(store.getState().auth.profile).toBeNull()
+      expect(store.getState().auth.user).toBeNull()
+      expect(getLikes() ?? []).not.toContain('user-02')
     })
 
     await waitFor(() => {
@@ -507,5 +561,36 @@ describe('useLikeUser', () => {
 
     expect(localStorage.getItem('skillswap_user_profile')).toBeNull()
     expect(pendingRequests).toHaveLength(0)
+  })
+
+  it('не откатывает лайки новой сессии поздней ошибкой старого запроса', async () => {
+    const userEvents = userEvent.setup()
+    const { store, getLikes } = await renderLikeProbes({
+      targetUserIds: ['user-02'],
+      initialProfile: makeProfile([]),
+    })
+
+    await userEvents.click(screen.getByRole('button', { name: /Карточка 1/ }))
+    const request = await takeLikeRequest('PUT', 'user-02')
+
+    await act(async () => {
+      await store.dispatch(logout())
+      const newProfile = makeProfile(['user-02', 'user-04'])
+      profileHolder.current = newProfile
+      saveServerAuthUser({ ...authUser, token: 'new-token' })
+      await store.dispatch(authApi.util.upsertQueryData('getAuthMe', undefined, newProfile))
+      store.dispatch(setAuthUser({ ...authUser, token: 'new-token' }))
+    })
+
+    await act(async () => {
+      request.resolve(jsonResponse({ message: 'Старый запрос отклонён' }, 409))
+    })
+
+    await waitFor(() => {
+      expect(screen.getByRole('button', { name: /Карточка 1/ })).toBeEnabled()
+    })
+    expect(getLikes()).toEqual(['user-02', 'user-04'])
+    expect(store.getState().auth.user?.token).toBe('new-token')
+    expect(localStorage.getItem('skillswap_user_profile')).toBeNull()
   })
 })

@@ -1,5 +1,6 @@
 import { render, screen } from '@testing-library/react'
-import { MemoryRouter } from 'react-router-dom'
+import { lazy } from 'react'
+import { MemoryRouter, Route, Routes } from 'react-router-dom'
 import { describe, expect, it, vi } from 'vitest'
 import { MainLayout } from './MainLayout'
 
@@ -35,5 +36,23 @@ describe('MainLayout', () => {
     renderLayout('/register')
     expect(screen.getByRole('banner')).toBeInTheDocument()
     expect(screen.queryByRole('contentinfo')).not.toBeInTheDocument()
+  })
+
+  it('сохраняет шапку и подвал во время загрузки страницы', () => {
+    const LoadingPage = lazy(() => new Promise<{ default: React.ComponentType }>(() => {}))
+
+    render(
+      <MemoryRouter initialEntries={['/']}>
+        <Routes>
+          <Route element={<MainLayout />}>
+            <Route path="/" element={<LoadingPage />} />
+          </Route>
+        </Routes>
+      </MemoryRouter>,
+    )
+
+    expect(screen.getByRole('banner')).toBeInTheDocument()
+    expect(screen.getByRole('contentinfo')).toBeInTheDocument()
+    expect(document.querySelector('main')).toBeInTheDocument()
   })
 })
