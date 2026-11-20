@@ -32,8 +32,7 @@ describe('getSkillById', () => {
       },
     }
 
-    ;(globalThis.fetch as any).mockResolvedValueOnce(mockResponse)
-
+    vi.mocked(globalThis.fetch).mockResolvedValueOnce(mockResponse as Response)
     const store = setupStore()
     const data = await store.dispatch(skillApi.endpoints.getSkillById.initiate('1')).unwrap()
 
@@ -55,7 +54,7 @@ describe('getSkillById', () => {
       },
     }
 
-    ;(globalThis.fetch as any).mockResolvedValueOnce(mockErrorResponse)
+    vi.mocked(globalThis.fetch).mockResolvedValueOnce(mockErrorResponse as Response)
 
     const store = setupStore()
 
